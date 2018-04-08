@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>bfa2687a-1112-44df-bc64-f0fc7f2a1d32</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>EntityTrackingModule</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)EntityTracking Module.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Known Objects.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LidarTracking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SensorTracking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TrackingUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TurretTracking.cs" />
+  </ItemGroup>
+</Project>

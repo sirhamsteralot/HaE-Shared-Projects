@@ -16,23 +16,13 @@ using VRageMath;
 
 namespace IngameScript
 {
-    partial class Program : MyGridProgram
-    {
-        
+	partial class Program
+	{
+        public class EntityTracking_Module
+	    {
+            public Known_Objects known_Objects = new Known_Objects();
 
-        public Program()
-        {
-          
-        }
 
-        public void Save()
-        {
-         
-        }
-
-        public void Main(string argument, UpdateType updateSource)
-        {
-            
-        }
-    }
+	    }
+	}
 }

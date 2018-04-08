@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>4efa3dc1-c6df-4853-962d-e2998290b240</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HaE_Autopilot_Module</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Autopilot Module.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GyroUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITracking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MovementUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrustersInDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrustUtils.cs" />
+  </ItemGroup>
+</Project>

@@ -5,7 +5,25 @@ VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared Projects", "Shared Projects\Shared Projects.csproj", "{27F93B29-3DEA-43AA-A0E1-1C42A60C295B}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Autopilot Module", "HaE Autopilot Module\HaE Autopilot Module.shproj", "{4EFA3DC1-C6DF-4853-962D-E2998290B240}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE VectorUtils", "VectorUtils\HaE VectorUtils.shproj", "{477E0254-B96C-41F0-80EA-77F22D2133B9}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE EntityTrackingModule", "EntityTrackingModule\HaE EntityTrackingModule.shproj", "{BFA2687A-1112-44DF-BC64-F0FC7F2A1D32}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE GridTerminalSystemUtils", "HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.shproj", "{EC6DFC99-0769-41FC-96A3-029FBEB3A7A1}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		EntityTrackingModule\EntityTrackingModule.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Autopilot Module\HaE Autopilot Module.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		VectorUtils\VectorUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		VectorUtils\VectorUtils.projitems*{477e0254-b96c-41f0-80ea-77f22d2133b9}*SharedItemsImports = 13
+		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13
+		EntityTrackingModule\EntityTrackingModule.projitems*{bfa2687a-1112-44df-bc64-f0fc7f2a1d32}*SharedItemsImports = 13
+		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{ec6dfc99-0769-41fc-96a3-029fbeb3a7a1}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 	EndGlobalSection

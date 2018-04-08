@@ -16,23 +16,13 @@ using VRageMath;
 
 namespace IngameScript
 {
-    partial class Program : MyGridProgram
-    {
-        
+	partial class Program
+	{
+        public interface ITracking
+	    {
+            Action<HaE_Entity> OnEntityDetected { get; set; }
 
-        public Program()
-        {
-          
-        }
-
-        public void Save()
-        {
-         
-        }
-
-        public void Main(string argument, UpdateType updateSource)
-        {
-            
-        }
-    }
+            void Poll();
+	    }
+	}
 }
