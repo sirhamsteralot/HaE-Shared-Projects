@@ -21,8 +21,69 @@ namespace IngameScript
         public class EntityTracking_Module
 	    {
             public Known_Objects known_Objects = new Known_Objects();
+            public List<ITracking> ObjectTrackers = new List<ITracking>();
+            private TargetPainter targetPainter;
 
+            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
+            {
+                targetPainter = new TargetPainter(targetingCamera);
 
+                List<IMyLargeTurretBase> turretList = new List<IMyLargeTurretBase>();
+                GTS.GridTerminalSystem.GetBlocksOfType(turretList);
+                ObjectTrackers.Add(new TurretTracking(turretList));
+
+                List<IMySensorBlock> sensorList = new List<IMySensorBlock>();
+                GTS.GridTerminalSystem.GetBlocksOfType(sensorList);
+                ObjectTrackers.Add(new SensorTracking(sensorList));
+
+                List<IMyCameraBlock> cameraList = new List<IMyCameraBlock>();
+                GTS.GridTerminalSystem.GetBlocksOfType(cameraList);
+                ObjectTrackers.Add(new LidarTracking(cameraList, reference, known_Objects.LidarEntities));
+
+                foreach(var tracker in ObjectTrackers)
+                {
+                    tracker.OnEntityDetected += OnEntityDetected;
+                }
+            }
+
+            public void PaintTarget(double distance)
+            {
+                var entity = targetPainter.PaintTarget(distance);
+                OnEntityDetected(entity);
+            }
+
+            public void Poll()
+            {
+                foreach (var tracker in ObjectTrackers)
+                {
+                    tracker.Poll();
+                }
+            }
+
+            public void TimeoutEntities(TimeSpan timeout)
+            {
+                known_Objects.TimeOutEntities(timeout);
+            }
+
+            public void ClearEntities()
+            {
+                known_Objects.Clear();
+            }
+
+            private void OnEntityDetected(HaE_Entity entity)
+            {
+                if (entity == null)
+                    return;
+
+                if (known_Objects.Contains(entity))
+                {
+                    known_Objects.UpdateEntity(entity);
+                }
+                else
+                {
+                    known_Objects.AddEntity(entity);
+                }
+            }
 	    }
 	}
 }

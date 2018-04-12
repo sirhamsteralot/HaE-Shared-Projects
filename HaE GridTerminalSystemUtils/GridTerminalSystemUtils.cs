@@ -20,8 +20,8 @@ namespace IngameScript
 	{
         public class GridTerminalSystemUtils
 	    {
-            private IMyProgrammableBlock Me;
-            private IMyGridTerminalSystem GridTerminalSystem;
+            public IMyProgrammableBlock Me;
+            public IMyGridTerminalSystem GridTerminalSystem;
 
             public GridTerminalSystemUtils(IMyProgrammableBlock me, IMyGridTerminalSystem gridTerminalSystem)
             {

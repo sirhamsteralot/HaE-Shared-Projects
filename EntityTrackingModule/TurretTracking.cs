@@ -29,6 +29,10 @@ namespace IngameScript
             {
                 this.turrets = turrets;
             }
+            public TurretTracking(List<IMyLargeTurretBase> turrets)
+            {
+                this.turrets = new HashSet<IMyLargeTurretBase>(turrets);
+            }
 
             public void Poll()
             {

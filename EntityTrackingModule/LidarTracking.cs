@@ -33,11 +33,31 @@ namespace IngameScript
 
             private IEnumerator<bool> _castingSpreader;
 
+
             public LidarTracking(HashSet<IMyCameraBlock> cameras, IMyTerminalBlock reference, HashSet<HaE_Entity> trackedEntities)
             {
                 this.cameras = cameras;
                 this.trackedEntities = trackedEntities;
                 this.reference = reference;
+
+                CommonInit();
+            }
+
+            public LidarTracking(List<IMyCameraBlock> cameras, IMyTerminalBlock reference, HashSet<HaE_Entity> trackedEntities)
+            {
+                this.cameras = new HashSet<IMyCameraBlock>(cameras);
+                this.trackedEntities = trackedEntities;
+                this.reference = reference;
+
+                CommonInit();
+            }
+
+            private void CommonInit()
+            {
+                foreach (var camera in cameras)
+                {
+                    camera.EnableRaycast = true;
+                }
             }
 
             public void Poll()
@@ -58,7 +78,9 @@ namespace IngameScript
 
             private IEnumerator<bool> CastingSpreader()
             {
-                foreach (var entity in trackedEntities)
+                var Templist = new HashSet<HaE_Entity>(trackedEntities);
+
+                foreach (var entity in Templist)
                 {
                     RaycastEntity(entity);
                     yield return true;
@@ -73,13 +95,12 @@ namespace IngameScript
                 if (detectedEntity == null)
                 {
                     if (!AttemptReScan(entity))
-                    {
-                        trackedEntities.Remove(entity);
-                    }
+                        return;
                 }
 
                 OnEntityDetected?.Invoke(detectedEntity);
             }
+
 
             private bool AttemptReScan(HaE_Entity entity)
             {
@@ -103,9 +124,10 @@ namespace IngameScript
 
             public HaE_Entity RaycastDirection (Vector3D direction, double distance)
             {
-                IMyCameraBlock camera = GetUsableCamera(distance);
-
-                Vector3D position = camera.GetPosition() + direction * distance;
+                Vector3D position = reference.GetPosition() + direction * distance;
+                IMyCameraBlock camera = GetUsableCamera(position);
+                if (camera == null)
+                    return null;
 
                 MyDetectedEntityInfo detected = camera.Raycast(position);
                 if (!detected.IsEmpty())
@@ -126,6 +148,9 @@ namespace IngameScript
             public HaE_Entity RaycastPosition (Vector3D position)
             {
                 IMyCameraBlock camera = GetUsableCamera(position);
+                if (camera == null)
+                    return null;
+
 
                 MyDetectedEntityInfo detected = camera.Raycast(position);
                 if (!detected.IsEmpty())

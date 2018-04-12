@@ -30,6 +30,11 @@ namespace IngameScript
                 this.sensors = sensors;
             }
 
+            public SensorTracking(List<IMySensorBlock> sensors)
+            {
+                this.sensors = new HashSet<IMySensorBlock>(sensors);
+            }
+
             List<MyDetectedEntityInfo> templist = new List<MyDetectedEntityInfo>();
             public void Poll()
             {

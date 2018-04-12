@@ -10,9 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Autopilot Module.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GyroUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ITracking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MovementUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThrustersInDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThrustUtils.cs" />

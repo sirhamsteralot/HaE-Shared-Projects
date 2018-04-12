@@ -18,21 +18,61 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-        
+        public const string REFERENCENAME = "Remote Control";
+        public const string TARGETCAMNAME = "Targeting Camera";
+        public const string TEXTOUTNAME = "TextOut";
+
+        public const double PAINTINGDISTANCE = 1000;
+
+        GridTerminalSystemUtils gridTerminalSystemUtils;
+        IMyShipController reference;
+        IMyCameraBlock targetingCamera;
+        IMyTextPanel textOut;
+
+        EntityTracking_Module entityTracking;
 
         public Program()
         {
-          
-        }
+            //UpdateType
+            Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update100;
 
-        public void Save()
-        {
-         
+            //Generic Inits
+            gridTerminalSystemUtils = new GridTerminalSystemUtils(Me, GridTerminalSystem);
+            reference = GridTerminalSystem.GetBlockWithName(REFERENCENAME) as IMyShipController;
+            targetingCamera = GridTerminalSystem.GetBlockWithName(TARGETCAMNAME) as IMyCameraBlock;
+            textOut = GridTerminalSystem.GetBlockWithName(TEXTOUTNAME) as IMyTextPanel;
+
+            //Module Inits
+            entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            
+            DebugUtils.MainWrapper(SubMain, argument, updateSource, this);
+        }
+
+        public void SubMain(string argument, UpdateType updateSource)
+        {
+            EntityTrackingTests(argument, updateSource);
+        }
+
+        public void EntityTrackingTests(string argument, UpdateType updateSource)
+        {
+            entityTracking.Poll();
+
+            switch (argument)
+            {
+                case "Paint":
+                    entityTracking.PaintTarget(PAINTINGDISTANCE);
+                    break;
+            }
+
+            if ((updateSource & UpdateType.Update100) != 0)
+            {
+                entityTracking.TimeoutEntities(TimeSpan.FromSeconds(5));
+            }
+
+            textOut.WritePublicText(entityTracking.known_Objects.ToString());
         }
     }
 }

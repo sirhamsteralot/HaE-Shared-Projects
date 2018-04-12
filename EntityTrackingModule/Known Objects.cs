@@ -147,6 +147,42 @@ namespace IngameScript
                 return false;
             }
 
+            public void TimeOutEntities(TimeSpan timeoutTime)
+            {
+                var TempSet = new HashSet<HaE_Entity>(detectedEntitiesSet);
+
+                foreach (var entity in TempSet)
+                {
+                    if (entity.GetTimeSinceAdded() > timeoutTime)
+                        Remove(entity);
+                }
+            }
+
+            public void Clear()
+            {
+                detectedEntitiesDict.Clear();
+                _lidarEntities.Clear();
+                _sensorEntities.Clear();
+                _turretEntities.Clear();
+                detectedEntitiesSet.Clear();
+            }
+
+            StringBuilder sb = new StringBuilder();
+            StringBuilder throwAwaySb = new StringBuilder();
+            public override string ToString()
+            {
+                sb.Clear();
+                throwAwaySb.Clear();
+
+                foreach(var entity in detectedEntitiesSet)
+                {
+                    sb.AppendLine(entity.ToString(throwAwaySb));
+                    sb.AppendLine("==========================================================");
+                }
+
+                return sb.ToString();
+            }
+
             private class EntityInfoComparer : IEqualityComparer<HaE_Entity>
             {
                 public bool Equals(HaE_Entity x, HaE_Entity y)

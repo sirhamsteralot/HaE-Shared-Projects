@@ -34,6 +34,25 @@ namespace IngameScript
                 return DateTime.Now - LastDetectionTime;
             }
 
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                return ToString(sb);
+            }
+
+            public string ToString(StringBuilder sb)
+            {
+                sb.Clear();
+
+                sb.Append("Name: ").Append(entityInfo.Name);
+                sb.Append("\nId: ").Append(entityInfo.EntityId);
+                sb.Append("\nType: ").Append(trackingType.ToString());
+                sb.Append("\nPosition: ").Append(entityInfo.Position);
+                sb.Append("\nLastDetected: ").Append(LastDetectionTime.ToString("HH:mm:ss.ffff"));
+
+                return sb.ToString();
+            }
+
             public static explicit operator MyDetectedEntityInfo(HaE_Entity x)
             {
                 return x.entityInfo;

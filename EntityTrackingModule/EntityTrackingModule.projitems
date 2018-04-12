@@ -9,10 +9,13 @@
     <Import_RootNamespace>EntityTrackingModule</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityTracking Module.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITracking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Known Objects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LidarTracking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SensorTracking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TargetPainter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TrackingUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TurretTracking.cs" />
   </ItemGroup>
