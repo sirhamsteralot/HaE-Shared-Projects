@@ -20,11 +20,11 @@ namespace IngameScript
 	{
         public class Autopilot_Module
 	    {
-            public PID_Controller.PIDSettings PIDsettings = new PID_Controller.PIDSettings
+            public PID_Controller.PIDSettings PIDControlSettings = new PID_Controller.PIDSettings
             {
                 PGain = 21,
-                IntegralGain = 0.001,
-                DerivativeGain = 1,
+                IntegralGain = 0,
+                DerivativeGain = -1,
             };
 
             private PID_Controller PIDControl;
@@ -46,7 +46,7 @@ namespace IngameScript
                 this.controller = controller;
 
                 sortedThrusters = ThrustUtils.SortThrustByDirection(allThrusters, controller);
-                PIDControl = new PID_Controller(PIDsettings.PGain, PIDsettings.IntegralGain, PIDsettings.DerivativeGain);
+                PIDControl = new PID_Controller(PIDControlSettings.PGain, PIDControlSettings.IntegralGain, PIDControlSettings.DerivativeGain);
             }
 
             public void TravelToPosition(Vector3D position)

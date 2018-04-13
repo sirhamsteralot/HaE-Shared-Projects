@@ -110,14 +110,18 @@ namespace IngameScript
 
             private static void DirectionToPitchYawRoll(MatrixD currentOrientation, Vector3D direction, Vector3D upDirection, out double yaw, out double pitch, out double roll)
             {
-                double pitchComponentError = VectorUtils.GetComponent(currentOrientation.Up, direction);
-                double yawComponentError = VectorUtils.GetComponent(currentOrientation.Right, direction);
-                double rollComponentError = VectorUtils.GetComponent(upDirection, currentOrientation.Right);
+                double pitchComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Up, direction);
+                double yawComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Right, direction);
+                double rollComponentError = VectorUtils.GetProjectionScalar(upDirection, currentOrientation.Right);
 
 
                 pitch = pitchComponentError;
                 yaw = yawComponentError;
                 roll = rollComponentError;
+
+                //check if the target doesnt pull a 180 on us
+                if ((pitch == 0) && (yaw == 0) && (direction.Dot(currentOrientation.Forward) < 0))
+                    yaw = Math.PI;
             }
         }
     }

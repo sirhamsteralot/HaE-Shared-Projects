@@ -28,7 +28,7 @@ namespace IngameScript
             }
             
             /// calculate component of one on two
-            public static double GetComponent(Vector3D one, Vector3D two)
+            public static double GetProjectionScalar(Vector3D one, Vector3D two)
             {
                 double dotBetween = one.Dot(two);
 

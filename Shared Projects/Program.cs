@@ -23,7 +23,9 @@ namespace IngameScript
         public const string TEXTOUTNAME = "TextOut";
 
         public const double PAINTINGDISTANCE = 1000;
+        public const int TicksToRunProfiler = 100;
 
+        Profiler profiler = new Profiler(TicksToRunProfiler, true);
         GridTerminalSystemUtils gridTerminalSystemUtils;
         IMyShipController reference;
         IMyCameraBlock targetingCamera;
@@ -97,11 +99,20 @@ namespace IngameScript
         //MAIN/CONSTR
         public Program()
         {
+            profiler.OnProfilingFinished += OnProfilingFinished;
             DebugUtils.ConstructorWrapper(SubConstructor, this);
+        }
+
+        public void OnProfilingFinished()
+        {
+            profiler.DumpValues(Me);
+            Echo("Profiling finished");
+            profiler = null;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
+            profiler?.AddValue(Runtime.LastRunTimeMs);
             DebugUtils.MainWrapper(SubMain, argument, updateSource, this);
         }
     }
