@@ -23,13 +23,12 @@ namespace IngameScript
 
             public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, double multiplier = 1)
             {
-                double yaw, pitch;
+                PointInDirection(gyros, reference.WorldMatrix, direction, multiplier);
+            }
 
-                Vector3D relativeDirection = Vector3D.TransformNormal(direction, Matrix.Transpose(reference.WorldMatrix));
-
-                DirectionToPitchYaw(reference.WorldMatrix.Forward, reference.WorldMatrix.Left, reference.WorldMatrix.Up, direction, out yaw, out pitch);
-
-                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, 0);
+            public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, Vector3D up, double multiplier = 1)
+            {
+                PointInDirection(gyros, reference.WorldMatrix, direction, up, multiplier);
             }
 
             public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, double multiplier = 1)
@@ -41,6 +40,17 @@ namespace IngameScript
                 DirectionToPitchYaw(reference.Forward, reference.Left, reference.Up, direction, out yaw, out pitch);
 
                 ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, 0);
+            }
+
+            public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, Vector3D up, double multiplier = 1)
+            {
+                double yaw, pitch, roll;
+
+                Vector3D relativeDirection = Vector3D.TransformNormal(direction, Matrix.Transpose(reference));
+
+                DirectionToPitchYawRoll(reference, direction, up, out yaw, out pitch, out roll);
+
+                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, roll * multiplier);
             }
 
             public static void ApplyGyroOverride(List<IMyGyro> gyros, MatrixD reference, double pitch, double yaw, double roll)
@@ -96,6 +106,18 @@ namespace IngameScript
                 //check if the target doesnt pull a 180 on us
                 if ((pitch == 0) && (yaw == 0) && (direction.Dot(forward) < 0))
                     yaw = Math.PI;
+            }
+
+            private static void DirectionToPitchYawRoll(MatrixD currentOrientation, Vector3D direction, Vector3D upDirection, out double yaw, out double pitch, out double roll)
+            {
+                double pitchComponentError = VectorUtils.GetComponent(currentOrientation.Up, direction);
+                double yawComponentError = VectorUtils.GetComponent(currentOrientation.Right, direction);
+                double rollComponentError = VectorUtils.GetComponent(upDirection, currentOrientation.Right);
+
+
+                pitch = pitchComponentError;
+                yaw = yawComponentError;
+                roll = rollComponentError;
             }
         }
     }

@@ -17,12 +17,17 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE DebugUtils", "HaE Debug
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Serialization", "HaE Serialization\HaE Serialization.shproj", "{633D8B24-4B3B-4C26-9480-DBA498CC7831}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Comms", "HaE Comms\HaE Comms.shproj", "{0563C763-5B65-4A47-8A5B-2176876D7EAF}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		HaE Comms\HaE Comms.projitems*{0563c763-5b65-4a47-8a5b-2176876d7eaf}*SharedItemsImports = 13
 		EntityTrackingModule\EntityTrackingModule.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Comms\HaE Comms.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE DebugUtils\HaE DebugUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Serialization\HaE Serialization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		VectorUtils\VectorUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		VectorUtils\VectorUtils.projitems*{477e0254-b96c-41f0-80ea-77f22d2133b9}*SharedItemsImports = 13
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13

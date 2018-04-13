@@ -26,6 +26,21 @@ namespace IngameScript
                 Vector3D projection = one.Dot(two) / two.LengthSquared() * two;
                 return projection;
             }
+            
+            /// calculate component of one on two
+            public static double GetComponent(Vector3D one, Vector3D two)
+            {
+                double dotBetween = one.Dot(two);
+
+                return one.Length() * dotBetween;
+            }
+
+            public static double GetCrossComponent(Vector3D one, Vector3D two)
+            {
+                Vector3D crossed = one.Cross(two);
+
+                return crossed.Length();
+            }
 
             /// mirror a over b
             public static Vector3D Reflect(Vector3D a, Vector3D b, double rejectionFactor = 1) 

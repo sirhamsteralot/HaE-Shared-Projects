@@ -30,8 +30,11 @@ namespace IngameScript
         IMyTextPanel textOut;
 
         EntityTracking_Module entityTracking;
+        Autopilot_Module autopilotModule;
 
-        public Program()
+
+
+        public void SubConstructor()
         {
             //UpdateType
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update100;
@@ -44,16 +47,32 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-        }
-
-        public void Main(string argument, UpdateType updateSource)
-        {
-            DebugUtils.MainWrapper(SubMain, argument, updateSource, this);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference);
         }
 
         public void SubMain(string argument, UpdateType updateSource)
         {
             EntityTrackingTests(argument, updateSource);
+            AutopilotTests(argument, updateSource);
+        }
+
+        bool started = false;
+        public void AutopilotTests(string argument, UpdateType updateSource)
+        {
+            switch (argument)
+            {
+                case "Toggle":
+                    started = !started;
+                    break;
+            }
+
+            if (started)
+            {
+                Vector3D directionToTravel = Vector3D.Normalize(Vector3D.Zero - reference.GetPosition());
+                Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
+
+                autopilotModule.PointInDirection(directionToTravel, directionAlign);
+            }
         }
 
         public void EntityTrackingTests(string argument, UpdateType updateSource)
@@ -73,6 +92,17 @@ namespace IngameScript
             }
 
             textOut.WritePublicText(entityTracking.known_Objects.ToString());
+        }
+
+        //MAIN/CONSTR
+        public Program()
+        {
+            DebugUtils.ConstructorWrapper(SubConstructor, this);
+        }
+
+        public void Main(string argument, UpdateType updateSource)
+        {
+            DebugUtils.MainWrapper(SubMain, argument, updateSource, this);
         }
     }
 }

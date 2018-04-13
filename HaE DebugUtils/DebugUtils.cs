@@ -43,6 +43,31 @@ namespace IngameScript
                     throw;
                 }
             }
-	    }
+
+            public static void ConstructorWrapper(Action Constructor, Program P)
+            {
+                try
+                {
+                    Constructor();
+                }
+                catch (Exception e)
+                {
+                    var sb = new StringBuilder();
+
+                    sb.AppendLine("Exception Message:");
+                    sb.AppendLine($"   {e.Message}");
+                    sb.AppendLine();
+
+                    sb.AppendLine("Stack trace:");
+                    sb.AppendLine(e.StackTrace);
+                    sb.AppendLine();
+
+                    var exceptionDump = sb.ToString();
+
+                    P.Echo(exceptionDump);
+                    throw;
+                }
+            }
+        }
 	}
 }

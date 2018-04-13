@@ -110,6 +110,8 @@
   <Import Project="..\EntityTrackingModule\EntityTrackingModule.projitems" Label="Shared" />
   <Import Project="..\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems" Label="Shared" />
   <Import Project="..\HaE DebugUtils\HaE DebugUtils.projitems" Label="Shared" />
+  <Import Project="..\HaE Comms\HaE Comms.projitems" Label="Shared" />
+  <Import Project="..\HaE Serialization\HaE Serialization.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="mdk\mdk.options" DestinationFolder="$(TargetDir)\mdk" />

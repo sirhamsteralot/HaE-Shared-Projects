@@ -126,14 +126,14 @@ namespace IngameScript
             /// <param name="thrusters"> list of thrusters you want to sort</param>
             /// <param name="reference"> the reference, what everything is relative to</param>
             /// <returns> contains array of lists keyed by Base6Directions.EnumDirections</returns>
-            public static ThrustersInDirection SortThrustByDirection(List<IMyThrust> thrusters, IMyTerminalBlock reference)
+            public static ThrustersInDirection SortThrustByDirection(List<IMyThrust> thrusters, IMyShipController reference)
             {
                 List<IMyThrust>[] sortedThrusters = new List<IMyThrust>[6];
 
                 foreach (var thruster in thrusters)
                 {
                     var thrustDir = Base6Directions.GetOppositeDirection(thruster.Orientation.Forward);
-
+                    
                     foreach (var dir in Base6Directions.EnumDirections)
                     {
                         if (reference.Orientation.TransformDirection(dir) == thrustDir)
@@ -147,9 +147,14 @@ namespace IngameScript
                     }
                 }
 
+                
+
                 int minThrustersInDirection = 0;
                 foreach (var thrustDirection in sortedThrusters)
                 {
+                    if (thrustDirection == null)
+                        continue;
+
                     int amountInDirection = thrustDirection.Count;
                     minThrustersInDirection = (minThrustersInDirection > amountInDirection) ? amountInDirection : minThrustersInDirection;
                 }
