@@ -34,7 +34,7 @@ namespace IngameScript
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
             private Dictionary<Vector3D, List<IMyThrust>> sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
-            private Dictionary<Vector3D, double> sortedMultipliers = new Dictionary<Vector3D, double>();
+            private Dictionary<Vector3D, int> thrustersPerDirection = new Dictionary<Vector3D, int>();
 
             private IMyShipController controller;
 
@@ -45,7 +45,8 @@ namespace IngameScript
 
                 this.controller = controller;
 
-                sortedThrusters = ThrustUtils.SortThrustersByDirection(allThrusters);
+                sortedThrusters = ThrustUtils.SortThrustersByDirection(allThrusters, controller);
+                CountThrustersPerDirection();
 
                 PIDControl = new PID_Controller(PIDControlSettings.PGain, PIDControlSettings.IntegralGain, PIDControlSettings.DerivativeGain);
             }
@@ -67,19 +68,69 @@ namespace IngameScript
 
             public void ThrustInDirection(Vector3D direction, Vector3D compensateForGravity)
             {
-                Vector3D directionToThrust = direction;
+                Vector3D localDirection = Vector3D.TransformNormal(direction, controller.WorldMatrix);
 
                 if (compensateForGravity != Vector3D.Zero)
                 {
                     Vector3D gravity = -compensateForGravity;
 
-                    foreach (var thrustInDir in sortedThrusters)
-                    {
+                    int highestThrustInDirection = 0;
+                    int lowestThrustInDirection = 0;
 
+                    foreach (var thrustInDir in sortedThrusters.Keys)
+                    {
+                        if (thrustInDir.Dot(localDirection) < 0)
+                            continue;
+
+                        var thrusterList = sortedThrusters[thrustInDir];
+
+                        int thrusterListCount = thrusterList.Count;
+                        if (highestThrustInDirection < thrusterListCount)
+                            highestThrustInDirection = thrusterListCount;
+                        else if (lowestThrustInDirection < thrusterListCount)
+                            lowestThrustInDirection = thrusterListCount;
                     }
+
+
+
+
+                    foreach (var thrustInDir in sortedThrusters.Keys)
+                    {
+                        if (thrustInDir.Dot(localDirection) < 0)
+                            continue;
+
+                        var thrusterList = sortedThrusters[thrustInDir];
+
+                        double countMultiplier = (double)lowestThrustInDirection / (double)thrusterList.Count;
+                        double splitMultiplier = VectorUtils.GetProjectionScalar(direction, thrustInDir);
+
+                        double percentActivation = countMultiplier * splitMultiplier;
+
+
+                        foreach (var thruster in thrusterList)
+                        {
+                            thruster.ThrustOverridePercentage = (float)percentActivation;
+                        }
+                    }
+
                 }
 
-                ThrustUtils.SetThrustBasedDot(allThrusters, directionToThrust);
+                ThrustUtils.SetThrustBasedDot(allThrusters, direction);
+            }
+
+            private void CountThrustersPerDirection()
+            {
+                foreach (var thrustInDir in sortedThrusters.Keys)
+                {
+                    var thrusterList = sortedThrusters[thrustInDir];
+
+                    thrustersPerDirection[thrustInDir] = thrusterList.Count;
+                }
+            }
+
+            public void ThrustToVelocity(Vector3D velocity, Vector3D compensateForGravity)
+            {
+
             }
         }
 	}

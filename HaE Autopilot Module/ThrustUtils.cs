@@ -74,16 +74,18 @@ namespace IngameScript
                 }
             }
 
-            public static Dictionary<Vector3D, List<IMyThrust>> SortThrustersByDirection(List<IMyThrust> thrusters)
+            public static Dictionary<Vector3D, List<IMyThrust>> SortThrustersByDirection(List<IMyThrust> thrusters, IMyShipController reference)
             {
                 var thrustByDirection = new Dictionary<Vector3D, List<IMyThrust>>();
 
                 foreach (var thruster in thrusters)
                 {
-                    if (thrustByDirection[thruster.WorldMatrix.Backward] == null)
-                        thrustByDirection[thruster.WorldMatrix.Backward] = new List<IMyThrust>();
+                    var relativeThrustVector = Vector3D.TransformNormal(thruster.WorldMatrix.Backward, reference.WorldMatrix);
 
-                    thrustByDirection[thruster.WorldMatrix.Backward].Add(thruster);
+                    if (thrustByDirection[relativeThrustVector] == null)
+                        thrustByDirection[relativeThrustVector] = new List<IMyThrust>();
+
+                    thrustByDirection[relativeThrustVector].Add(thruster);
                 }
 
                 return thrustByDirection;
