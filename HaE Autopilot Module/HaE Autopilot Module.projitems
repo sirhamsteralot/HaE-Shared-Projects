@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)GyroUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MovementUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PID Controller.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ThrustersInDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThrustUtils.cs" />
   </ItemGroup>
 </Project>

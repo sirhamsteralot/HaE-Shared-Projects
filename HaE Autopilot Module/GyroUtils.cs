@@ -47,8 +47,10 @@ namespace IngameScript
                 double yaw, pitch, roll;
 
                 Vector3D relativeDirection = Vector3D.TransformNormal(direction, Matrix.Transpose(reference));
-
-                DirectionToPitchYawRoll(reference, direction, up, out yaw, out pitch, out roll);
+                if (up != Vector3D.Zero)
+                    DirectionToPitchYawRoll(reference, direction, up, out yaw, out pitch, out roll);
+                else
+                    DirectionToPitchYaw(reference, direction, out yaw, out pitch, out roll);
 
                 ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, roll * multiplier);
             }
@@ -113,6 +115,22 @@ namespace IngameScript
                 double pitchComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Up, direction);
                 double yawComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Right, direction);
                 double rollComponentError = VectorUtils.GetProjectionScalar(upDirection, currentOrientation.Right);
+
+
+                pitch = pitchComponentError;
+                yaw = yawComponentError;
+                roll = rollComponentError;
+
+                //check if the target doesnt pull a 180 on us
+                if ((pitch == 0) && (yaw == 0) && (direction.Dot(currentOrientation.Forward) < 0))
+                    yaw = Math.PI;
+            }
+
+            private static void DirectionToPitchYaw(MatrixD currentOrientation, Vector3D direction, out double yaw, out double pitch, out double roll)
+            {
+                double pitchComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Up, direction);
+                double yawComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Right, direction);
+                double rollComponentError = 0;
 
 
                 pitch = pitchComponentError;

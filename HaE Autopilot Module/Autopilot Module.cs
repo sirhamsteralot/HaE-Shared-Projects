@@ -29,12 +29,12 @@ namespace IngameScript
 
             private PID_Controller PIDControl;
             private DateTime lastUpdateTime;
-
-            private ThrustersInDirection sortedThrusters;
             
 
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
+            private Dictionary<Vector3D, List<IMyThrust>> sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
+            private Dictionary<Vector3D, double> sortedMultipliers = new Dictionary<Vector3D, double>();
 
             private IMyShipController controller;
 
@@ -45,7 +45,8 @@ namespace IngameScript
 
                 this.controller = controller;
 
-                sortedThrusters = ThrustUtils.SortThrustByDirection(allThrusters, controller);
+                sortedThrusters = ThrustUtils.SortThrustersByDirection(allThrusters);
+
                 PIDControl = new PID_Controller(PIDControlSettings.PGain, PIDControlSettings.IntegralGain, PIDControlSettings.DerivativeGain);
             }
 
@@ -62,6 +63,23 @@ namespace IngameScript
 
                 GyroUtils.PointInDirection(gyros, controller, direction, alignUpTo, multiplier);
                 lastUpdateTime = DateTime.Now;
+            }
+
+            public void ThrustInDirection(Vector3D direction, Vector3D compensateForGravity)
+            {
+                Vector3D directionToThrust = direction;
+
+                if (compensateForGravity != Vector3D.Zero)
+                {
+                    Vector3D gravity = -compensateForGravity;
+
+                    foreach (var thrustInDir in sortedThrusters)
+                    {
+
+                    }
+                }
+
+                ThrustUtils.SetThrustBasedDot(allThrusters, directionToThrust);
             }
         }
 	}
