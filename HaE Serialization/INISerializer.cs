@@ -67,6 +67,43 @@ namespace IngameScript
                 Data += data.ToString();
             }
 
+            public void Serialize(ref string Data)
+            {
+                StringBuilder data = new StringBuilder();
+
+                List<string> SeperateLines = new List<string>(Data.Split('\n'));
+                bool mySection = false;
+
+                for (int i = 0; i < SeperateLines.Count; i++)
+                {
+                    SeperateLines[i] = SeperateLines[i].Trim();
+
+                    if (SeperateLines[i].StartsWith("["))
+                    {
+                        if (SeperateLines[i] == $"[{SectionTag}]")
+                            mySection = true;
+                        else
+                            mySection = false;
+
+                        continue;
+                    }
+
+                    if (mySection)
+                    {
+                        SeperateLines.RemoveAt(i);
+                    }
+                }
+
+                foreach (var line in SeperateLines)
+                {
+                    data.Append(line + "\n");
+                }
+
+                Data += data.ToString();
+            }
+
+            
+
             public void DeSerialize(string Data)
             {
                 string[] SeperateLines = Data.Split('\n');
