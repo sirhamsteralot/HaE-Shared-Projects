@@ -57,7 +57,7 @@ namespace IngameScript
         {
             double deltaError = _currentError - _pastError;
 
-            return _derivativeGain * (deltaError * _iterationTimeS);
+            return _derivativeGain * (deltaError / _iterationTimeS);
         }
 
         public struct PIDSettings

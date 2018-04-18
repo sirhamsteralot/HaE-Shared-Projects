@@ -49,7 +49,7 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, this);
         }
 
         public void SubMain(string argument, UpdateType updateSource)
@@ -74,7 +74,7 @@ namespace IngameScript
                 Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
 
                 autopilotModule.PointInDirection(directionAlign, Vector3D.Zero);
-                autopilotModule.ThrustInDirection(directionToTravel, reference.GetNaturalGravity());
+                autopilotModule.ThrustInDirection(directionToTravel, 50000);
             }
         }
 

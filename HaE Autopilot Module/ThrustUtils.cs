@@ -82,7 +82,7 @@ namespace IngameScript
                 {
                     var relativeThrustVector = Vector3D.TransformNormal(thruster.WorldMatrix.Backward, reference.WorldMatrix);
 
-                    if (thrustByDirection[relativeThrustVector] == null)
+                    if (!thrustByDirection.ContainsKey(relativeThrustVector))
                         thrustByDirection[relativeThrustVector] = new List<IMyThrust>();
 
                     thrustByDirection[relativeThrustVector].Add(thruster);
