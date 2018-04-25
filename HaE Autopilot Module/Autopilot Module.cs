@@ -20,132 +20,31 @@ namespace IngameScript
 	{
         public class Autopilot_Module
 	    {
-            public PID_Controller.PIDSettings PIDControlSettings = new PID_Controller.PIDSettings
-            {
-                PGain = 21,
-                IntegralGain = 0,
-                DerivativeGain = -1,
-            };
-
             private PID_Controller PIDControl;
-            private DateTime lastUpdateTime;
-            private Program P;
+            private IngameTime ingameTime;
 
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
-            private Dictionary<Vector3D, List<IMyThrust>> sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
-            private Dictionary<Vector3D, int> thrustersPerDirection = new Dictionary<Vector3D, int>();
 
             private IMyShipController controller;
 
-            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, Program P)
+            private AdvThrustControl thrustControl;
+            private AdvGyroControl gyroControl;
+
+            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings GyroPidSettings)
             {
                 GTS.GridTerminalSystem.GetBlocksOfType(allThrusters);
                 GTS.GridTerminalSystem.GetBlocksOfType(gyros);
 
                 this.controller = controller;
-                this.P = P;
+                this.ingameTime = ingameTime;
 
-                sortedThrusters = ThrustUtils.SortThrustersByDirection(allThrusters, controller);
-                CountThrustersPerDirection();
-
-                PIDControl = new PID_Controller(PIDControlSettings.PGain, PIDControlSettings.IntegralGain, PIDControlSettings.DerivativeGain);
+                gyroControl = new AdvGyroControl(GyroPidSettings, ingameTime);
             }
 
             public void TravelToPosition(Vector3D position)
             {
 
-            }
-
-            public void PointInDirectionUpDominant(Vector3D direction, Vector3D alignUpTo)
-            {
-                var timespan = DateTime.Now - lastUpdateTime;
-                double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
-                double multiplier = MyMath.Clamp( (float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
-
-                Vector3D forwardVector = VectorUtils.ProjectOnPlanePerpendiculair(controller.WorldMatrix.Left, controller.WorldMatrix.Forward, direction);
-
-                GyroUtils.PointInDirection(gyros, controller, forwardVector, alignUpTo, multiplier);
-                lastUpdateTime = DateTime.Now;
-            }
-
-            public void PointInDirectionDirectionDominant(Vector3D direction, Vector3D alignUpTo)
-            {
-                var timespan = DateTime.Now - lastUpdateTime;
-                double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
-                double multiplier = MyMath.Clamp((float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
-
-                Vector3D upvector = VectorUtils.ProjectOnPlanePerpendiculair(controller.WorldMatrix.Left, controller.WorldMatrix.Up, alignUpTo);
-
-                GyroUtils.PointInDirection(gyros, controller, direction, upvector, multiplier);
-                lastUpdateTime = DateTime.Now;
-            }
-
-            public void PointInDirection(Vector3D direction)
-            {
-                var timespan = DateTime.Now - lastUpdateTime;
-                double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
-                double multiplier = MyMath.Clamp((float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
-
-                GyroUtils.PointInDirection(gyros, controller, direction, multiplier);
-                lastUpdateTime = DateTime.Now;
-            }
-
-            //NOT WORKING
-            public void ThrustInDirection(Vector3D direction, double newtons)
-            {
-                Vector3D localDirection = -Vector3D.TransformNormal(direction, controller.WorldMatrix);
-
-                int highestThrustInDirection = 0;
-                int lowestThrustInDirection = int.MaxValue;
-
-                foreach (var thrustInDir in sortedThrusters.Keys)
-                {
-                    if (thrustInDir.Dot(localDirection) < 0)
-                        continue;
-
-                    var thrusterList = sortedThrusters[thrustInDir];
-
-                    int thrusterListCount = thrusterList.Count;
-                    if (highestThrustInDirection < thrusterListCount)
-                        highestThrustInDirection = thrusterListCount;
-                    else if (lowestThrustInDirection > thrusterListCount)
-                        lowestThrustInDirection = thrusterListCount;
-                }
-
-                P.Echo($"lowestThrustDirection: {lowestThrustInDirection}");
-                if (lowestThrustInDirection == 0)
-                    return;
-
-                foreach (var thrustInDir in sortedThrusters.Keys)
-                {
-                    if (thrustInDir.Dot(localDirection) < 0)
-                        continue;
-
-                    var thrusterList = sortedThrusters[thrustInDir];
-
-                    double countMultiplier = (double)lowestThrustInDirection / (double)thrusterList.Count;
-                    double splitMultiplier = 1 - VectorUtils.GetProjectionScalar(localDirection, thrustInDir);
-
-                    double newtonActivation = countMultiplier * splitMultiplier * newtons;
-
-                    P.Echo($"newtonActivation: {newtonActivation}");
-
-                    foreach (var thruster in thrusterList)
-                    {
-                        thruster.ThrustOverride = (float)newtonActivation;
-                    }
-                }
-            }
-
-            private void CountThrustersPerDirection()
-            {
-                foreach (var thrustInDir in sortedThrusters.Keys)
-                {
-                    var thrusterList = sortedThrusters[thrustInDir];
-
-                    thrustersPerDirection[thrustInDir] = thrusterList.Count;
-                }
             }
 
             public void ThrustToVelocity(Vector3D velocity, Vector3D compensateForGravity)

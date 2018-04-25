@@ -9,6 +9,8 @@
     <Import_RootNamespace>HaE_Autopilot_Module</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AdvGyroControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AdvThrustControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Autopilot Module.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GyroUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PID Controller.cs" />

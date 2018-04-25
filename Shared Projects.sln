@@ -19,6 +19,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Serialization", "HaE Se
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Comms", "HaE Comms\HaE Comms.shproj", "{0563C763-5B65-4A47-8A5B-2176876D7EAF}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Timing", "HaE Timing\HaE Timing.shproj", "{36C0DEEB-8ADE-4156-AEA7-9DF3C620F474}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		HaE Comms\HaE Comms.projitems*{0563c763-5b65-4a47-8a5b-2176876d7eaf}*SharedItemsImports = 13
@@ -28,7 +30,9 @@ Global
 		HaE DebugUtils\HaE DebugUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Serialization\HaE Serialization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Timing\HaE Timing.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		VectorUtils\VectorUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Timing\HaE Timing.projitems*{36c0deeb-8ade-4156-aea7-9df3c620f474}*SharedItemsImports = 13
 		VectorUtils\VectorUtils.projitems*{477e0254-b96c-41f0-80ea-77f22d2133b9}*SharedItemsImports = 13
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13
 		HaE Serialization\HaE Serialization.projitems*{633d8b24-4b3b-4c26-9480-dba498cc7831}*SharedItemsImports = 13
