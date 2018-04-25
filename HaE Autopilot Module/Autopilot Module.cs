@@ -57,13 +57,37 @@ namespace IngameScript
 
             }
 
-            public void PointInDirection(Vector3D direction, Vector3D alignUpTo)
+            public void PointInDirectionUpDominant(Vector3D direction, Vector3D alignUpTo)
             {
                 var timespan = DateTime.Now - lastUpdateTime;
                 double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
                 double multiplier = MyMath.Clamp( (float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
 
-                GyroUtils.PointInDirection(gyros, controller, direction, alignUpTo, multiplier);
+                Vector3D forwardVector = VectorUtils.ProjectOnPlanePerpendiculair(controller.WorldMatrix.Left, controller.WorldMatrix.Forward, direction);
+
+                GyroUtils.PointInDirection(gyros, controller, forwardVector, alignUpTo, multiplier);
+                lastUpdateTime = DateTime.Now;
+            }
+
+            public void PointInDirectionDirectionDominant(Vector3D direction, Vector3D alignUpTo)
+            {
+                var timespan = DateTime.Now - lastUpdateTime;
+                double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
+                double multiplier = MyMath.Clamp((float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
+
+                Vector3D upvector = VectorUtils.ProjectOnPlanePerpendiculair(controller.WorldMatrix.Left, controller.WorldMatrix.Up, alignUpTo);
+
+                GyroUtils.PointInDirection(gyros, controller, direction, upvector, multiplier);
+                lastUpdateTime = DateTime.Now;
+            }
+
+            public void PointInDirection(Vector3D direction)
+            {
+                var timespan = DateTime.Now - lastUpdateTime;
+                double error = Vector3D.Dot(controller.WorldMatrix.Right, direction);
+                double multiplier = MyMath.Clamp((float)Math.Abs(PIDControl.NextValue(error, timespan.TotalSeconds)), 0.1f, 100);
+
+                GyroUtils.PointInDirection(gyros, controller, direction, multiplier);
                 lastUpdateTime = DateTime.Now;
             }
 

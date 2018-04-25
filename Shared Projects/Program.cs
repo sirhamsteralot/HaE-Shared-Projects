@@ -73,7 +73,7 @@ namespace IngameScript
                 Vector3D directionToTravel = Vector3D.Normalize(Vector3D.Zero - reference.GetPosition());
                 Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
 
-                autopilotModule.PointInDirection(directionAlign, Vector3D.Zero);
+                autopilotModule.PointInDirectionDirectionDominant(directionAlign, Vector3D.Zero);
                 autopilotModule.ThrustInDirection(directionToTravel, 50000);
             }
         }
