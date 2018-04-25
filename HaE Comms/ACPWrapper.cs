@@ -256,18 +256,6 @@ namespace IngameScript
                     }
                 }
             }
-
-            public class Adress
-            {
-                public long Id;
-                public string Name;
-
-                public Adress(long Id, string Name)
-                {
-                    this.Id = Id;
-                    this.Name = Name;
-                }
-            }
         }
     }
 }
