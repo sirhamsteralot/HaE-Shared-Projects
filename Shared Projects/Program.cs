@@ -25,6 +25,7 @@ namespace IngameScript
         public const double PAINTINGDISTANCE = 1000;
         public const int TicksToRunProfiler = 100;
 
+        IngameTime ingameTime;
         Profiler profiler = new Profiler(TicksToRunProfiler, true);
         GridTerminalSystemUtils gridTerminalSystemUtils;
         IMyShipController reference;
@@ -34,10 +35,24 @@ namespace IngameScript
         EntityTracking_Module entityTracking;
         Autopilot_Module autopilotModule;
 
+        PID_Controller.PIDSettings gyroPidSettings = new PID_Controller.PIDSettings
+        {
+            PGain = 1,
+            DerivativeGain = 0,
+            IntegralGain = 0
+        };
 
+        PID_Controller.PIDSettings thrusterPidSettings = new PID_Controller.PIDSettings
+        {
+            PGain = 1,
+            DerivativeGain = 0,
+            IntegralGain = 0
+        };
 
         public void SubConstructor()
         {
+            ingameTime = new IngameTime();
+
             //UpdateType
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update100;
 
@@ -49,7 +64,7 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, this);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrusterPidSettings);
         }
 
         public void SubMain(string argument, UpdateType updateSource)
@@ -73,8 +88,7 @@ namespace IngameScript
                 Vector3D directionToTravel = Vector3D.Normalize(Vector3D.Zero - reference.GetPosition());
                 Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
 
-                autopilotModule.PointInDirectionDirectionDominant(directionAlign, Vector3D.Zero);
-                autopilotModule.ThrustInDirection(directionToTravel, 50000);
+
             }
         }
 
@@ -113,6 +127,8 @@ namespace IngameScript
 
         public void Main(string argument, UpdateType updateSource)
         {
+            ingameTime.Tick(Runtime.TimeSinceLastRun.TotalMilliseconds);
+
             profiler?.AddValue(Runtime.LastRunTimeMs);
             DebugUtils.MainWrapper(SubMain, argument, updateSource, this);
         }

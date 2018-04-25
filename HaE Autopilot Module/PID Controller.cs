@@ -55,9 +55,14 @@ namespace IngameScript
 
         private double Derivative()
         {
-            double deltaError = _currentError - _pastError;
+            if (_iterationTimeS != 0)
+            {
+                double deltaError = _currentError - _pastError;
 
-            return _derivativeGain * (deltaError / _iterationTimeS);
+                return _derivativeGain * (deltaError / _iterationTimeS);
+            }
+
+            return 0;
         }
 
         public struct PIDSettings

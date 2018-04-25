@@ -34,6 +34,22 @@ namespace IngameScript
                 }
             }
 
+            public static void SetThrustPercentage(List<IMyThrust> thrusters, float percent)
+            {
+                foreach (var thruster in thrusters)
+                {
+                    thruster.ThrustOverridePercentage = percent;
+                }
+            }
+
+            public static void SetThrustPercentage(HashSet<IMyThrust> thrusters, float percent)
+            {
+                foreach (var thruster in thrusters)
+                {
+                    thruster.ThrustOverridePercentage = percent;
+                }
+            }
+
             public static void SetMinimumThrust(List<IMyThrust> thrusters, Vector3D direction, double percent)
             {
                 foreach (var thrust in thrusters)
@@ -72,23 +88,6 @@ namespace IngameScript
                         thrust.ThrustOverridePercentage = (float)percent;
                     }
                 }
-            }
-
-            public static Dictionary<Vector3D, List<IMyThrust>> SortThrustersByDirection(List<IMyThrust> thrusters, IMyShipController reference)
-            {
-                var thrustByDirection = new Dictionary<Vector3D, List<IMyThrust>>();
-
-                foreach (var thruster in thrusters)
-                {
-                    var relativeThrustVector = Vector3D.TransformNormal(thruster.WorldMatrix.Backward, reference.WorldMatrix);
-
-                    if (!thrustByDirection.ContainsKey(relativeThrustVector))
-                        thrustByDirection[relativeThrustVector] = new List<IMyThrust>();
-
-                    thrustByDirection[relativeThrustVector].Add(thruster);
-                }
-
-                return thrustByDirection;
             }
         }
     }

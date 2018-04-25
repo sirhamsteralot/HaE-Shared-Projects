@@ -21,16 +21,19 @@ namespace IngameScript
         public class AdvThrustControl
 	    {
             private IMyShipController controller;
+            private IngameTime ingameTime;
 
             private Dictionary<Vector3D, List<IMyThrust>> sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
             private Dictionary<Vector3D, int> thrustersPerDirection = new Dictionary<Vector3D, int>();
 
-            public AdvThrustControl(IMyShipController controller, List<IMyThrust> thrusters, Dictionary<Vector3D, int> thrustersPerDirection)
+            private Dictionary<Vector3D, ThrusterSide> thrustersInDirection;
+
+            public AdvThrustControl(IMyShipController controller, List<IMyThrust> thrusters,IngameTime ingameTime, PID_Controller.PIDSettings PidSettings)
             {
                 this.controller = controller;
-                this.thrustersPerDirection = thrustersPerDirection;
+                this.ingameTime = ingameTime;
 
-                sortedThrusters = ThrustUtils.SortThrustersByDirection(thrusters, controller);
+                SortThrustersByDirection(thrusters, controller, PidSettings);
                 CountThrustersPerDirection();
             }
 
@@ -44,46 +47,82 @@ namespace IngameScript
                 }
             }
 
-            //NOT WORKING
-            public void ThrustInDirection(Vector3D direction, double newtons)
+            public void SortThrustersByDirection(List<IMyThrust> thrusters, IMyShipController reference, PID_Controller.PIDSettings pidSettings)
             {
-                Vector3D localDirection = -Vector3D.TransformNormal(direction, controller.WorldMatrix);
+                var sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
 
-                int highestThrustInDirection = 0;
-                int lowestThrustInDirection = int.MaxValue;
-
-                foreach (var thrustInDir in sortedThrusters.Keys)
+                foreach (var thruster in thrusters)
                 {
-                    if (thrustInDir.Dot(localDirection) < 0)
-                        continue;
+                    var relativeThrustVector = VectorUtils.TransformDirWorldToLocal(reference.WorldMatrix, thruster.WorldMatrix.Backward);
 
-                    var thrusterList = sortedThrusters[thrustInDir];
+                    if (!sortedThrusters.ContainsKey(relativeThrustVector))
+                        sortedThrusters[relativeThrustVector] = new List<IMyThrust>();
 
-                    int thrusterListCount = thrusterList.Count;
-                    if (highestThrustInDirection < thrusterListCount)
-                        highestThrustInDirection = thrusterListCount;
-                    else if (lowestThrustInDirection > thrusterListCount)
-                        lowestThrustInDirection = thrusterListCount;
-                }
-
-                if (lowestThrustInDirection == 0)
-                    return;
-
-                foreach (var thrustInDir in sortedThrusters.Keys)
-                {
-                    if (thrustInDir.Dot(localDirection) < 0)
-                        continue;
-
-                    var thrusterList = sortedThrusters[thrustInDir];
-
-                    double countMultiplier = (double)lowestThrustInDirection / (double)thrusterList.Count;
-                    double splitMultiplier = 1 - VectorUtils.GetProjectionScalar(localDirection, thrustInDir);
-
-                    double newtonActivation = countMultiplier * splitMultiplier * newtons;
-
-                    foreach (var thruster in thrusterList)
+                    if (!thrustersInDirection.ContainsKey(relativeThrustVector))
                     {
-                        thruster.ThrustOverride = (float)newtonActivation;
+                        ThrusterSide side = new ThrusterSide
+                        {
+                            thrustDirection = relativeThrustVector,
+                            pid = new PID_Controller(pidSettings),
+                            ingameTime = this.ingameTime,
+                            thrusters = new HashSet<IMyThrust>()
+                        };
+
+                        thrustersInDirection[relativeThrustVector].thrusters.Add(thruster);
+                    }
+
+
+                    sortedThrusters[relativeThrustVector].Add(thruster);
+                }
+            }
+
+            public void ThrustToVelocity(Vector3D velocity)
+            {
+                Vector3D accel = velocity - controller.GetShipVelocities().LinearVelocity;
+                double Magnitude = accel.Normalize();
+
+                Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
+                localAccel *= Magnitude;
+
+
+                foreach (var thrustSide in thrustersInDirection.Values)
+                {
+                    thrustSide.ProjectThrustOnDirection(localAccel);
+                }
+            }
+
+
+            private class ThrusterSide
+            {
+                public Vector3D thrustDirection;
+                public PID_Controller pid;
+                public IngameTime ingameTime;
+
+                public int Amount => thrusters.Count;
+                public HashSet<IMyThrust> thrusters;
+
+                private TimeSpan lastTime;
+                private float currentThrustAmount;
+
+                public void ProjectThrustOnDirection(Vector3D localDesiredAcceleration)
+                {
+                    double thrustAxisProjection = VectorUtils.GetProjectionScalar(localDesiredAcceleration, thrustDirection);
+
+                    double timeSinceLastRun = lastTime.TotalSeconds;
+                    lastTime = ingameTime.Time;
+
+                    float thrustAmount = (float)pid.NextValue(thrustAxisProjection, timeSinceLastRun);
+
+
+                    if (thrustAmount > 0 && thrustAmount != currentThrustAmount)
+                    {
+                        ThrustUtils.SetThrustPercentage(thrusters, thrustAmount);
+                        currentThrustAmount = thrustAmount;
+                    }   
+                    else if (thrustAmount <= 0 && currentThrustAmount != 0)
+                    {
+                        ThrustUtils.SetThrustPercentage(thrusters, 0);
+                        currentThrustAmount = 0;
                     }
                 }
             }

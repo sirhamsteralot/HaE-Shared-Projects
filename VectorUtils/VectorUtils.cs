@@ -84,6 +84,28 @@ namespace IngameScript
             {
                 return Math.Acos(MathHelper.Clamp(One.Dot(Two) / Math.Sqrt(One.LengthSquared() * Two.LengthSquared()), -1, 1));
             }
+
+            public static Vector3D TransformPosLocalToWorld(MatrixD worldMatrix, Vector3D localPosition)
+            {
+                return Vector3D.Transform(localPosition, worldMatrix);
+            }
+
+            public static Vector3D TransformPosWorldToLocal(MatrixD worldMatrix, Vector3D worldPosition)
+            {
+                Vector3D referenceWorldPosition = worldMatrix.Translation;
+                Vector3D worldDirection = worldPosition - referenceWorldPosition;
+                return Vector3D.TransformNormal(worldDirection, MatrixD.Transpose(worldMatrix));
+            }
+
+            public static Vector3D TransformDirLocalToWorld(MatrixD worldMatrix, Vector3D localDirection)
+            {
+                return Vector3D.TransformNormal(localDirection, worldMatrix);
+            }
+
+            public static Vector3D TransformDirWorldToLocal(MatrixD worldMatrix, Vector3D worldDirection)
+            {
+                return Vector3D.TransformNormal(worldDirection, MatrixD.Transpose(worldMatrix));
+            }
         }
 	}
 }
