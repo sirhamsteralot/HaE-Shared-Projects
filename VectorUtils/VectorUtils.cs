@@ -26,7 +26,35 @@ namespace IngameScript
                 Vector3D projection = one.Dot(two) / two.LengthSquared() * two;
                 return projection;
             }
-            
+
+            /// projects onto a plane
+            public static Vector3D ProjectOnPlane(Vector3D planeLeft, Vector3D planeForward, Vector3D direction)
+            {
+                Vector3D normal = Vector3D.Cross(planeLeft, planeForward);
+                normal.Normalize();
+
+                Vector3D projection = direction - Project(direction, normal);
+
+                return projection;
+            }
+
+            /// projects onto a plane
+            public static Vector3D ProjectOnPlanePerpendiculair(Vector3D planeLeft, Vector3D planeForward, Vector3D direction)
+            {
+                Vector3D projectionLeft = Project(direction, planeLeft);
+                Vector3D projectionForward = Project(direction, planeForward);
+
+                return projectionLeft + projectionForward;
+            }
+
+            /// proejcts onto a plane
+            public static Vector3D ProjectOnPlane(Vector3D planeNormal, Vector3D direction)
+            {
+                Vector3D projection = direction - Project(direction, planeNormal);
+
+                return projection;
+            }
+
             /// calculate component of one on two
             public static double GetProjectionScalar(Vector3D one, Vector3D two)
             {

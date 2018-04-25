@@ -21,11 +21,8 @@ namespace IngameScript
         public class ACPWrapper
         {
             /*========| Customize |========*/
-            public readonly string CUSTOMNAME = "HaE Missile server"; //Whatever you want it to be.
             public readonly char[] HEADDIVIDER = new char[] { '?' };    //(char)0x1c == HaE standard
             public readonly char DIVIDER = '|';         //(char)0x1f == HaE standard
-            public readonly string MATING = "PING";           //PING == HaE standard
-            public readonly string MATINGRESPONSE = "PONG";   //PONG == HaE standard
             public readonly int STRINGMAXLENGTH = 100000;     //Maximum msg length, must be 100k or lower!
 
             /*========| Main vars |========*/
@@ -42,8 +39,6 @@ namespace IngameScript
             private List<string> msgQueue;
             public MyTransmitTarget TRANSMITTARGET;
 
-            public HashSet<Adress> adressBook;
-
 
             /*======| Constructors |======*/
             public ACPWrapper(Program p, Func<IMyTerminalBlock, bool> collect = null)
@@ -55,8 +50,6 @@ namespace IngameScript
                 P.GridTerminalSystem.GetBlocksOfType(antennaList, collect);
 
                 isList = true;
-
-                Ping();
             }
 
             public ACPWrapper(Program p, bool HasList, List<IMyRadioAntenna> list = null)
@@ -66,7 +59,6 @@ namespace IngameScript
                 if (list != null)
                     antennaList = list;
 
-                Ping();
             }
 
             public ACPWrapper(Program p, IMyLaserAntenna lAntenna)
@@ -74,16 +66,12 @@ namespace IngameScript
                 CommonInit(p);
                 this.lAntenna = lAntenna;
                 isLaser = true;
-
-                Ping();
             }
 
             public ACPWrapper(Program p, IMyRadioAntenna antenna)
             {
                 CommonInit(p);
                 this.antenna = antenna;
-
-                Ping();
             }
 
             public ACPWrapper(Program p, string antennaName)
@@ -102,8 +90,6 @@ namespace IngameScript
                     this.lAntenna = (IMyLaserAntenna)temp;
                     isLaser = true;
                 }
-
-                Ping();
             }
 
             private void CommonInit(Program p)
@@ -111,7 +97,6 @@ namespace IngameScript
                 this.P = p;
 
                 msgQueue = new List<string>();
-                adressBook = new HashSet<Adress>();
                 TRANSMITTARGET = MyTransmitTarget.Default;
             }
 
@@ -142,21 +127,6 @@ namespace IngameScript
                                     parameters.RemoveAt(i);
                                 }
                             }
-
-                            if (parameters[0] == MATING && parameters.Count == 2)
-                            {               //Add to aderssbook
-                                Pong(senderId);
-
-                                AddAdress(senderId, parameters[1]);
-
-                                return null;
-                            }
-                            else if (parameters[0] == MATINGRESPONSE && parameters.Count == 2)
-                            {
-                                AddAdress(senderId, parameters[1]);
-
-                                return null;
-                            }
                         }
 
                         if (parameters.Count > 0)
@@ -174,11 +144,6 @@ namespace IngameScript
             public bool PrepareMSG(string parameter, long To, bool anon = false)
             {
                 return PrepareMSG(new string[] { parameter }, To, anon);
-            }
-
-            public void AddAdress(long Id, string Name)
-            {
-                adressBook.Add(new Adress(Id, Name));
             }
 
             public bool PrepareMSG(string[] parameters, long To, bool anon = false)
@@ -213,53 +178,6 @@ namespace IngameScript
                 return true;
             }
 
-            public bool PrepareMSG(string[] parameters, string To, bool anon = false)
-            { //Prepares a message, returns false if it fails.
-                StringBuilder constructedMSG = new StringBuilder();
-
-                //Head
-                if (!anon)
-                {
-                    constructedMSG.Append(P.Me.EntityId.ToString());
-                }
-                else
-                {
-                    constructedMSG.Append('0');
-                }
-
-                constructedMSG.Append(DIVIDER);
-
-                long? ToId = GetIdWithName(To);
-                if (!ToId.HasValue)
-                    return false;
-                constructedMSG.Append(ToId.Value);
-
-                constructedMSG.Append(HEADDIVIDER);
-
-                //Body
-                foreach (string parameter in parameters)
-                {
-                    constructedMSG.Append(parameter);
-                    constructedMSG.Append(DIVIDER);
-                }
-
-                if (constructedMSG.Length > STRINGMAXLENGTH)
-                    return false;
-
-                msgQueue.Add(constructedMSG.ToString());
-                return true;
-            }
-
-            public void Ping()
-            {            //Initial ping out, prompts receivers to send a message back.
-                PrepareMSG(new string[] { MATING, CUSTOMNAME }, 0);
-            }
-
-            public void Pong(long Id)
-            {     //Ping response.
-                PrepareMSG(new string[] { MATINGRESPONSE, CUSTOMNAME }, Id);
-            }
-
             public void SetLaserTarget(Vector3D location)
             {
                 lAntenna.SetTargetCoords($"GPS:T:{location.X}:{location.Y}:{location.Z}:");
@@ -268,16 +186,6 @@ namespace IngameScript
             public void SetLaserTarget(string GPS)
             { //Expects gps in format GPS:Name:X:Y:Z:
                 lAntenna.SetTargetCoords(GPS);
-            }
-
-            public long? GetIdWithName(string Name)
-            { //Returns first ID with name in the adressBook.
-                foreach (Adress I in adressBook)
-                {
-                    if (I.Name == Name)
-                        return I.Id;
-                }
-                return null;
             }
 
             /*========| Private Methods |========*/
