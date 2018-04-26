@@ -24,9 +24,10 @@ namespace IngameScript
             private IngameTime ingameTime;
 
             private Dictionary<Vector3D, List<IMyThrust>> sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
+
             private Dictionary<Vector3D, int> thrustersPerDirection = new Dictionary<Vector3D, int>();
 
-            private Dictionary<Vector3D, ThrusterSide> thrustersInDirection;
+            private Dictionary<Vector3D, ThrusterSide> thrustersInDirection = new Dictionary<Vector3D, ThrusterSide>();
 
             public AdvThrustControl(IMyShipController controller, List<IMyThrust> thrusters,IngameTime ingameTime, PID_Controller.PIDSettings PidSettings)
             {
@@ -68,10 +69,10 @@ namespace IngameScript
                             thrusters = new HashSet<IMyThrust>()
                         };
 
-                        thrustersInDirection[relativeThrustVector].thrusters.Add(thruster);
+                        thrustersInDirection[relativeThrustVector] = side;
                     }
 
-
+                    thrustersInDirection[relativeThrustVector].thrusters.Add(thruster);
                     sortedThrusters[relativeThrustVector].Add(thruster);
                 }
             }
@@ -83,7 +84,6 @@ namespace IngameScript
 
                 Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
                 localAccel *= Magnitude;
-
 
                 foreach (var thrustSide in thrustersInDirection.Values)
                 {

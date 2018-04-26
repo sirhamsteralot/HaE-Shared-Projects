@@ -48,6 +48,9 @@ namespace IngameScript
 
         private double Integral()
         {
+            if (_integralGain == 0)
+                return 0;
+
             _integral += _currentError * _iterationTimeS;
 
             return _integralGain * _integral;
@@ -55,6 +58,9 @@ namespace IngameScript
 
         private double Derivative()
         {
+            if (_derivativeGain == 0)
+                return 0;
+
             if (_iterationTimeS != 0)
             {
                 double deltaError = _currentError - _pastError;

@@ -26,7 +26,7 @@ namespace IngameScript
         public const int TicksToRunProfiler = 100;
 
         IngameTime ingameTime;
-        Profiler profiler = new Profiler(TicksToRunProfiler, true);
+        Profiler profiler = new Profiler(TicksToRunProfiler, false);
         GridTerminalSystemUtils gridTerminalSystemUtils;
         IMyShipController reference;
         IMyCameraBlock targetingCamera;
@@ -86,9 +86,10 @@ namespace IngameScript
             if (started)
             {
                 Vector3D directionToTravel = Vector3D.Normalize(Vector3D.Zero - reference.GetPosition());
-                Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
+                double speed = 50;
+                //Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
 
-
+                autopilotModule.ThrustToVelocity(directionToTravel * speed);
             }
         }
 

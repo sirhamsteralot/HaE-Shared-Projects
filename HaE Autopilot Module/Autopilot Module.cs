@@ -34,6 +34,8 @@ namespace IngameScript
             private MatrixD ControlMatrix => controller.WorldMatrix;
             private Vector3D ControlPosition => controller.GetPosition();
             private Vector3D ControlVelocity => controller.GetShipVelocities().LinearVelocity;
+            private Vector3D ControlGravity => controller.GetNaturalGravity();
+            private double ControlMass => controller.CalculateShipMass().PhysicalMass;
 
             public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings)
             {
