@@ -95,6 +95,19 @@ namespace IngameScript
                 }
             }
 
+            public void ProjectOnThrustAxi(Vector3D velocity)
+            {
+                Vector3D accel = velocity - controller.GetShipVelocities().LinearVelocity;
+                double Magnitude = accel.Normalize();
+
+                Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
+
+                foreach (var thrustSide in thrustersInDirection.Values)
+                {
+                    thrustSide.ProjectThrustOnDirection(localAccel);
+                }
+            }
+
             private void CalculateMag(Vector3D localDir, ref double scale)
             {
                 double mag;
