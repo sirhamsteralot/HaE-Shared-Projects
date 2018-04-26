@@ -84,7 +84,7 @@ namespace IngameScript
 
                 Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
 
-                double scale = 0;
+                double scale = double.MaxValue;
                 CalculateMag(localAccel, ref scale);
 
                 localAccel *= Magnitude;
