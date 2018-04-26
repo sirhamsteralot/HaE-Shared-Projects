@@ -77,17 +77,37 @@ namespace IngameScript
                 }
             }
 
-            public void ThrustToVelocity(Vector3D velocity)
+            public void ApplyForce(Vector3D velocity)
             {
                 Vector3D accel = velocity - controller.GetShipVelocities().LinearVelocity;
                 double Magnitude = accel.Normalize();
 
                 Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
+
+                double scale = 0;
+                CalculateMag(localAccel, ref scale);
+
                 localAccel *= Magnitude;
 
                 foreach (var thrustSide in thrustersInDirection.Values)
                 {
-                    thrustSide.ProjectThrustOnDirection(localAccel);
+                    thrustSide.ApplyForce(localAccel, scale);
+                }
+            }
+
+            private void CalculateMag(Vector3D localDir, ref double scale)
+            {
+                double mag;
+
+                foreach (var dir in thrustersInDirection.Values)
+                {
+                    mag = Math.Max(0, localDir.Dot(dir.thrustDirection));
+                    if (mag == 0)
+                        continue;
+
+                    var q = dir.MaxThrustInDirection / mag;
+                    if (q < scale)
+                        scale = q;
                 }
             }
 
@@ -95,6 +115,8 @@ namespace IngameScript
             private class ThrusterSide
             {
                 public Vector3D thrustDirection;
+                public double MaxThrustInDirection => CalculateEffectiveThrust();
+
                 public PID_Controller pid;
                 public IngameTime ingameTime;
 
@@ -103,6 +125,19 @@ namespace IngameScript
 
                 private TimeSpan lastTime;
                 private float currentThrustAmount;
+
+                private double cachedEffectiveThrustAmount;
+                private TimeSpan lastCachingTime;
+                public double cachingTimeOutS = 5;
+
+                public void ApplyForce(Vector3D localDesiredAcceleration, double scale)
+                {
+                    var s = localDesiredAcceleration.Dot(thrustDirection) * scale / MaxThrustInDirection;
+                    foreach (var thruster in thrusters)
+                    {
+                        thruster.ThrustOverride = (float)(thruster.MaxEffectiveThrust * s);
+                    }
+                }
 
                 public void ProjectThrustOnDirection(Vector3D localDesiredAcceleration)
                 {
@@ -118,12 +153,30 @@ namespace IngameScript
                     {
                         ThrustUtils.SetThrustPercentage(thrusters, thrustAmount);
                         currentThrustAmount = thrustAmount;
-                    }   
+                    }
                     else if (thrustAmount <= 0 && currentThrustAmount != 0)
                     {
                         ThrustUtils.SetThrustPercentage(thrusters, 0);
                         currentThrustAmount = 0;
                     }
+                }
+
+                private double CalculateEffectiveThrust()
+                {
+                    if ((ingameTime.Time - lastCachingTime).TotalSeconds > cachingTimeOutS || lastCachingTime == TimeSpan.Zero)
+                    {
+                        cachedEffectiveThrustAmount = 0;
+
+                        foreach (var thruster in thrusters)
+                        {
+                            cachedEffectiveThrustAmount += thruster.MaxEffectiveThrust;
+                        }
+
+                        lastCachingTime = ingameTime.Time;
+                    }
+
+
+                    return cachedEffectiveThrustAmount;
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace IngameScript
         PID_Controller.PIDSettings thrusterPidSettings = new PID_Controller.PIDSettings
         {
             PGain = 1,
-            DerivativeGain = 0,
+            DerivativeGain = 1,
             IntegralGain = 0
         };
 

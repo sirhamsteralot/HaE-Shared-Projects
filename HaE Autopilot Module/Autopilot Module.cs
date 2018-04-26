@@ -56,7 +56,7 @@ namespace IngameScript
 
             public void ThrustToVelocity(Vector3D velocity)
             {
-                thrustControl.ThrustToVelocity(velocity);
+                thrustControl.ApplyForce(velocity * 100000);
             }
 
             public void AimInDirection(Vector3D direction, Vector3D up, bool upDominant = false)
