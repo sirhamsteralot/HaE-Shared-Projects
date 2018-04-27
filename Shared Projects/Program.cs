@@ -25,8 +25,6 @@ namespace IngameScript
         public const double PAINTINGDISTANCE = 1000;
         public const int TicksToRunProfiler = 100;
 
-        public static Program P;
-
         IngameTime ingameTime;
         Profiler profiler = new Profiler(TicksToRunProfiler, false);
         GridTerminalSystemUtils gridTerminalSystemUtils;
@@ -44,17 +42,15 @@ namespace IngameScript
             IntegralGain = 0
         };
 
-        PID_Controller.PIDSettings thrusterPidSettings = new PID_Controller.PIDSettings
+        PID_Controller.PIDSettings thrustPidSettings = new PID_Controller.PIDSettings
         {
             PGain = 1,
-            DerivativeGain = 1,
+            DerivativeGain = 0,
             IntegralGain = 0
         };
 
         public void SubConstructor()
         {
-            P = this;
-
             ingameTime = new IngameTime();
 
             //UpdateType
@@ -68,12 +64,12 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrusterPidSettings);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings);
         }
 
         public void SubMain(string argument, UpdateType updateSource)
         {
-            EntityTrackingTests(argument, updateSource);
+            //EntityTrackingTests(argument, updateSource);
             AutopilotTests(argument, updateSource);
         }
 
@@ -94,6 +90,9 @@ namespace IngameScript
                 //Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
 
                 autopilotModule.ThrustToVelocity(directionToTravel * speed);
+
+                double stoppingDistance = autopilotModule.CalculateStoppingDistance(Echo);
+                Echo("stoppingdistance: " + stoppingDistance.ToString());
             }
         }
 

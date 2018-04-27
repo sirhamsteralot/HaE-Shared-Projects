@@ -5,7 +5,7 @@
   <gamebinpath enabled="no">d:\programs\steam\SteamApps\common\SpaceEngineers\Bin64</gamebinpath>
   <installpath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\jcf2yqvh.ev1</installpath>
   <outputpath>C:\Users\SirHa\AppData\Roaming\SpaceEngineers\IngameScripts\local</outputpath>
-  <trimtypes>no</trimtypes>
+  <trimtypes>yes</trimtypes>
   <minify>no</minify>
   <ignore>
     <folder>mdk</folder>

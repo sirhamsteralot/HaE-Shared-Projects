@@ -106,6 +106,11 @@ namespace IngameScript
             {
                 return Vector3D.TransformNormal(worldDirection, MatrixD.Transpose(worldMatrix));
             }
+
+            public static bool IsEqual(Vector3D v1, Vector3D v2, double tolerance)
+            {
+                return (v1 - v2).LengthSquared() < tolerance;
+            }
         }
 	}
 }

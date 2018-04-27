@@ -20,8 +20,9 @@ namespace IngameScript
 	{
         public class Autopilot_Module
 	    {
-            private PID_Controller PIDControl;
             private IngameTime ingameTime;
+            private PID_Controller thrustPidController;
+            private TimeSpan lastTime;
 
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
@@ -45,8 +46,10 @@ namespace IngameScript
                 this.controller = controller;
                 this.ingameTime = ingameTime;
 
+                thrustPidController = new PID_Controller(thrustPidSettings);
+
                 gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
-                thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime, thrustPidSettings);
+                thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
             }
 
             public void TravelToPosition(Vector3D position)
@@ -58,8 +61,38 @@ namespace IngameScript
             public void ThrustToVelocity(Vector3D velocity)
             {
                 Vector3D difference = velocity - ControlVelocity;
-                P.Echo(difference.ToString());
-                thrustControl.ApplyForce(difference);
+                double percent = thrustPidController.NextValue(difference.Length(), (lastTime - ingameTime.Time).TotalSeconds);
+                percent = MathHelperD.Clamp(percent, 0, 1);
+
+                thrustControl.ApplyForce(difference, percent);
+
+                lastTime = ingameTime.Time;
+            }
+
+            public IEnumerable<bool> ThrustToVelocity(Vector3D velocity, double tolerance)
+            {
+                while (!VectorUtils.IsEqual(velocity, ControlVelocity, tolerance))
+                {
+                    ThrustToVelocity(velocity);
+                    yield return true;
+                }
+            }
+
+            public double CalculateStoppingDistance(Action<string> echo = null)
+            {
+                Vector3D velocityDir = ControlVelocity;
+                double velocity = velocityDir.Normalize();
+                double mass = ControlMass;
+
+                double forceInDir = thrustControl.CalculateMaxForce(velocityDir);
+                echo?.Invoke("stoppingForce: " + forceInDir.ToString());
+
+                double deceleration = forceInDir / mass;
+
+                double stoppingTime = velocity / deceleration;
+                double stoppingDistance = stoppingTime * (velocity * 0.5);
+
+                return stoppingDistance;
             }
 
             public void AimInDirection(Vector3D direction, Vector3D up, bool upDominant = false)

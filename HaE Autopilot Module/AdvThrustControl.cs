@@ -29,12 +29,12 @@ namespace IngameScript
 
             private Dictionary<Vector3D, ThrusterSide> thrustersInDirection = new Dictionary<Vector3D, ThrusterSide>();
 
-            public AdvThrustControl(IMyShipController controller, List<IMyThrust> thrusters,IngameTime ingameTime, PID_Controller.PIDSettings PidSettings)
+            public AdvThrustControl(IMyShipController controller, List<IMyThrust> thrusters,IngameTime ingameTime)
             {
                 this.controller = controller;
                 this.ingameTime = ingameTime;
 
-                SortThrustersByDirection(thrusters, controller, PidSettings);
+                SortThrustersByDirection(thrusters, controller);
                 CountThrustersPerDirection();
             }
 
@@ -48,7 +48,7 @@ namespace IngameScript
                 }
             }
 
-            public void SortThrustersByDirection(List<IMyThrust> thrusters, IMyShipController reference, PID_Controller.PIDSettings pidSettings)
+            public void SortThrustersByDirection(List<IMyThrust> thrusters, IMyShipController reference)
             {
                 var sortedThrusters = new Dictionary<Vector3D, List<IMyThrust>>();
 
@@ -64,7 +64,6 @@ namespace IngameScript
                         ThrusterSide side = new ThrusterSide
                         {
                             thrustDirection = relativeThrustVector,
-                            pid = new PID_Controller(pidSettings),
                             ingameTime = this.ingameTime,
                             thrusters = new HashSet<IMyThrust>()
                         };
@@ -76,6 +75,25 @@ namespace IngameScript
                     sortedThrusters[relativeThrustVector].Add(thruster);
                 }
             }
+
+            public void ApplyForce(Vector3D force, double percent)
+            {
+                Vector3D accel = force;
+                double Magnitude = accel.Normalize();
+
+                Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
+
+                double scale = double.MaxValue;
+                CalculateMag(localAccel, ref scale);
+
+                scale *= percent;
+
+                foreach (var thrustSide in thrustersInDirection.Values)
+                {
+                    thrustSide.ApplyForce(localAccel, scale);
+                }
+            }
+
 
             public void ApplyForce(Vector3D force)
             {
@@ -91,6 +109,23 @@ namespace IngameScript
                 {
                     thrustSide.ApplyForce(localAccel, scale);
                 }
+            }
+
+            public double CalculateMaxForce(Vector3D direction)
+            {
+                Vector3D localDir = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, direction);
+
+                double scale = double.MaxValue;
+                CalculateMag(localDir, ref scale);
+
+                Vector3D appliedForce = Vector3D.Zero;
+
+                foreach (var thrustSide in thrustersInDirection.Values)
+                {
+                    appliedForce += thrustSide.thrustDirection * thrustSide.CalculateMaxForce(localDir, scale);
+                }
+
+                return appliedForce.Length();
             }
 
             private void CalculateMag(Vector3D localDir, ref double scale)
@@ -115,13 +150,11 @@ namespace IngameScript
                 public Vector3D thrustDirection;
                 public double MaxThrustInDirection => CalculateEffectiveThrust();
 
-                public PID_Controller pid;
                 public IngameTime ingameTime;
 
                 public int Amount => thrusters.Count;
                 public HashSet<IMyThrust> thrusters;
 
-                private TimeSpan lastTime;
                 private float currentThrustAmount;
 
                 private double cachedEffectiveThrustAmount;
@@ -132,6 +165,18 @@ namespace IngameScript
                 {
                     var s = localDesiredAcceleration.Dot(thrustDirection) * scale / MaxThrustInDirection;
                     ApplyThrustPercentage(s);
+                }
+
+                public void NoForce()
+                {
+                    ApplyThrustPercentage(0);
+                }
+
+                public double CalculateMaxForce(Vector3D direction, double scale)
+                {
+                    var s = direction.Dot(thrustDirection) * scale;
+
+                    return s;
                 }
 
                 private void ApplyThrustPercentage(double percentage)
