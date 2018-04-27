@@ -77,9 +77,9 @@ namespace IngameScript
                 }
             }
 
-            public void ApplyForce(Vector3D velocity)
+            public void ApplyForce(Vector3D force)
             {
-                Vector3D accel = velocity - controller.GetShipVelocities().LinearVelocity;
+                Vector3D accel = force;
                 double Magnitude = accel.Normalize();
 
                 Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
@@ -87,24 +87,9 @@ namespace IngameScript
                 double scale = double.MaxValue;
                 CalculateMag(localAccel, ref scale);
 
-                localAccel *= Magnitude;
-
                 foreach (var thrustSide in thrustersInDirection.Values)
                 {
                     thrustSide.ApplyForce(localAccel, scale);
-                }
-            }
-
-            public void ProjectOnThrustAxi(Vector3D velocity)
-            {
-                Vector3D accel = velocity - controller.GetShipVelocities().LinearVelocity;
-                double Magnitude = accel.Normalize();
-
-                Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
-
-                foreach (var thrustSide in thrustersInDirection.Values)
-                {
-                    thrustSide.ProjectThrustOnDirection(localAccel);
                 }
             }
 
@@ -146,28 +131,17 @@ namespace IngameScript
                 public void ApplyForce(Vector3D localDesiredAcceleration, double scale)
                 {
                     var s = localDesiredAcceleration.Dot(thrustDirection) * scale / MaxThrustInDirection;
-                    foreach (var thruster in thrusters)
-                    {
-                        thruster.ThrustOverride = (float)(thruster.MaxEffectiveThrust * s);
-                    }
+                    ApplyThrustPercentage(s);
                 }
 
-                public void ProjectThrustOnDirection(Vector3D localDesiredAcceleration)
+                private void ApplyThrustPercentage(double percentage)
                 {
-                    double thrustAxisProjection = VectorUtils.GetProjectionScalar(localDesiredAcceleration, thrustDirection);
-
-                    double timeSinceLastRun = lastTime.TotalSeconds;
-                    lastTime = ingameTime.Time;
-
-                    float thrustAmount = (float)pid.NextValue(thrustAxisProjection, timeSinceLastRun);
-
-
-                    if (thrustAmount > 0 && thrustAmount != currentThrustAmount)
+                    if (percentage > 0 && percentage != currentThrustAmount)
                     {
-                        ThrustUtils.SetThrustPercentage(thrusters, thrustAmount);
-                        currentThrustAmount = thrustAmount;
+                        ThrustUtils.SetThrustPercentage(thrusters, (float)percentage);
+                        currentThrustAmount = (float)percentage;
                     }
-                    else if (thrustAmount <= 0 && currentThrustAmount != 0)
+                    else if (percentage <= 0 && currentThrustAmount != 0)
                     {
                         ThrustUtils.SetThrustPercentage(thrusters, 0);
                         currentThrustAmount = 0;

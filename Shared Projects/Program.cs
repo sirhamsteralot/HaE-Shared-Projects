@@ -25,6 +25,8 @@ namespace IngameScript
         public const double PAINTINGDISTANCE = 1000;
         public const int TicksToRunProfiler = 100;
 
+        public static Program P;
+
         IngameTime ingameTime;
         Profiler profiler = new Profiler(TicksToRunProfiler, false);
         GridTerminalSystemUtils gridTerminalSystemUtils;
@@ -51,6 +53,8 @@ namespace IngameScript
 
         public void SubConstructor()
         {
+            P = this;
+
             ingameTime = new IngameTime();
 
             //UpdateType

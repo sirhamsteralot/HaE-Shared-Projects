@@ -54,9 +54,12 @@ namespace IngameScript
 
             }
 
+
             public void ThrustToVelocity(Vector3D velocity)
             {
-                thrustControl.ApplyForce(velocity);
+                Vector3D difference = velocity - ControlVelocity;
+                P.Echo(difference.ToString());
+                thrustControl.ApplyForce(difference);
             }
 
             public void AimInDirection(Vector3D direction, Vector3D up, bool upDominant = false)
