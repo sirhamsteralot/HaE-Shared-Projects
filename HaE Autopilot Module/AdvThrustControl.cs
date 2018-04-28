@@ -79,7 +79,6 @@ namespace IngameScript
             public void ApplyForce(Vector3D force, double percent)
             {
                 Vector3D accel = force;
-                double Magnitude = accel.Normalize();
 
                 Vector3D localAccel = VectorUtils.TransformDirWorldToLocal(controller.WorldMatrix, accel);
 

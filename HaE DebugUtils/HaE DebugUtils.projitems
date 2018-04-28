@@ -9,6 +9,7 @@
     <Import_RootNamespace>HaE_DebugUtils</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DebugExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profiler.cs" />
   </ItemGroup>

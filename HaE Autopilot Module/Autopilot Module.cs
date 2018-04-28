@@ -18,14 +18,11 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Autopilot_Module
+        public class Autopilot_Module : DebugExtension
 	    {
             private IngameTime ingameTime;
             private PID_Controller thrustPidController;
             private TimeSpan lastTime;
-
-            private PID_Controller positionHoldPidcontroller;
-            private TimeSpan lastTimePosHoldPid;
 
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
@@ -41,7 +38,7 @@ namespace IngameScript
             private Vector3D ControlGravity => controller.GetNaturalGravity();
             private double ControlMass => controller.CalculateShipMass().PhysicalMass;
 
-            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings, PID_Controller.PIDSettings positionPidSettings)
+            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings)
             {
                 GTS.GridTerminalSystem.GetBlocksOfType(allThrusters);
                 GTS.GridTerminalSystem.GetBlocksOfType(gyros);
@@ -50,7 +47,6 @@ namespace IngameScript
                 this.ingameTime = ingameTime;
 
                 thrustPidController = new PID_Controller(thrustPidSettings);
-                positionHoldPidcontroller = new PID_Controller(positionPidSettings);
 
                 gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
@@ -62,21 +58,18 @@ namespace IngameScript
                 double distance = direction.Normalize();
 
                 double stoppingDistance = CalculateStoppingDistance();
+                Echo($"Stoppingdist: {stoppingDistance}");
+                Echo($"Distance: {distance}");
 
                 Vector3D velocity = direction * maximumVelocity;
 
-                if (distance >= stoppingDistance * safetyMargin)
+                if (distance >= stoppingDistance * safetyMargin && distance > 1)
                 {
                     ThrustToVelocity(velocity);
                 } else
                 {
-                    if (distance > 1)
-                        ThrustToVelocity(direction);
-                    else
-                    {
-                        ThrustToVelocity(direction * positionHoldPidcontroller.NextValue(distance, (lastTimePosHoldPid - ingameTime.Time).TotalSeconds));
-                    }
-                        
+                    ThrustToVelocity(Vector3D.Zero);
+                    Echo($"At location: {distance >= stoppingDistance}, {distance > 1}");
                 }
             }
 
@@ -84,7 +77,8 @@ namespace IngameScript
             public void ThrustToVelocity(Vector3D velocity)
             {
                 Vector3D difference = velocity - ControlVelocity;
-                double percent = thrustPidController.NextValue(difference.Length(), (lastTime - ingameTime.Time).TotalSeconds);
+                double differenceMag = difference.Normalize();
+                double percent = thrustPidController.NextValue(differenceMag, (lastTime - ingameTime.Time).TotalSeconds);
                 percent = MathHelperD.Clamp(percent, 0, 1);
 
                 thrustControl.ApplyForce(difference, percent);
@@ -113,6 +107,9 @@ namespace IngameScript
 
                 double stoppingTime = velocity / deceleration;
                 double stoppingDistance = stoppingTime * (velocity * 0.5);
+
+                if (double.IsNaN(stoppingDistance))
+                    return 0;
 
                 return stoppingDistance;
             }

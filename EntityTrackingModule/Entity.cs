@@ -24,6 +24,8 @@ namespace IngameScript
             public DateTime LastDetectionTime;
             public TrackingType trackingType;
 
+            public BoundingSphereD BoundingSphere => BoundingSphereD.CreateFromBoundingBox(entityInfo.BoundingBox);
+
             public int GetTicksSinceAdded()
             {
                 return (int)Math.Round((DateTime.Now - LastDetectionTime).TotalMilliseconds / 0.01666666666);

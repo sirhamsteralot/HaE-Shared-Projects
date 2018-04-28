@@ -26,7 +26,7 @@ namespace IngameScript
 
             public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
             {
-                targetPainter = new TargetPainter(targetingCamera);
+                
 
                 List<IMyLargeTurretBase> turretList = new List<IMyLargeTurretBase>();
                 GTS.GridTerminalSystem.GetBlocksOfType(turretList);
@@ -40,7 +40,9 @@ namespace IngameScript
                 GTS.GridTerminalSystem.GetBlocksOfType(cameraList);
                 ObjectTrackers.Add(new LidarTracking(cameraList, reference, known_Objects.LidarEntities));
 
-                foreach(var tracker in ObjectTrackers)
+                targetPainter = new TargetPainter(targetingCamera, cameraList);
+
+                foreach (var tracker in ObjectTrackers)
                 {
                     tracker.OnEntityDetected += OnEntityDetected;
                 }
@@ -50,6 +52,15 @@ namespace IngameScript
             {
                 var entity = targetPainter.PaintTarget(distance);
                 OnEntityDetected(entity);
+            }
+
+            public HaE_Entity PaintTarget(Vector3D pos)
+            {
+
+                var entity = targetPainter.PaintTarget(pos);
+                OnEntityDetected(entity);
+
+                return entity;
             }
 
             public void Poll()
