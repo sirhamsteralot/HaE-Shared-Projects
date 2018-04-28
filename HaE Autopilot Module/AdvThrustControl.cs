@@ -174,7 +174,11 @@ namespace IngameScript
 
                 public double CalculateMaxForce(Vector3D direction, double scale)
                 {
-                    var s = direction.Dot(thrustDirection) * scale;
+                    double dotProd = direction.Dot(thrustDirection);
+                    if (dotProd <= 0)
+                        return 0;
+
+                    var s = dotProd * scale;
 
                     return s;
                 }

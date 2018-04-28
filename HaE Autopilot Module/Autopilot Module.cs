@@ -24,6 +24,9 @@ namespace IngameScript
             private PID_Controller thrustPidController;
             private TimeSpan lastTime;
 
+            private PID_Controller positionHoldPidcontroller;
+            private TimeSpan lastTimePosHoldPid;
+
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
 
@@ -38,7 +41,7 @@ namespace IngameScript
             private Vector3D ControlGravity => controller.GetNaturalGravity();
             private double ControlMass => controller.CalculateShipMass().PhysicalMass;
 
-            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings)
+            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings, PID_Controller.PIDSettings positionPidSettings)
             {
                 GTS.GridTerminalSystem.GetBlocksOfType(allThrusters);
                 GTS.GridTerminalSystem.GetBlocksOfType(gyros);
@@ -47,6 +50,7 @@ namespace IngameScript
                 this.ingameTime = ingameTime;
 
                 thrustPidController = new PID_Controller(thrustPidSettings);
+                positionHoldPidcontroller = new PID_Controller(positionPidSettings);
 
                 gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
@@ -69,7 +73,10 @@ namespace IngameScript
                     if (distance > 1)
                         ThrustToVelocity(direction);
                     else
-                        ThrustToVelocity(Vector3D.Zero);
+                    {
+                        ThrustToVelocity(direction * positionHoldPidcontroller.NextValue(distance, (lastTimePosHoldPid - ingameTime.Time).TotalSeconds));
+                    }
+                        
                 }
             }
 

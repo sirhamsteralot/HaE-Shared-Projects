@@ -49,6 +49,13 @@ namespace IngameScript
             IntegralGain = 0
         };
 
+        PID_Controller.PIDSettings loctionPidSettings = new PID_Controller.PIDSettings
+        {
+            PGain = 1,
+            DerivativeGain = 0,
+            IntegralGain = 0
+        };
+
         public void SubConstructor()
         {
             ingameTime = new IngameTime();
@@ -64,7 +71,7 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, loctionPidSettings);
         }
 
         public void SubMain(string argument, UpdateType updateSource)
