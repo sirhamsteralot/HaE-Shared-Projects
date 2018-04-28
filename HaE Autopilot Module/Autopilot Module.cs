@@ -52,9 +52,25 @@ namespace IngameScript
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
             }
 
-            public void TravelToPosition(Vector3D position)
+            public void TravelToPosition(Vector3D position, double maximumVelocity = 100, double safetyMargin = 1.25)
             {
+                Vector3D direction = position - ControlPosition;
+                double distance = direction.Normalize();
 
+                double stoppingDistance = CalculateStoppingDistance();
+
+                Vector3D velocity = direction * maximumVelocity;
+
+                if (distance >= stoppingDistance * safetyMargin)
+                {
+                    ThrustToVelocity(velocity);
+                } else
+                {
+                    if (distance > 1)
+                        ThrustToVelocity(direction);
+                    else
+                        ThrustToVelocity(Vector3D.Zero);
+                }
             }
 
 
@@ -78,14 +94,13 @@ namespace IngameScript
                 }
             }
 
-            public double CalculateStoppingDistance(Action<string> echo = null)
+            public double CalculateStoppingDistance()
             {
                 Vector3D velocityDir = ControlVelocity;
                 double velocity = velocityDir.Normalize();
                 double mass = ControlMass;
 
                 double forceInDir = thrustControl.CalculateMaxForce(velocityDir);
-                echo?.Invoke("stoppingForce: " + forceInDir.ToString());
 
                 double deceleration = forceInDir / mass;
 

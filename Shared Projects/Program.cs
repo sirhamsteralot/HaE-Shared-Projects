@@ -85,14 +85,9 @@ namespace IngameScript
 
             if (started)
             {
-                Vector3D directionToTravel = Vector3D.Normalize(Vector3D.Zero - reference.GetPosition());
-                double speed = 50;
-                //Vector3D directionAlign = -Vector3D.Normalize(reference.GetNaturalGravity());
+                Vector3D position = Vector3D.Zero;
 
-                autopilotModule.ThrustToVelocity(directionToTravel * speed);
-
-                double stoppingDistance = autopilotModule.CalculateStoppingDistance(Echo);
-                Echo("stoppingdistance: " + stoppingDistance.ToString());
+                autopilotModule.TravelToPosition(position);
             }
         }
 
