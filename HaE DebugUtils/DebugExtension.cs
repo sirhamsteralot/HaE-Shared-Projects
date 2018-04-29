@@ -22,7 +22,10 @@ namespace IngameScript
 	    {
             public Program P;
 
-            public Action<string> Echo => P.Echo;
+            public void Echo(string output)
+            {
+                P?.Echo(output);
+            }
 	    }
 	}
 }

@@ -18,15 +18,17 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class CollisionAvoidance
+        public class CollisionAvoidance : DebugExtension
 	    {
-            private HashSet<HaE_Entity> relevantEntities = new HashSet<HaE_Entity>(new Known_Objects.EntityInfoComparer());
+            private List<HaE_Entity> relevantEntities = new List<HaE_Entity>();
             private BoundingSphereD boundingSphere;
 
             private List<Vector3D> localScanMap;
 
             private IMyShipController rc;
             private EntityTracking_Module trackingModule;
+
+            private Vector3D lastHeadingDir;
 
             public CollisionAvoidance(IMyShipController rc, EntityTracking_Module trackingModule, int resX, int resY)
             {
@@ -39,30 +41,78 @@ namespace IngameScript
             
             public void OnEntityDetected(HaE_Entity entity)
             {
-                if (CheckIfEntityRelevant(entity))
+                if (CheckIfEntityRelevant(entity, lastHeadingDir))
                 {
                     if (relevantEntities.Contains(entity))
                     {
                         relevantEntities.Remove(entity);
-                        relevantEntities.Add(entity);
-                    } else
-                    {
                         relevantEntities.Add(entity);
                     }
-                } else
-                {
-                    if (relevantEntities.Contains(entity))
+                    else
                     {
-                        relevantEntities.Remove(entity);
+                        relevantEntities.Add(entity);
                     }
                 }
             }
 
-            public bool NextPosition(out Vector3D nextPosition)
+            public bool CheckForObjects()
             {
-                CreateSphereFromEntities();
+                Echo($"Relevant entities: {relevantEntities.Count}");
 
+                return relevantEntities.Count > 0;
+            }
 
+            public void NextPosition(ref Vector3D nextPosition, Vector3D headingDir, double safetyMargin = 1.25)
+            {
+                CreateSphereFromEntities(headingDir);
+                Echo("Created Sphere from entities!");
+                Echo($"Sphere center: {boundingSphere.Center}");
+                Echo($"Sphere radius: {boundingSphere.Radius}");
+
+                Vector3D position = rc.CubeGrid.WorldVolume.Center;
+                Vector3D movementDir = rc.GetShipVelocities().LinearVelocity;
+                movementDir.Normalize();
+
+                RayD movementRay = new RayD(position, movementDir);
+                RayD headingRay = new RayD(rc.CubeGrid.WorldVolume.Center, headingDir);
+
+                BoundingSphereD sphere = boundingSphere;
+                sphere.Radius += rc.CubeGrid.WorldVolume.Radius;
+
+                if (sphere.Contains(position) != ContainmentType.Disjoint)
+                {
+                    Echo("Sphere Contains Pos!");
+
+                    Vector3D dodgeDirection = Vector3D.Normalize(position - sphere.Center);
+
+                    nextPosition = sphere.Center + dodgeDirection * sphere.Radius * safetyMargin;
+                    return;
+                }
+
+                double? movementDist = sphere.Intersects(movementRay);
+                double? headingDist = sphere.Intersects(headingRay);
+
+                if (movementDist.HasValue || headingDist.HasValue)
+                {
+                    Echo("On collision Course with sphere!");
+
+                    Vector3D pointOnSphere;
+                    Vector3D dodgeDirection;
+                    if (movementDist.HasValue)
+                    {
+                        pointOnSphere = position + movementDir * movementDist.Value;
+                        dodgeDirection = GetAvoidanceVector(pointOnSphere, sphere, movementDir);
+                    }   
+                    else
+                    {
+                        pointOnSphere = position + headingDir * headingDist.Value;
+                        dodgeDirection = GetAvoidanceVector(pointOnSphere, sphere, headingDir);
+                    }
+                        
+
+                     
+                    nextPosition = rc.CubeGrid.WorldVolume.Center + dodgeDirection * sphere.Radius * safetyMargin;
+                }
             }
 
             public bool Scan(double distance)
@@ -83,19 +133,32 @@ namespace IngameScript
                 return detected;
             }
 
-            private bool CheckIfEntityRelevant(HaE_Entity entity)
+            private Vector3D GetAvoidanceVector(Vector3D sphereContactPoint, BoundingSphereD sphere, Vector3D travelDir)
             {
+                Vector3D tangentPlaneNormal = sphereContactPoint - sphere.Center;
+                Vector3D avoidanceVector = Vector3D.Normalize(VectorUtils.Reject(tangentPlaneNormal, travelDir));
+
+                return -avoidanceVector;
+            }
+
+            private bool CheckIfEntityRelevant(HaE_Entity entity, Vector3D currentHeading)
+            {
+                if (entity.entityInfo.EntityId == rc.CubeGrid.EntityId)
+                    return false;
+
                 Vector3D movementDir = rc.GetShipVelocities().LinearVelocity;
                 movementDir.Normalize();
 
                 RayD movementRay = new RayD(rc.CubeGrid.WorldVolume.Center, movementDir);
+                RayD headingRay = new RayD(rc.CubeGrid.WorldVolume.Center, currentHeading);
 
                 BoundingSphereD sphere = entity.BoundingSphere;
                 sphere.Radius += rc.CubeGrid.WorldVolume.Radius;
 
-                double? intersect = sphere.Intersects(movementRay);
+                double? intersectVel = sphere.Intersects(movementRay);
+                double? intersectHeading = sphere.Intersects(headingRay);
 
-                return intersect.HasValue;
+                return intersectVel.HasValue || intersectHeading.HasValue;
             }
 
             private List<Vector3D> BuildScanMap(int resX, int resY)
@@ -126,16 +189,24 @@ namespace IngameScript
                 return scanMap;
             }
 
-            private void CreateSphereFromEntities()
+            private void CreateSphereFromEntities(Vector3D headingDir)
             {
                 ResetBoundingSphere();
 
-                foreach (var entity in relevantEntities)
+                for(int i = relevantEntities.Count - 1; i >= 0; i--)
                 {
-                    if (CheckIfEntityRelevant(entity))
+                    var entity = relevantEntities[i];
+
+                    if (CheckIfEntityRelevant(entity, headingDir))
+                    {
                         boundingSphere.Include(entity.BoundingSphere);
+                        Echo($"Entity: {entity.entityInfo.Name} is Relevant");
+                    } 
                     else
-                        relevantEntities.Remove(entity);
+                    {
+                        relevantEntities.RemoveAt(i);
+                        Echo($"Entity: {entity.entityInfo.Name} Removed");
+                    }
                 }
             }
 

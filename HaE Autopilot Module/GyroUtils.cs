@@ -116,6 +116,9 @@ namespace IngameScript
                 double yawComponentError = VectorUtils.GetProjectionScalar(currentOrientation.Right, direction);
                 double rollComponentError = VectorUtils.GetProjectionScalar(upDirection, currentOrientation.Right);
 
+                if (upDirection == Vector3D.Zero || !upDirection.IsValid())
+                    rollComponentError = 0;
+
 
                 pitch = pitchComponentError;
                 yaw = yawComponentError;

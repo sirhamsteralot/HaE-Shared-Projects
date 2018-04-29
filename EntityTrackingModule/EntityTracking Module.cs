@@ -22,7 +22,10 @@ namespace IngameScript
 	    {
             public Known_Objects known_Objects = new Known_Objects();
             public List<ITracking> ObjectTrackers = new List<ITracking>();
+            public Action<HaE_Entity> onEntityDetected;
+
             private TargetPainter targetPainter;
+            
 
             public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
             {
@@ -94,6 +97,8 @@ namespace IngameScript
                 {
                     known_Objects.AddEntity(entity);
                 }
+
+                onEntityDetected?.Invoke(entity);
             }
 	    }
 	}

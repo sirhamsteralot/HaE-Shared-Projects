@@ -64,16 +64,17 @@ namespace IngameScript
 
             //Module Inits
             entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings);
+            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
 
             //DEBUG ATTACHMENTS
             autopilotModule.P = this;
-
+            autopilotModule.gyroControl.P = this;
+            autopilotModule.collisionAvoidance.P = this;
         }
 
         public void SubMain(string argument, UpdateType updateSource)
         {
-            //EntityTrackingTests(argument, updateSource);
+            EntityTrackingTests(argument, updateSource);
             AutopilotTests(argument, updateSource);
         }
 
@@ -90,8 +91,11 @@ namespace IngameScript
             if (started)
             {
                 Vector3D position = Vector3D.Zero;
+                Vector3D direction = position - reference.GetPosition();
+                direction.Normalize();
 
-                autopilotModule.TravelToPosition(position);
+                //autopilotModule.AimInDirection(direction, Vector3D.Zero);
+                autopilotModule.TravelToPosition(position, true);
             }
         }
 

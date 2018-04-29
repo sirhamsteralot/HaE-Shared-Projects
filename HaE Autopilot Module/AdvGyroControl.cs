@@ -18,7 +18,7 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class AdvGyroControl
+        public class AdvGyroControl : DebugExtension
 	    {
             private PID_Controller yawPid;
             private PID_Controller pitchPid;
@@ -56,11 +56,13 @@ namespace IngameScript
                 GyroUtils.DirectionToPitchYawRoll(reference, direction, up, out yaw, out pitch, out roll);
 
                 double timeSinceLast = (ingameTime.Time - lastTime).TotalSeconds;
+
                 lastTime = ingameTime.Time;
 
-                yaw = pitchPid.NextValue(yaw, timeSinceLast);
+                yaw = yawPid.NextValue(yaw, timeSinceLast);
                 pitch = pitchPid.NextValue(pitch, timeSinceLast);
-                roll = pitchPid.NextValue(roll, timeSinceLast);
+                roll = rollPid.NextValue(roll, timeSinceLast);
+
 
                 GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll);
             }

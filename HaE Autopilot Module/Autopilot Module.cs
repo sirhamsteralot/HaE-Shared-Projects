@@ -29,8 +29,9 @@ namespace IngameScript
 
             private IMyShipController controller;
 
-            private AdvThrustControl thrustControl;
-            private AdvGyroControl gyroControl;
+            public AdvThrustControl thrustControl;
+            public AdvGyroControl gyroControl;
+            public CollisionAvoidance collisionAvoidance;
 
             private MatrixD ControlMatrix => controller.WorldMatrix;
             private Vector3D ControlPosition => controller.GetPosition();
@@ -38,7 +39,9 @@ namespace IngameScript
             private Vector3D ControlGravity => controller.GetNaturalGravity();
             private double ControlMass => controller.CalculateShipMass().PhysicalMass;
 
-            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings)
+            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, 
+                                    PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings,
+                                    EntityTracking_Module trackingModule)
             {
                 GTS.GridTerminalSystem.GetBlocksOfType(allThrusters);
                 GTS.GridTerminalSystem.GetBlocksOfType(gyros);
@@ -50,6 +53,44 @@ namespace IngameScript
 
                 gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
+                collisionAvoidance = new CollisionAvoidance(controller, trackingModule, 10, 10);
+                trackingModule.onEntityDetected += collisionAvoidance.OnEntityDetected;
+            }
+
+            int avoidanceCheckCounter = 0;
+            public void TravelToPosition(Vector3D position, bool enableAvoidance, double maximumVelocity = 100, double safetyMargin = 1.25)
+            {
+                double distanceFromTargetSQ = (position - ControlPosition).LengthSquared();
+                if (distanceFromTargetSQ > 1 || controller.GetShipSpeed() > 0.0001)
+                {
+                    if (enableAvoidance)
+                    {
+                        if (avoidanceCheckCounter++ > 100)
+                        {
+                            double scanDistance = CalculateStoppingDistance() * safetyMargin;
+                            avoidanceCheckCounter = 0;
+
+                            collisionAvoidance.Scan(scanDistance);
+                        }
+                        
+
+                        if (collisionAvoidance.CheckForObjects())
+                        {
+                            Echo("OBJECT!");
+                            Vector3D heading = Vector3D.Normalize(position - ControlPosition);
+                            Vector3D nexpos = Vector3D.Zero;
+                            collisionAvoidance.NextPosition(ref nexpos, heading);
+
+                            Echo($"NextPos: {nexpos}");
+
+                            TravelToPosition(nexpos, maximumVelocity, safetyMargin);
+                            return;
+                        }
+                    }
+
+                    Echo("Safe");
+                    TravelToPosition(position, maximumVelocity, safetyMargin);
+                }
             }
 
             public void TravelToPosition(Vector3D position, double maximumVelocity = 100, double safetyMargin = 1.25)
@@ -57,9 +98,9 @@ namespace IngameScript
                 Vector3D direction = position - ControlPosition;
                 double distance = direction.Normalize();
 
+                AimInDirection(direction, Vector3D.Zero);
+
                 double stoppingDistance = CalculateStoppingDistance();
-                Echo($"Stoppingdist: {stoppingDistance}");
-                Echo($"Distance: {distance}");
 
                 Vector3D velocity = direction * maximumVelocity;
 
@@ -69,7 +110,6 @@ namespace IngameScript
                 } else
                 {
                     ThrustToVelocity(Vector3D.Zero);
-                    Echo($"At location: {distance >= stoppingDistance}, {distance > 1}");
                 }
             }
 

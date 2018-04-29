@@ -79,6 +79,13 @@ namespace IngameScript
                 return reflect_a;
             }
 
+            public static Vector3D Reject(Vector3D a, Vector3D b)
+            {
+                Vector3D project_a = Project(a, b);
+                Vector3D reject_a = a - project_a;
+                return reject_a;
+            }
+
             /// returns angle in radians
             public static double GetAngle(Vector3D One, Vector3D Two) 
             {
