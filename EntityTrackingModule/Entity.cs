@@ -18,13 +18,18 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class HaE_Entity
+        public class HaE_Entity : IEquatable<HaE_Entity>
         {
             public MyDetectedEntityInfo entityInfo;
             public DateTime LastDetectionTime;
             public TrackingType trackingType;
 
             public BoundingSphereD BoundingSphere => BoundingSphereD.CreateFromBoundingBox(entityInfo.BoundingBox);
+
+            public bool Equals(HaE_Entity other)
+            {
+                return this.entityInfo.EntityId == other.entityInfo.EntityId;
+            }
 
             public int GetTicksSinceAdded()
             {

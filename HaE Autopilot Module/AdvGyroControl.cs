@@ -32,6 +32,8 @@ namespace IngameScript
                 yawPid = new PID_Controller(yawSettings);
                 pitchPid = new PID_Controller(pitchSettings);
                 rollPid = new PID_Controller(rollSettings);
+
+                this.ingameTime = ingameTime;
             }
 
             public AdvGyroControl(PID_Controller.PIDSettings pidSettings, IngameTime ingameTime)
@@ -39,6 +41,8 @@ namespace IngameScript
                 yawPid = new PID_Controller(pidSettings);
                 pitchPid = new PID_Controller(pidSettings);
                 rollPid = new PID_Controller(pidSettings);
+
+                this.ingameTime = ingameTime;
             }
 
             public void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, Vector3D up)
@@ -52,6 +56,7 @@ namespace IngameScript
                 GyroUtils.DirectionToPitchYawRoll(reference, direction, up, out yaw, out pitch, out roll);
 
                 double timeSinceLast = (ingameTime.Time - lastTime).TotalSeconds;
+                lastTime = ingameTime.Time;
 
                 yaw = pitchPid.NextValue(yaw, timeSinceLast);
                 pitch = pitchPid.NextValue(pitch, timeSinceLast);
@@ -71,6 +76,7 @@ namespace IngameScript
                 GyroUtils.DirectionToPitchYaw(reference, direction, out yaw, out pitch, out roll);
 
                 double timeSinceLast = (ingameTime.Time - lastTime).TotalSeconds;
+                lastTime = ingameTime.Time;
 
                 yaw = pitchPid.NextValue(yaw, timeSinceLast);
                 pitch = pitchPid.NextValue(pitch, timeSinceLast);

@@ -20,7 +20,7 @@ namespace IngameScript
 	{
         public class CollisionAvoidance
 	    {
-            private List<HaE_Entity> relevantObjects = new List<HaE_Entity>();
+            private HashSet<HaE_Entity> relevantEntities = new HashSet<HaE_Entity>(new Known_Objects.EntityInfoComparer());
             private BoundingSphereD boundingSphere;
 
             private List<Vector3D> localScanMap;
@@ -36,26 +36,32 @@ namespace IngameScript
                 localScanMap = BuildScanMap(resX, resY);
             }
 
-            public void RegisterObject(HaE_Entity entity)
+            
+            public void OnEntityDetected(HaE_Entity entity)
             {
-                relevantObjects.Add(entity);
-                boundingSphere = BoundingSphereD.CreateMerged(boundingSphere, entity.BoundingSphere);
+                if (CheckIfEntityRelevant(entity))
+                {
+                    if (relevantEntities.Contains(entity))
+                    {
+                        relevantEntities.Remove(entity);
+                        relevantEntities.Add(entity);
+                    } else
+                    {
+                        relevantEntities.Add(entity);
+                    }
+                } else
+                {
+                    if (relevantEntities.Contains(entity))
+                    {
+                        relevantEntities.Remove(entity);
+                    }
+                }
             }
 
-            public void UnRegisterObject(HaE_Entity entity)
+            public bool NextPosition(out Vector3D nextPosition)
             {
-                relevantObjects.Remove(entity);
                 CreateSphereFromEntities();
-            }
 
-            public void ClearEntities()
-            {
-                relevantObjects.Clear();
-                ResetBoundingSphere();
-            }
-
-            public bool NextPosition(out Vector3D vector)
-            {
 
             }
 
@@ -70,12 +76,26 @@ namespace IngameScript
                     HaE_Entity entity = trackingModule.PaintTarget(worldPos);
                     if (entity != null)
                     {
-                        RegisterObject(entity);
                         detected = true;
                     }
                 }
 
                 return detected;
+            }
+
+            private bool CheckIfEntityRelevant(HaE_Entity entity)
+            {
+                Vector3D movementDir = rc.GetShipVelocities().LinearVelocity;
+                movementDir.Normalize();
+
+                RayD movementRay = new RayD(rc.CubeGrid.WorldVolume.Center, movementDir);
+
+                BoundingSphereD sphere = entity.BoundingSphere;
+                sphere.Radius += rc.CubeGrid.WorldVolume.Radius;
+
+                double? intersect = sphere.Intersects(movementRay);
+
+                return intersect.HasValue;
             }
 
             private List<Vector3D> BuildScanMap(int resX, int resY)
@@ -110,9 +130,12 @@ namespace IngameScript
             {
                 ResetBoundingSphere();
 
-                foreach (var entity in relevantObjects)
+                foreach (var entity in relevantEntities)
                 {
-                    boundingSphere = BoundingSphereD.CreateMerged(boundingSphere, entity.BoundingSphere);
+                    if (CheckIfEntityRelevant(entity))
+                        boundingSphere.Include(entity.BoundingSphere);
+                    else
+                        relevantEntities.Remove(entity);
                 }
             }
 

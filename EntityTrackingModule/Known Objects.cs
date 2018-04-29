@@ -183,7 +183,7 @@ namespace IngameScript
                 return sb.ToString();
             }
 
-            private class EntityInfoComparer : IEqualityComparer<HaE_Entity>
+            public class EntityInfoComparer : IEqualityComparer<HaE_Entity>
             {
                 public bool Equals(HaE_Entity x, HaE_Entity y)
                 {
