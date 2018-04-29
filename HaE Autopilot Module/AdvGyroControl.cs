@@ -86,6 +86,16 @@ namespace IngameScript
 
                 GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll);
             }
+
+            public void StopRotation(List<IMyGyro> gyros)
+            {
+                foreach(var gyro in gyros)
+                {
+                    gyro.Yaw = 0;
+                    gyro.Pitch = 0;
+                    gyro.Roll = 0;
+                }
+            }
         }
 	}
 }

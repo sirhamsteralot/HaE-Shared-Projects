@@ -83,7 +83,9 @@ namespace IngameScript
 
                             Echo($"NextPos: {nexpos}");
 
-                            TravelToPosition(nexpos, maximumVelocity, safetyMargin);
+                            //TravelToPosition(nexpos, maximumVelocity, safetyMargin);
+                            ThrustToVelocity(nexpos * maximumVelocity);
+                            AimInDirection(nexpos, Vector3D.Zero);
                             return;
                         }
                     }
@@ -97,19 +99,20 @@ namespace IngameScript
             {
                 Vector3D direction = position - ControlPosition;
                 double distance = direction.Normalize();
-
-                AimInDirection(direction, Vector3D.Zero);
-
                 double stoppingDistance = CalculateStoppingDistance();
 
-                Vector3D velocity = direction * maximumVelocity;
+                Vector3D velocity = direction * maximumVelocity - VectorUtils.ProjectOnPlane(direction , ControlVelocity);
+
+                
 
                 if (distance >= stoppingDistance * safetyMargin && distance > 1)
                 {
                     ThrustToVelocity(velocity);
+                    AimInDirection(Vector3D.Normalize(velocity), Vector3D.Normalize(ControlGravity));
                 } else
                 {
                     ThrustToVelocity(Vector3D.Zero);
+                    AimInDirection(Vector3D.Zero, Vector3D.Normalize(ControlGravity));
                 }
             }
 
@@ -156,7 +159,12 @@ namespace IngameScript
 
             public void AimInDirection(Vector3D direction, Vector3D up, bool upDominant = false)
             {
-                if (upDominant)
+                if (direction == Vector3D.Zero && up == Vector3D.Zero)
+                {
+                    gyroControl.StopRotation(gyros);
+                }
+
+                if (upDominant || direction == Vector3D.Zero)
                 {
                     Vector3D forwardVector = VectorUtils.ProjectOnPlane(up, direction);
                     forwardVector.Normalize();

@@ -108,10 +108,9 @@ namespace IngameScript
                         pointOnSphere = position + headingDir * headingDist.Value;
                         dodgeDirection = GetAvoidanceVector(pointOnSphere, sphere, headingDir);
                     }
-                        
 
-                     
-                    nextPosition = rc.CubeGrid.WorldVolume.Center + dodgeDirection * sphere.Radius * safetyMargin;
+                    //nextPosition = rc.CubeGrid.WorldVolume.Center + dodgeDirection * sphere.Radius * safetyMargin;
+                    nextPosition = dodgeDirection;
                 }
             }
 
@@ -138,12 +137,15 @@ namespace IngameScript
                 Vector3D tangentPlaneNormal = sphereContactPoint - sphere.Center;
                 Vector3D avoidanceVector = Vector3D.Normalize(VectorUtils.Reject(tangentPlaneNormal, travelDir));
 
-                return -avoidanceVector;
+                return avoidanceVector;
             }
 
             private bool CheckIfEntityRelevant(HaE_Entity entity, Vector3D currentHeading)
             {
                 if (entity.entityInfo.EntityId == rc.CubeGrid.EntityId)
+                    return false;
+
+                if (entity.BoundingSphere.Radius <= 0)
                     return false;
 
                 Vector3D movementDir = rc.GetShipVelocities().LinearVelocity;
