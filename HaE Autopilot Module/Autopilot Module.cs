@@ -18,7 +18,7 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Autopilot_Module : DebugExtension
+        public class Autopilot_Module
 	    {
             private IngameTime ingameTime;
             private PID_Controller thrustPidController;
@@ -76,21 +76,16 @@ namespace IngameScript
 
                         if (collisionAvoidance.CheckForObjects())
                         {
-                            Echo("OBJECT!");
                             Vector3D heading = Vector3D.Normalize(position - ControlPosition);
-                            Vector3D nexpos = Vector3D.Zero;
-                            collisionAvoidance.NextPosition(ref nexpos, heading);
+                            Vector3D nextDir = Vector3D.Zero;
+                            collisionAvoidance.NextPosition(ref nextDir, heading);
 
-                            Echo($"NextPos: {nexpos}");
-
-                            //TravelToPosition(nexpos, maximumVelocity, safetyMargin);
-                            ThrustToVelocity(nexpos * maximumVelocity);
-                            AimInDirection(nexpos, Vector3D.Zero);
+                            ThrustToVelocity(nextDir * maximumVelocity);
+                            gyroControl.StopRotation(gyros);
                             return;
                         }
                     }
 
-                    Echo("Safe");
                     TravelToPosition(position, maximumVelocity, safetyMargin);
                 }
             }

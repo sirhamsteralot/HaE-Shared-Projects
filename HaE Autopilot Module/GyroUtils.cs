@@ -21,12 +21,12 @@ namespace IngameScript
         public static class GyroUtils
         {
 
-            public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, double multiplier = 1)
+            public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, double multiplier = 1, bool onlyUpdateOne = false)
             {
-                PointInDirection(gyros, reference.WorldMatrix, direction, multiplier);
+                PointInDirection(gyros, reference.WorldMatrix, direction, multiplier, onlyUpdateOne);
             }
 
-            public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, double multiplier = 1)
+            public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, double multiplier = 1, bool onlyUpdateOne = false)
             {
                 double yaw, pitch;
 
@@ -34,15 +34,15 @@ namespace IngameScript
 
                 DirectionToPitchYaw(reference.Forward, reference.Left, reference.Up, direction, out yaw, out pitch);
 
-                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, 0);
+                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, 0, onlyUpdateOne);
             }
 
-            public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, Vector3D up, double multiplier = 1)
+            public static void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction, Vector3D up, double multiplier = 1, bool onlyUpdateOne = false)
             {
-                PointInDirection(gyros, reference.WorldMatrix, direction, up, multiplier);
+                PointInDirection(gyros, reference.WorldMatrix, direction, up, multiplier, onlyUpdateOne);
             }
 
-            public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, Vector3D up, double multiplier = 1)
+            public static void PointInDirection(List<IMyGyro> gyros, MatrixD reference, Vector3D direction, Vector3D up, double multiplier = 1, bool onlyUpdateOne = false)
             {
                 double yaw, pitch, roll;
 
@@ -52,10 +52,10 @@ namespace IngameScript
                 else
                     DirectionToPitchYaw(reference, direction, out yaw, out pitch, out roll);
 
-                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, roll * multiplier);
+                ApplyGyroOverride(gyros, reference, pitch * multiplier, yaw * multiplier, roll * multiplier, onlyUpdateOne);
             }
 
-            public static void ApplyGyroOverride(List<IMyGyro> gyros, MatrixD reference, double pitch, double yaw, double roll)
+            public static void ApplyGyroOverride(List<IMyGyro> gyros, MatrixD reference, double pitch, double yaw, double roll, bool onlyUpdateOne = false)
             {
                 Vector3D localRotation = new Vector3D(-pitch, yaw, roll);
 
@@ -70,10 +70,13 @@ namespace IngameScript
                     gyro.Roll = (float)gyroRotation.Z;
 
                     gyro.GyroOverride = true;
+
+                    if (onlyUpdateOne)
+                        return;
                 }
             }
 
-            public static void ApplyGyroOverride(List<IMyGyro> gyros, IMyShipController reference, double pitch, double yaw, double roll)
+            public static void ApplyGyroOverride(List<IMyGyro> gyros, IMyShipController reference, double pitch, double yaw, double roll, bool onlyUpdateOne = false)
             {
                 Vector3D localRotation = new Vector3D(-pitch, yaw, roll);
 
@@ -88,6 +91,9 @@ namespace IngameScript
                     gyro.Roll = (float)gyroRotation.Z;
 
                     gyro.GyroOverride = true;
+
+                    if (onlyUpdateOne)
+                        return;
                 }
             }
 

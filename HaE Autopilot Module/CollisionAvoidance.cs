@@ -18,7 +18,7 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class CollisionAvoidance : DebugExtension
+        public class CollisionAvoidance
 	    {
             private List<HaE_Entity> relevantEntities = new List<HaE_Entity>();
             private BoundingSphereD boundingSphere;
@@ -57,17 +57,12 @@ namespace IngameScript
 
             public bool CheckForObjects()
             {
-                Echo($"Relevant entities: {relevantEntities.Count}");
-
                 return relevantEntities.Count > 0;
             }
 
-            public void NextPosition(ref Vector3D nextPosition, Vector3D headingDir, double safetyMargin = 1.25)
+            public void NextPosition(ref Vector3D nextDirection, Vector3D headingDir, double safetyMargin = 1.25)
             {
                 CreateSphereFromEntities(headingDir);
-                Echo("Created Sphere from entities!");
-                Echo($"Sphere center: {boundingSphere.Center}");
-                Echo($"Sphere radius: {boundingSphere.Radius}");
 
                 Vector3D position = rc.CubeGrid.WorldVolume.Center;
                 Vector3D movementDir = rc.GetShipVelocities().LinearVelocity;
@@ -81,11 +76,9 @@ namespace IngameScript
 
                 if (sphere.Contains(position) != ContainmentType.Disjoint)
                 {
-                    Echo("Sphere Contains Pos!");
-
                     Vector3D dodgeDirection = Vector3D.Normalize(position - sphere.Center);
 
-                    nextPosition = sphere.Center + dodgeDirection * sphere.Radius * safetyMargin;
+                    nextDirection = sphere.Center + dodgeDirection * sphere.Radius * safetyMargin;
                     return;
                 }
 
@@ -94,8 +87,6 @@ namespace IngameScript
 
                 if (movementDist.HasValue || headingDist.HasValue)
                 {
-                    Echo("On collision Course with sphere!");
-
                     Vector3D pointOnSphere;
                     Vector3D dodgeDirection;
                     if (movementDist.HasValue)
@@ -109,8 +100,7 @@ namespace IngameScript
                         dodgeDirection = GetAvoidanceVector(pointOnSphere, sphere, headingDir);
                     }
 
-                    //nextPosition = rc.CubeGrid.WorldVolume.Center + dodgeDirection * sphere.Radius * safetyMargin;
-                    nextPosition = dodgeDirection;
+                    nextDirection = dodgeDirection;
                 }
             }
 
@@ -202,12 +192,10 @@ namespace IngameScript
                     if (CheckIfEntityRelevant(entity, headingDir))
                     {
                         boundingSphere.Include(entity.BoundingSphere);
-                        Echo($"Entity: {entity.entityInfo.Name} is Relevant");
                     } 
                     else
                     {
                         relevantEntities.RemoveAt(i);
-                        Echo($"Entity: {entity.entityInfo.Name} Removed");
                     }
                 }
             }

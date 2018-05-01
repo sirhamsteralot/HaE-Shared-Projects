@@ -18,8 +18,10 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class AdvGyroControl : DebugExtension
+        public class AdvGyroControl
 	    {
+            public bool onlyUpdateOne = false;
+
             private PID_Controller yawPid;
             private PID_Controller pitchPid;
             private PID_Controller rollPid;
@@ -64,7 +66,7 @@ namespace IngameScript
                 roll = rollPid.NextValue(roll, timeSinceLast);
 
 
-                GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll);
+                GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll, onlyUpdateOne);
             }
 
             public void PointInDirection(List<IMyGyro> gyros, IMyShipController reference, Vector3D direction)
@@ -84,16 +86,19 @@ namespace IngameScript
                 pitch = pitchPid.NextValue(pitch, timeSinceLast);
                 roll = pitchPid.NextValue(roll, timeSinceLast);
 
-                GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll);
+                GyroUtils.ApplyGyroOverride(gyros, reference, pitch, yaw, roll, onlyUpdateOne);
             }
 
-            public void StopRotation(List<IMyGyro> gyros)
+            public void StopRotation(List<IMyGyro> gyros, bool disableOverride = false)
             {
                 foreach(var gyro in gyros)
                 {
                     gyro.Yaw = 0;
                     gyro.Pitch = 0;
                     gyro.Roll = 0;
+
+                    if (disableOverride)
+                        gyro.GyroOverride = false;
                 }
             }
         }
