@@ -9,6 +9,9 @@
     <Import_RootNamespace>VectorUtils</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)MathExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MathUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VectorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorUtils.cs" />
   </ItemGroup>
 </Project>

@@ -118,6 +118,16 @@ namespace IngameScript
             {
                 return (v1 - v2).LengthSquared() < tolerance;
             }
+
+            private static Vector3D Quadratic(Vector3D vector)
+            {
+                return vector * vector;
+            }
+
+            private static Vector3D Sqrt(Vector3D vector)
+            {
+                return new Vector3D(Math.Sqrt(vector.X), Math.Sqrt(vector.Y), Math.Sqrt(vector.Z));
+            }
         }
 	}
 }

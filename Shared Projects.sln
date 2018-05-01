@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared Projects", "Shared P
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Autopilot Module", "HaE Autopilot Module\HaE Autopilot Module.shproj", "{4EFA3DC1-C6DF-4853-962D-E2998290B240}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE VectorUtils", "VectorUtils\HaE VectorUtils.shproj", "{477E0254-B96C-41F0-80EA-77F22D2133B9}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE MathUtils", "VectorUtils\HaE MathUtils.shproj", "{477E0254-B96C-41F0-80EA-77F22D2133B9}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE EntityTrackingModule", "EntityTrackingModule\HaE EntityTrackingModule.shproj", "{BFA2687A-1112-44DF-BC64-F0FC7F2A1D32}"
 EndProject
@@ -21,6 +21,10 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Comms", "HaE Comms\HaE 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Timing", "HaE Timing\HaE Timing.shproj", "{36C0DEEB-8ADE-4156-AEA7-9DF3C620F474}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Visualization", "HaE Visualization\HaE Visualization.shproj", "{F97D848C-73A1-455C-8A8D-5C546C45D2ED}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Targeting", "HaE Targeting\HaE Targeting.shproj", "{2C0B9AAB-8C08-40EF-A9F4-980DBA0E4B11}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		HaE Comms\HaE Comms.projitems*{0563c763-5b65-4a47-8a5b-2176876d7eaf}*SharedItemsImports = 13
@@ -30,8 +34,11 @@ Global
 		HaE DebugUtils\HaE DebugUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Serialization\HaE Serialization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Targeting\HaE Targeting.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Timing\HaE Timing.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Visualization\HaE Visualization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		VectorUtils\VectorUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE Targeting\HaE Targeting.projitems*{2c0b9aab-8c08-40ef-a9f4-980dba0e4b11}*SharedItemsImports = 13
 		HaE Timing\HaE Timing.projitems*{36c0deeb-8ade-4156-aea7-9df3c620f474}*SharedItemsImports = 13
 		VectorUtils\VectorUtils.projitems*{477e0254-b96c-41f0-80ea-77f22d2133b9}*SharedItemsImports = 13
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13
@@ -39,6 +46,7 @@ Global
 		EntityTrackingModule\EntityTrackingModule.projitems*{bfa2687a-1112-44df-bc64-f0fc7f2a1d32}*SharedItemsImports = 13
 		HaE DebugUtils\HaE DebugUtils.projitems*{dcdceea4-bff4-4d63-a9c8-81dff30fb34a}*SharedItemsImports = 13
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{ec6dfc99-0769-41fc-96a3-029fbeb3a7a1}*SharedItemsImports = 13
+		HaE Visualization\HaE Visualization.projitems*{f97d848c-73a1-455c-8a8d-5c546c45d2ed}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
