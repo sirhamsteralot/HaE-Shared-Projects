@@ -25,6 +25,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Visualization", "HaE Vi
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE Targeting", "HaE Targeting\HaE Targeting.shproj", "{2C0B9AAB-8C08-40EF-A9F4-980DBA0E4B11}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE LCDDrawingLib", "HaE LCDDrawingLib\HaE LCDDrawingLib.shproj", "{D808BD09-1F4E-429A-AB42-06B517AC925A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		HaE Comms\HaE Comms.projitems*{0563c763-5b65-4a47-8a5b-2176876d7eaf}*SharedItemsImports = 13
@@ -33,6 +35,7 @@ Global
 		HaE Comms\HaE Comms.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE DebugUtils\HaE DebugUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE LCDDrawingLib\HaE LCDDrawingLib.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Serialization\HaE Serialization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Targeting\HaE Targeting.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Timing\HaE Timing.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
@@ -44,6 +47,7 @@ Global
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13
 		HaE Serialization\HaE Serialization.projitems*{633d8b24-4b3b-4c26-9480-dba498cc7831}*SharedItemsImports = 13
 		EntityTrackingModule\EntityTrackingModule.projitems*{bfa2687a-1112-44df-bc64-f0fc7f2a1d32}*SharedItemsImports = 13
+		HaE LCDDrawingLib\HaE LCDDrawingLib.projitems*{d808bd09-1f4e-429a-ab42-06b517ac925a}*SharedItemsImports = 13
 		HaE DebugUtils\HaE DebugUtils.projitems*{dcdceea4-bff4-4d63-a9c8-81dff30fb34a}*SharedItemsImports = 13
 		HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems*{ec6dfc99-0769-41fc-96a3-029fbeb3a7a1}*SharedItemsImports = 13
 		HaE Visualization\HaE Visualization.projitems*{f97d848c-73a1-455c-8a8d-5c546c45d2ed}*SharedItemsImports = 13

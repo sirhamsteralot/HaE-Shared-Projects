@@ -115,6 +115,7 @@
   <Import Project="..\HaE Timing\HaE Timing.projitems" Label="Shared" />
   <Import Project="..\HaE Visualization\HaE Visualization.projitems" Label="Shared" />
   <Import Project="..\HaE Targeting\HaE Targeting.projitems" Label="Shared" />
+  <Import Project="..\HaE LCDDrawingLib\HaE LCDDrawingLib.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="mdk\mdk.options" DestinationFolder="$(TargetDir)\mdk" />

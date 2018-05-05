@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>d808bd09-1f4e-429a-ab42-06b517ac925a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HaE_LCDDrawingLib</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)LCDDrawingLib.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LCDUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Canvas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\IMonoElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\MonospaceUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Circle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Line.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Rectangle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Text.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Monospace\Shapes\" />
+  </ItemGroup>
+</Project>
