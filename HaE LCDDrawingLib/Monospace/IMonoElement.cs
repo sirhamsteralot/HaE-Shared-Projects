@@ -20,10 +20,9 @@ namespace IngameScript
 	{
         public interface IMonoElement
 	    {
-            Vector2I Min { get; set; }
-            Vector2I Max { get; set; }
+            Vector2I Position { get; set; }
 
-            void Draw();
+            Canvas Draw();
 	    }
 	}
 }

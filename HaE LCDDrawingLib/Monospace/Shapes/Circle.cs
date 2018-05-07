@@ -20,24 +20,57 @@ namespace IngameScript
 	{
         public class Circle : IMonoElement
         {
-            public Vector2I Min
-            {
-                get
-                {
-                    throw new NotImplementedException();
-                }
+            public int Radius { get { return radius; } set { radius = value; } }
+            public Vector2I Position { get { return position; } set { position = value; } }
+            public bool Fill { get { return fill; } set { fill = value; } }
+            public Color Color { get { return color; } set { color = value; } }
+            public Canvas Canvas { get { return canvas; } set { canvas = value; } }
 
-                set
+            private Vector2I position;
+            private int radius;
+            private bool fill;
+            private Color color;
+            private Canvas canvas;
+
+            public Circle(Vector2I position, int radius, bool fill)
+            {
+                this.position = position;
+                this.radius = radius;
+
+                int sizeX = radius * 2;
+                int sizeY = radius * 2;
+
+                canvas = new Canvas(sizeX, sizeY);
+            }
+
+            private void Generate()
+            {
+                char pixel = MonospaceUtils.GetColorChar(color);
+
+                for (int x = 0; x < canvas.sizeX; x++)
                 {
-                    throw new NotImplementedException();
+                    for (int y = 0; y < canvas.sizeY; y++)
+                    {
+                        if (fill)
+                        {
+                            if (((x - radius) * (x - radius) + (y - radius) * (y - radius)) <= radius * radius)
+                            {
+                                canvas.PaintPixel(pixel, x, y);
+                            }
+                        } else
+                        {
+                            if (Math.Abs(((x - radius) * (x - radius) + (y - radius) * (y - radius)) - (radius * radius)) <= 1)
+                            {
+                                canvas.PaintPixel(pixel, x, y);
+                            }
+                        }
+                    }
                 }
             }
 
-            public Vector2I Max { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public void Draw()
+            public Canvas Draw()
             {
-                throw new NotImplementedException();
+                return canvas;
             }
         }
     }

@@ -20,24 +20,12 @@ namespace IngameScript
 	{
         public class Line : IMonoElement
         {
-            public Vector2I Min
+            public Vector2I Position { get; set; }
+
+
+            public Canvas Draw()
             {
-                get
-                {
-                    throw new NotImplementedException();
-                }
 
-                set
-                {
-                    throw new NotImplementedException();
-                }
-            }
-
-            public Vector2I Max { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public void Draw()
-            {
-                throw new NotImplementedException();
             }
         }
     }

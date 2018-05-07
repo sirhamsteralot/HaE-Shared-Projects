@@ -20,7 +20,78 @@ namespace IngameScript
 	{
         public class Canvas
 	    {
-	        
-	    }
+            public int sizeX;
+            public int sizeY;
+
+            private StringBuilder canvas;
+
+            public StringBuilder ToStringBuilder()
+            {
+                return canvas;
+            }
+
+            public Canvas(int sizeX, int sizeY)
+            {
+                this.sizeX = sizeX;
+                this.sizeY = sizeY;
+
+                canvas = new StringBuilder();
+
+                for (int i = 0; i < sizeY; i++)
+                {
+                    PaintPixel('\n', sizeX, i);
+                }
+            }
+
+            public void SetBackGround(Color color)
+            {
+                char pixel = MonospaceUtils.GetColorChar(color);
+
+                for (int x = 0; x < sizeX; x++)
+                {
+                    for (int y = 0; y < sizeY; y++)
+                    {
+                        PaintPixel(pixel, x, y);
+                    }
+                }
+            }
+
+            public void PaintPixel(char pixel, int posX, int posY)
+            {
+                int i = CalculateStringPos(posX, posY);
+                canvas[i] = pixel;
+            }
+
+            public void PaintPixel(Color color, int posX, int posY)
+            {
+                char pixel = MonospaceUtils.GetColorChar(color);
+
+                PaintPixel(pixel, posX, posY);
+            }
+
+            public void MergeCanvas(Canvas other, Vector2I position)
+            {
+                Vector2I topLeft = new Vector2I(position.X - other.sizeX / 2, position.Y - other.sizeY / 2);
+
+                for (int x = 0; x < other.sizeX; x++)
+                {
+                    for (int y = 0; y < other.sizeY; y++)
+                    {
+                        if (sizeX < x + topLeft.X)
+                            continue;
+                        if (sizeY < y + topLeft.Y)
+                            continue;
+
+                        int i = other.CalculateStringPos(x, y);
+                        PaintPixel(other.canvas[i], x + topLeft.X, y + topLeft.Y);
+                    }
+                }
+            }
+
+            private int CalculateStringPos(int x, int y)
+            {
+                return (y * (sizeX + 1)) + x;
+            }
+        }
 	}
 }
