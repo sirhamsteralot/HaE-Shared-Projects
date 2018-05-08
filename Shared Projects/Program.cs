@@ -40,7 +40,7 @@ namespace IngameScript
 
         EntityTracking_Module entityTracking;
         Autopilot_Module autopilotModule;
-        LCDDrawingLib drawingLib;
+        MonospaceDrawingLib drawingLib;
         Scheduler scheduler;
 
         PID_Controller.PIDSettings gyroPidSettings = new PID_Controller.PIDSettings
@@ -77,7 +77,7 @@ namespace IngameScript
             //entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
             //autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
             scheduler = new Scheduler();
-            drawingLib = new LCDDrawingLib(87,87, Color.Green);
+            drawingLib = new MonospaceDrawingLib(87,87, Color.Green);
 
 
         }

@@ -9,7 +9,7 @@
     <Import_RootNamespace>HaE_LCDDrawingLib</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)LCDDrawingLib.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MonospaceDrawingLib.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LCDUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Canvas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\IMonoElement.cs" />
@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Rectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Text.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Monospace.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Monospace\Shapes\" />

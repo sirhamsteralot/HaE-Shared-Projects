@@ -18,14 +18,14 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class LCDDrawingLib
+        public class MonospaceDrawingLib
 	    {
             private Canvas mainCanvas;
             private HashSet<IMonoElement> elements = new HashSet<IMonoElement>();
 
             public Color backgroundColor;
 
-            public LCDDrawingLib(int sizeX, int sizeY, Color background)
+            public MonospaceDrawingLib(int sizeX, int sizeY, Color background)
             {
                 backgroundColor = background;
 
