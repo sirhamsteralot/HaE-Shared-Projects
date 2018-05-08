@@ -21,9 +21,12 @@ namespace IngameScript
         public const string REFERENCENAME = "Remote Control";
         public const string TARGETCAMNAME = "Targeting Camera";
         public const string TEXTOUTNAME = "TextOut";
+        public const string MonoLCDName = "LCD";
 
         public const double PAINTINGDISTANCE = 1000;
         public const int TicksToRunProfiler = 100;
+
+        public static Program P;
 
         IngameTime ingameTime;
         Profiler profiler = new Profiler(TicksToRunProfiler, false);
@@ -31,9 +34,14 @@ namespace IngameScript
         IMyShipController reference;
         IMyCameraBlock targetingCamera;
         IMyTextPanel textOut;
+        IMyTextPanel monoOut;
+
+        Random random = new Random();
 
         EntityTracking_Module entityTracking;
         Autopilot_Module autopilotModule;
+        LCDDrawingLib drawingLib;
+        Scheduler scheduler;
 
         PID_Controller.PIDSettings gyroPidSettings = new PID_Controller.PIDSettings
         {
@@ -51,29 +59,56 @@ namespace IngameScript
 
         public void SubConstructor()
         {
-            ingameTime = new IngameTime();
+            //DEBUG ATTACHMENTS
+            P = this;
 
-            //UpdateType
+            //Timing
             Runtime.UpdateFrequency = UpdateFrequency.Update1 | UpdateFrequency.Update100;
+            ingameTime = new IngameTime();
 
             //Generic Inits
             gridTerminalSystemUtils = new GridTerminalSystemUtils(Me, GridTerminalSystem);
             reference = GridTerminalSystem.GetBlockWithName(REFERENCENAME) as IMyShipController;
             targetingCamera = GridTerminalSystem.GetBlockWithName(TARGETCAMNAME) as IMyCameraBlock;
             textOut = GridTerminalSystem.GetBlockWithName(TEXTOUTNAME) as IMyTextPanel;
+            monoOut = GridTerminalSystem.GetBlockWithName(MonoLCDName) as IMyTextPanel;
 
             //Module Inits
-            entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
-            autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
+            //entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
+            //autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
+            scheduler = new Scheduler();
+            drawingLib = new LCDDrawingLib(100,100, Color.Green);
 
-            //DEBUG ATTACHMENTS
 
         }
 
         public void SubMain(string argument, UpdateType updateSource)
         {
-            EntityTrackingTests(argument, updateSource);
-            AutopilotTests(argument, updateSource);
+            //EntityTrackingTests(argument, updateSource);
+            //AutopilotTests(argument, updateSource);
+            LCDLibTests(argument, updateSource);
+
+            //Scheduler run
+            scheduler.Main();
+        }
+
+        public void LCDLibTests(string argument, UpdateType updateSource)
+        {
+            switch (argument)
+            {
+                case "DrawCircle":
+                    int ranX = random.Next(40, 60);
+                    int ranY = random.Next(40, 60);
+                    Vector2I pos = new Vector2I(ranX, ranY);
+
+                    var circle = new Circle(pos, random.Next(1, 25), Color.White, true);
+
+                    drawingLib.AddElement(circle);
+                    scheduler.AddTask(drawingLib.Generate());
+                    break;
+            }
+
+            monoOut.WritePublicText(drawingLib.Draw());
         }
 
         bool started = false;
@@ -112,7 +147,7 @@ namespace IngameScript
                 entityTracking.TimeoutEntities(TimeSpan.FromSeconds(5));
             }
 
-            textOut.WritePublicText(entityTracking.known_Objects.ToString());
+            monoOut.WritePublicText(entityTracking.known_Objects.ToString());
         }
 
         //MAIN/CONSTR

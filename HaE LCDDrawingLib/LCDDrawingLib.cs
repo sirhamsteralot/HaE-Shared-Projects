@@ -37,15 +37,20 @@ namespace IngameScript
                 elements.Add(element);
             }
 
-            public StringBuilder Draw()
+            public IEnumerator<bool> Generate()
             {
                 mainCanvas.SetBackGround(backgroundColor);
+                var tempElements = new HashSet<IMonoElement>(elements);
 
-                foreach (var element in elements)
+                foreach (var element in tempElements)
                 {
+                    yield return true;
                     mainCanvas.MergeCanvas(element.Draw(), element.Position);
                 }
+            }
 
+            public StringBuilder Draw()
+            {
                 return mainCanvas.ToStringBuilder();
             }
         }

@@ -36,14 +36,14 @@ namespace IngameScript
 
             private static char CreateCustomColor(byte r, byte g, byte b)
             {
-
                 return (char)(0xE100 + (MathHelper.Clamp(r, 0, 7) << 6) + (MathHelper.Clamp(g, 0, 7) << 3) + MathHelper.Clamp(b, 0, 7));
             }
 
             private static void GetSeven(ref byte B)
             {
-                B /= 255;
-                B *= 7;
+                double I = B / 256.0;
+                I *= 7;
+                B = (byte)(int)Math.Round(I);
             }
         }
 	}

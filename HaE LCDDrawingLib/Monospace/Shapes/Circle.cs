@@ -20,10 +20,10 @@ namespace IngameScript
 	{
         public class Circle : IMonoElement
         {
-            public int Radius { get { return radius; } set { radius = value; } }
+            public int Radius { get { return radius; } set { radius = value; Generate(); } }
             public Vector2I Position { get { return position; } set { position = value; } }
-            public bool Fill { get { return fill; } set { fill = value; } }
-            public Color Color { get { return color; } set { color = value; } }
+            public bool Fill { get { return fill; } set { fill = value; Generate(); } }
+            public Color Color { get { return color; } set { color = value; Generate(); } }
             public Canvas Canvas { get { return canvas; } set { canvas = value; } }
 
             private Vector2I position;
@@ -32,20 +32,28 @@ namespace IngameScript
             private Color color;
             private Canvas canvas;
 
-            public Circle(Vector2I position, int radius, bool fill)
+            private Vector2I center;
+
+            public Circle(Vector2I position, int radius, Color color, bool fill)
             {
                 this.position = position;
                 this.radius = radius;
+                this.fill = fill;
 
                 int sizeX = radius * 2;
                 int sizeY = radius * 2;
 
+                center = new Vector2I(radius, radius);
+                this.color = color;
+
                 canvas = new Canvas(sizeX, sizeY);
+                Generate();
             }
 
             private void Generate()
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
+                canvas.Clear();
 
                 for (int x = 0; x < canvas.sizeX; x++)
                 {
@@ -53,13 +61,14 @@ namespace IngameScript
                     {
                         if (fill)
                         {
-                            if (((x - radius) * (x - radius) + (y - radius) * (y - radius)) <= radius * radius)
+                            var thing = ((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y));
+                            if (thing <= radius * radius)
                             {
                                 canvas.PaintPixel(pixel, x, y);
                             }
                         } else
                         {
-                            if (Math.Abs(((x - radius) * (x - radius) + (y - radius) * (y - radius)) - (radius * radius)) <= 1)
+                            if (Math.Abs(((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y)) - (radius * radius)) <= 1)
                             {
                                 canvas.PaintPixel(pixel, x, y);
                             }

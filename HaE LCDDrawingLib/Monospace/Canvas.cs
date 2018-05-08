@@ -37,9 +37,21 @@ namespace IngameScript
 
                 canvas = new StringBuilder();
 
-                for (int i = 0; i < sizeY; i++)
+                for (int y = 0; y < sizeY; y++)
                 {
-                    PaintPixel('\n', sizeX, i);
+                    canvas.Append(' ', sizeX);
+                    canvas.Append('\n');
+                }
+            }
+
+            public void Clear()
+            {
+                canvas.Clear();
+
+                for (int y = 0; y < sizeY; y++)
+                {
+                    canvas.Append(' ', sizeX);
+                    canvas.Append('\n');
                 }
             }
 
@@ -58,6 +70,9 @@ namespace IngameScript
 
             public void PaintPixel(char pixel, int posX, int posY)
             {
+                if (posX > sizeX || posY > sizeY)
+                    return;
+
                 int i = CalculateStringPos(posX, posY);
                 canvas[i] = pixel;
             }
@@ -77,13 +92,10 @@ namespace IngameScript
                 {
                     for (int y = 0; y < other.sizeY; y++)
                     {
-                        if (sizeX < x + topLeft.X)
-                            continue;
-                        if (sizeY < y + topLeft.Y)
-                            continue;
-
                         int i = other.CalculateStringPos(x, y);
-                        PaintPixel(other.canvas[i], x + topLeft.X, y + topLeft.Y);
+
+                        if (other.canvas[i] != ' ')
+                            PaintPixel(other.canvas[i], x + topLeft.X, y + topLeft.Y);
                     }
                 }
             }
