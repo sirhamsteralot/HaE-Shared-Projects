@@ -77,7 +77,7 @@ namespace IngameScript
             //entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
             //autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
             scheduler = new Scheduler();
-            drawingLib = new MonospaceDrawingLib(87,87, Color.Green);
+            drawingLib = new MonospaceDrawingLib(175,175, Color.Black);
             scheduler.AddTask(drawingLib.ReGenerate(), OnInitialRenderDone);
 
         }
@@ -98,11 +98,11 @@ namespace IngameScript
             switch (argument)
             {
                 case "DrawCircle":
-                    int ranX = random.Next(0, 86);
-                    int ranY = random.Next(0, 86);
+                    int ranX = random.Next(0, 174);
+                    int ranY = random.Next(0, 174);
                     Vector2I pos = new Vector2I(ranX, ranY);
 
-                    var circle = new Circle(pos, random.Next(1, 10), Color.White, false);
+                    var circle = new Circle(pos, random.Next(1, 50), Color.White, false);
 
                     drawingLib.AddElement(circle);
                     break;

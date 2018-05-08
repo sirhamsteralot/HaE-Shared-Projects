@@ -47,7 +47,10 @@ namespace IngameScript
 
             public IEnumerator<bool> ReGenerate()
             {
-                mainCanvas.SetBackGround(backgroundColor);
+                Task renderBackgroundTask = new Task(mainCanvas.SetBackGround(backgroundColor, 100));
+                while (renderBackgroundTask.MoveNext())
+                    yield return true;
+
                 var tempElements = new HashSet<IMonoElement>(elements);
 
                 foreach (var element in tempElements)

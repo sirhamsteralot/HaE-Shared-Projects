@@ -57,24 +57,35 @@ namespace IngameScript
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
 
-                for (int x = 0; x < canvas.sizeX; x++)
+                int x = radius - 1;
+                int y = 0;
+                int dx = 1;
+                int dy = 1;
+                int err = dx - (radius << 1);
+
+                while (x >= y)
                 {
-                    for (int y = 0; y < canvas.sizeY; y++)
+                    canvas.PaintPixel(pixel, center.X + x, center.Y + y);
+                    canvas.PaintPixel(pixel, center.X + y, center.Y + x);
+                    canvas.PaintPixel(pixel, center.X - y, center.Y + x);
+                    canvas.PaintPixel(pixel, center.X - x, center.Y + y);
+                    canvas.PaintPixel(pixel, center.X - x, center.Y - y);
+                    canvas.PaintPixel(pixel, center.X - y, center.Y - x);
+                    canvas.PaintPixel(pixel, center.X + y, center.Y - x);
+                    canvas.PaintPixel(pixel, center.X + x, center.Y - y);
+
+                    if (err <= 0)
                     {
-                        if (fill)
-                        {
-                            var thing = ((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y));
-                            if (thing <= radius * radius)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        } else
-                        {
-                            if (Math.Abs(((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y)) - (radius * radius)) <= 4)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        }
+                        y++;
+                        err += dy;
+                        dy += 2;
+                    }
+
+                    if (err > 0)
+                    {
+                        x--;
+                        dx += 2;
+                        err += dx - (radius << 1);
                     }
                 }
             }

@@ -68,6 +68,26 @@ namespace IngameScript
                 }
             }
 
+            public IEnumerator<bool> SetBackGround(Color color, int maxPerRun)
+            {
+                char pixel = MonospaceUtils.GetColorChar(color);
+                int counter = 0;
+
+                for (int x = 0; x < sizeX; x++)
+                {
+                    for (int y = 0; y < sizeY; y++)
+                    {
+                        if (counter++ >= maxPerRun)
+                        {
+                            counter = 0;
+                            yield return true;
+                        }
+
+                        PaintPixel(pixel, x, y);
+                    }
+                }
+            }
+
             public void PaintPixel(char pixel, int posX, int posY)
             {
                 int i = CalculateStringPos(posX, posY);
