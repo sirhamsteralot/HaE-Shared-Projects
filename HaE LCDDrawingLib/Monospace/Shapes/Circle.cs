@@ -32,19 +32,21 @@ namespace IngameScript
             private Color color;
             private Canvas canvas;
 
+            private int lineThickness;
             private Vector2I center;
 
-            public Circle(Vector2I position, int radius, Color color, bool fill)
+            public Circle(Vector2I position, int radius, Color color, bool fill, int lineThickness = 4)
             {
                 this.position = position;
                 this.radius = radius;
                 this.fill = fill;
 
-                int sizeX = radius * 2;
-                int sizeY = radius * 2;
+                int sizeX = radius * 2 + 1;
+                int sizeY = radius * 2 + 1;
 
                 center = new Vector2I(radius, radius);
                 this.color = color;
+                this.lineThickness = lineThickness;
 
                 canvas = new Canvas(sizeX, sizeY);
                 Generate();
@@ -68,7 +70,7 @@ namespace IngameScript
                             }
                         } else
                         {
-                            if (Math.Abs(((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y)) - (radius * radius)) <= 1)
+                            if (Math.Abs(((x - center.X) * (x - center.X) + (y - center.Y) * (y - center.Y)) - (radius * radius)) <= 4)
                             {
                                 canvas.PaintPixel(pixel, x, y);
                             }

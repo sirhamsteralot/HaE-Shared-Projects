@@ -47,6 +47,12 @@ namespace IngameScript
                     yield return true;
                     mainCanvas.MergeCanvas(element.Draw(), element.Position);
                 }
+
+                for (int y = 0; y < mainCanvas.sizeY; y++)
+                {
+                    yield return true;
+                    mainCanvas.PaintPixel('\n', mainCanvas.sizeX, y);
+                }
             }
 
             public StringBuilder Draw()

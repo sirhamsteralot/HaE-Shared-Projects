@@ -70,11 +70,10 @@ namespace IngameScript
 
             public void PaintPixel(char pixel, int posX, int posY)
             {
-                if (posX > sizeX || posY > sizeY)
-                    return;
-
                 int i = CalculateStringPos(posX, posY);
-                canvas[i] = pixel;
+
+                if (i < canvas.Length && i >= 0)
+                    canvas[i] = pixel;
             }
 
             public void PaintPixel(Color color, int posX, int posY)

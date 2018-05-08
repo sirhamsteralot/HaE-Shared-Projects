@@ -77,19 +77,20 @@ namespace IngameScript
             //entityTracking = new EntityTracking_Module(gridTerminalSystemUtils, reference, targetingCamera);
             //autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
             scheduler = new Scheduler();
-            drawingLib = new LCDDrawingLib(100,100, Color.Green);
+            drawingLib = new LCDDrawingLib(87,87, Color.Green);
 
 
         }
 
         public void SubMain(string argument, UpdateType updateSource)
         {
-            //EntityTrackingTests(argument, updateSource);
-            //AutopilotTests(argument, updateSource);
-            LCDLibTests(argument, updateSource);
 
             //Scheduler run
             scheduler.Main();
+
+            //EntityTrackingTests(argument, updateSource);
+            //AutopilotTests(argument, updateSource);
+            LCDLibTests(argument, updateSource);
         }
 
         public void LCDLibTests(string argument, UpdateType updateSource)
@@ -97,17 +98,21 @@ namespace IngameScript
             switch (argument)
             {
                 case "DrawCircle":
-                    int ranX = random.Next(40, 60);
-                    int ranY = random.Next(40, 60);
+                    int ranX = random.Next(0, 86);
+                    int ranY = random.Next(0, 86);
                     Vector2I pos = new Vector2I(ranX, ranY);
 
-                    var circle = new Circle(pos, random.Next(1, 25), Color.White, true);
+                    var circle = new Circle(pos, random.Next(1, 10), Color.White, false);
 
                     drawingLib.AddElement(circle);
-                    scheduler.AddTask(drawingLib.Generate());
+                    Task generator = new Task(drawingLib.Generate(), LCD_OnGenerationComplete);
+                    scheduler.AddTask(generator);
                     break;
             }
+        }
 
+        public void LCD_OnGenerationComplete()
+        {
             monoOut.WritePublicText(drawingLib.Draw());
         }
 

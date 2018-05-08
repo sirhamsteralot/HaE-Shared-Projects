@@ -36,8 +36,13 @@ namespace IngameScript
                     if (Queue.Count == 0)
                         return;
 
-                    if (!Queue.First().MoveNext())
+                    var current = Queue.First();
+
+                    if (!current.MoveNext())
+                    {
                         Queue.Dequeue().Dispose();
+                        current.Callback?.Invoke();
+                    }
                 }
             }
 

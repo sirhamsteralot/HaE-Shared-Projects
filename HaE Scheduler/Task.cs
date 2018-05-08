@@ -21,6 +21,12 @@ namespace IngameScript
         public class Task
 	    {
             public IEnumerator<bool> Enumerator;
+            public Action Callback;
+
+            public Task(IEnumerator<bool> enumerator, Action callback) : this(enumerator)
+            {
+                Callback = callback;
+            }
 
             public Task(IEnumerator<bool> enumerator)
             {
