@@ -58,12 +58,6 @@ namespace IngameScript
                     while (internalRenderTask.MoveNext())
                         yield return true;
                 }
-
-                for (int y = 0; y < mainCanvas.sizeY; y++)
-                {
-                    yield return true;
-                    mainCanvas.PaintPixel('\n', mainCanvas.sizeX, y);
-                }
             }
 
             public IEnumerator<bool> RenderAddedElement(IMonoElement element)
