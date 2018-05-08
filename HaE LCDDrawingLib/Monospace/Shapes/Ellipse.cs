@@ -50,7 +50,7 @@ namespace IngameScript
                 int sizeX = Math.Abs(size.X);
                 int sizeY = Math.Abs(size.Y);
 
-                canvas = new Canvas(sizeX, sizeY);
+                canvas = new Canvas(sizeX + 1, sizeY + 1);
 
                 Generate();
             }
