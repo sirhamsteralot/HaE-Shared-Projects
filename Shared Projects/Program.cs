@@ -121,7 +121,7 @@ namespace IngameScript
                     var line = new Line(pointOne, pointTwo, Color.White);
                     drawingLib.AddElement(line);
                     break;
-                case "DrawElipse":
+                case "DrawEllipse":
                     int ranEX0 = random.Next(0, 174);
                     int ranEY0 = random.Next(0, 174);
 
@@ -131,7 +131,7 @@ namespace IngameScript
                     Vector2I pointEOne = new Vector2I(ranEX0, ranEY0);
                     Vector2I pointETwo = new Vector2I(ranEX1, ranEY1);
 
-                    var elipse = new Elipse(pointEOne, pointETwo, Color.White);
+                    var elipse = new Ellipse(pointEOne, pointETwo, Color.White);
                     drawingLib.AddElement(elipse);
                     break;
             }

@@ -18,7 +18,7 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Elipse : IMonoElement
+        public class Ellipse : IMonoElement
         {
             public Vector2I Position { get { return position; } set { position = value; } }
             private Vector2I position;
@@ -31,7 +31,7 @@ namespace IngameScript
             private Vector2I localStart;
             private Vector2I size;
 
-            public Elipse(Vector2I startPos, Vector2I endPos, Color color)
+            public Ellipse(Vector2I startPos, Vector2I endPos, Color color)
             {
                 this.color = color;
                 this.startPos = startPos;

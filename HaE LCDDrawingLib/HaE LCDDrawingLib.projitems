@@ -15,7 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\IMonoElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\MonospaceUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Circle.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Elipse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Ellipse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Rectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Text.cs" />
