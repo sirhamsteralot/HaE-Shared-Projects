@@ -115,11 +115,24 @@ namespace IngameScript
                     int ranX1 = random.Next(0, 174);
                     int ranY1 = random.Next(0, 174);
 
-                    Vector2I pointOne = new Vector2I(0, 174);
-                    Vector2I pointTwo = new Vector2I(174, 0);
+                    Vector2I pointOne = new Vector2I(ranX0, ranY0);
+                    Vector2I pointTwo = new Vector2I(ranX1, ranY1);
 
                     var line = new Line(pointOne, pointTwo, Color.White);
                     drawingLib.AddElement(line);
+                    break;
+                case "DrawElipse":
+                    int ranEX0 = random.Next(0, 174);
+                    int ranEY0 = random.Next(0, 174);
+
+                    int ranEX1 = random.Next(0, 174);
+                    int ranEY1 = random.Next(0, 174);
+
+                    Vector2I pointEOne = new Vector2I(ranEX0, ranEY0);
+                    Vector2I pointETwo = new Vector2I(ranEX1, ranEY1);
+
+                    var elipse = new Elipse(pointEOne, pointETwo, Color.White);
+                    drawingLib.AddElement(elipse);
                     break;
             }
 

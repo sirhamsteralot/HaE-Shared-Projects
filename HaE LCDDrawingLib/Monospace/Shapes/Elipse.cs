@@ -18,9 +18,9 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Line : IMonoElement
+        public class Elipse : IMonoElement
         {
-            public Vector2I Position { get { return position; } set { position = value;}}
+            public Vector2I Position { get { return position; } set { position = value; } }
             private Vector2I position;
 
             private Canvas canvas;
@@ -31,7 +31,7 @@ namespace IngameScript
             private Vector2I localStart;
             private Vector2I size;
 
-            public Line(Vector2I startPos, Vector2I endPos, Color color)
+            public Elipse(Vector2I startPos, Vector2I endPos, Color color)
             {
                 this.color = color;
                 this.startPos = startPos;
@@ -51,6 +51,7 @@ namespace IngameScript
                 int sizeY = Math.Abs(size.Y);
 
                 canvas = new Canvas(sizeX, sizeY);
+
                 Generate();
             }
 
@@ -64,19 +65,35 @@ namespace IngameScript
                 int x1 = localStart.X + size.X;
                 int y1 = localStart.Y + size.Y;
 
-                int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-                int dy = -Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-                int err = dx + dy, e2; /* error value e_xy */
+                int a = Math.Abs(x1 - x0), b = Math.Abs(y1 - y0), b1 = b & 1; /* values of diameter */
+                long dx = 4 * (1 - a) * b * b, dy = 4 * (b1 + 1) * a * a; /* error increment */
+                long err = dx + dy + b1 * a * a, e2; /* error of 1.step */
+
+                if (x0 > x1) { x0 = x1; x1 += a; } /* if called with swapped points */
+                if (y0 > y1) y0 = y1; /* .. exchange them */
+                y0 += (b + 1) / 2; y1 = y0 - b1;   /* starting pixel */
+                a *= 8 * a; b1 = 8 * b * b;
 
                 char pixel = MonospaceUtils.GetColorChar(color);
 
-                while(true)
-                {  /* loop */
-                    canvas.PaintPixel(pixel, x0, y0);
-                    if (x0 == x1 && y0 == y1) break;
+                do
+                {
+                    canvas.PaintPixel(pixel, x1, y0); /*   I. Quadrant */
+                    canvas.PaintPixel(pixel, x0, y0); /*  II. Quadrant */
+                    canvas.PaintPixel(pixel, x0, y1); /* III. Quadrant */
+                    canvas.PaintPixel(pixel, x1, y1); /*  IV. Quadrant */
+
                     e2 = 2 * err;
-                    if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-                    if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+                    if (e2 <= dy) { y0++; y1--; err += dy += a; }  /* y step */
+                    if (e2 >= dx || 2 * err > dy) { x0++; x1--; err += dx += b1; } /* x step */
+                } while (x0 <= x1);
+
+                while (y0 - y1 < b)
+                {  /* too early stop of flat ellipses a=1 */
+                    canvas.PaintPixel(pixel, x0 - 1, y0); /* -> finish tip of ellipse */
+                    canvas.PaintPixel(pixel, x1 + 1, y0++);
+                    canvas.PaintPixel(pixel, 0 - 1, y1);
+                    canvas.PaintPixel(pixel, x1 + 1, y1--);
                 }
             }
 
