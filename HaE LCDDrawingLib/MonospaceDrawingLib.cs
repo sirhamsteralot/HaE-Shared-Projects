@@ -25,7 +25,8 @@ namespace IngameScript
 
             private Scheduler internalRenderScheduler = new Scheduler();
 
-            public Color backgroundColor;
+            public Action onRenderDone;
+            private Color backgroundColor;
 
             public MonospaceDrawingLib(int sizeX, int sizeY, Color background)
             {
@@ -34,15 +35,20 @@ namespace IngameScript
                 mainCanvas = new Canvas(sizeX, sizeY);
             }
 
+            public void AddRenderTask(IEnumerator<bool> task, Action callback)
+            {
+                internalRenderScheduler.AddTask(task, callback);
+            }
+
             public void AddElement(IMonoElement element)
             {
                 elements.Add(element);
-                internalRenderScheduler.AddTask(RenderAddedElement(element));
+                internalRenderScheduler.AddTask(RenderAddedElement(element), onRenderDone);
             }
 
             public void SetBackground(Color color)
             {
-                mainCanvas.SetBackGround(color);
+                internalRenderScheduler.AddTask(mainCanvas.SetBackGround(color, 100), onRenderDone);
             }
 
             public IEnumerator<bool> ReGenerate()
@@ -72,9 +78,12 @@ namespace IngameScript
 
             public StringBuilder Draw()
             {
-                internalRenderScheduler.Main();
-
                 return mainCanvas.ToStringBuilder();
+            }
+
+            public void RunRenderer()
+            {
+                internalRenderScheduler.Main();
             }
         }
 	}

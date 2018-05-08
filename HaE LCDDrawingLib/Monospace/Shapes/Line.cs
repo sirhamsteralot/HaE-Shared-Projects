@@ -20,52 +20,61 @@ namespace IngameScript
 	{
         public class Line : IMonoElement
         {
-            public int Radius { get { return radius; } set { radius = value; } }
-            public Vector2I Position { get { return position; } set { position = value; } }
-            public bool Fill { get { return fill; } set { fill = value; } }
-            public Color Color { get { return color; } set { color = value; } }
-            public Canvas Canvas { get { return canvas; } set { canvas = value; } }
-
+            public Vector2I Position { get { return position; } set { position = value;}}
             private Vector2I position;
-            private int radius;
-            private bool fill;
-            private Color color;
+
             private Canvas canvas;
+            private Color color;
+            private Vector2I startPos;
+            private Vector2I endPos;
 
-            public Line(Vector2I position, int radius, bool fill)
+            private Vector2I localStart;
+            private Vector2I size;
+
+            public Line(Vector2I startPos, Vector2I endPos, Color color)
             {
-                this.position = position;
-                this.radius = radius;
+                this.color = color;
+                this.startPos = startPos;
+                this.endPos = endPos;
 
-                int sizeX = radius * 2;
-                int sizeY = radius * 2;
+                size = endPos - startPos;
+
+                position = startPos + size / 2;
+
+                if (size.X < 0)
+                    startPos.X = -size.X;
+
+                if (size.Y < 0)
+                    startPos.Y = -size.Y;
+
+                int sizeX = Math.Abs(size.X);
+                int sizeY = Math.Abs(size.Y);
 
                 canvas = new Canvas(sizeX, sizeY);
+                Generate();
             }
 
-            private void Generate()
+            public void Generate()
             {
+                int x0 = startPos.X;
+                int y0 = startPos.Y;
+
+                int x1 = size.X;
+                int y1 = size.Y;
+
+                int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+                int dy = -Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+                int err = dx + dy, e2; /* error value e_xy */
+
                 char pixel = MonospaceUtils.GetColorChar(color);
 
-                for (int x = 0; x < canvas.sizeX; x++)
-                {
-                    for (int y = 0; y < canvas.sizeY; y++)
-                    {
-                        if (fill)
-                        {
-                            if (((x - radius) * (x - radius) + (y - radius) * (y - radius)) <= radius * radius)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        }
-                        else
-                        {
-                            if (Math.Abs(((x - radius) * (x - radius) + (y - radius) * (y - radius)) - (radius * radius)) <= 1)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        }
-                    }
+                for (; ; )
+                {  /* loop */
+                    canvas.PaintPixel(pixel, x0, y0);
+                    if (x0 == x1 && y0 == y1) break;
+                    e2 = 2 * err;
+                    if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+                    if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
                 }
             }
 
