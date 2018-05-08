@@ -78,7 +78,7 @@ namespace IngameScript
             //autopilotModule = new Autopilot_Module(gridTerminalSystemUtils, reference, ingameTime, gyroPidSettings, thrustPidSettings, entityTracking);
             scheduler = new Scheduler();
             drawingLib = new MonospaceDrawingLib(87,87, Color.Green);
-
+            scheduler.AddTask(drawingLib.ReGenerate(), OnInitialRenderDone);
 
         }
 
@@ -105,13 +105,13 @@ namespace IngameScript
                     var circle = new Circle(pos, random.Next(1, 10), Color.White, false);
 
                     drawingLib.AddElement(circle);
-                    Task generator = new Task(drawingLib.Generate(), LCD_OnGenerationComplete);
-                    scheduler.AddTask(generator);
                     break;
             }
+
+            monoOut.WritePublicText(drawingLib.Draw());
         }
 
-        public void LCD_OnGenerationComplete()
+        public void OnInitialRenderDone()
         {
             monoOut.WritePublicText(drawingLib.Draw());
         }

@@ -56,6 +56,12 @@ namespace IngameScript
                 var task = new Task(enumerator);
                 AddTask(task);
             }
+
+            public void AddTask(IEnumerator<bool> enumerator, Action callback)
+            {
+                var task = new Task(enumerator, callback);
+                AddTask(task);
+            }
         }
 	}
 }

@@ -99,6 +99,38 @@ namespace IngameScript
                 }
             }
 
+            public IEnumerator<bool> MergeCanvas(Canvas other, Vector2I position, int maxPerRun)
+            {
+                Vector2I topLeft = new Vector2I(position.X - other.sizeX / 2, position.Y - other.sizeY / 2);
+                int counter = 0;
+
+                for (int x = 0; x < other.sizeX; x++)
+                {
+                    for (int y = 0; y < other.sizeY; y++)
+                    {
+                        if (counter++ >= maxPerRun)
+                        {
+                            counter = 0;
+                            yield return true;
+                        }
+                            
+
+                        int i = other.CalculateStringPos(x, y);
+
+                        if (other.canvas[i] != ' ')
+                        {
+                            int X = x + topLeft.X;
+
+                            if (X >= sizeX || X < 0)
+                                continue;
+
+                            PaintPixel(other.canvas[i], X, y + topLeft.Y);
+                        }
+                            
+                    }
+                }
+            }
+
             private int CalculateStringPos(int x, int y)
             {
                 return (y * (sizeX + 1)) + x;

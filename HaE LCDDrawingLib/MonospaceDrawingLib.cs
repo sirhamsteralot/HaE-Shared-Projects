@@ -23,6 +23,8 @@ namespace IngameScript
             private Canvas mainCanvas;
             private HashSet<IMonoElement> elements = new HashSet<IMonoElement>();
 
+            private Scheduler internalRenderScheduler = new Scheduler();
+
             public Color backgroundColor;
 
             public MonospaceDrawingLib(int sizeX, int sizeY, Color background)
@@ -35,9 +37,15 @@ namespace IngameScript
             public void AddElement(IMonoElement element)
             {
                 elements.Add(element);
+                internalRenderScheduler.AddTask(RenderAddedElement(element));
             }
 
-            public IEnumerator<bool> Generate()
+            public void SetBackground(Color color)
+            {
+                mainCanvas.SetBackGround(color);
+            }
+
+            public IEnumerator<bool> ReGenerate()
             {
                 mainCanvas.SetBackGround(backgroundColor);
                 var tempElements = new HashSet<IMonoElement>(elements);
@@ -45,7 +53,10 @@ namespace IngameScript
                 foreach (var element in tempElements)
                 {
                     yield return true;
-                    mainCanvas.MergeCanvas(element.Draw(), element.Position);
+
+                    Task internalRenderTask = new Task(mainCanvas.MergeCanvas(element.Draw(), element.Position, 100));
+                    while (internalRenderTask.MoveNext())
+                        yield return true;
                 }
 
                 for (int y = 0; y < mainCanvas.sizeY; y++)
@@ -55,8 +66,17 @@ namespace IngameScript
                 }
             }
 
+            public IEnumerator<bool> RenderAddedElement(IMonoElement element)
+            {
+                Task internalRenderTask = new Task(mainCanvas.MergeCanvas(element.Draw(), element.Position, 100));
+                while (internalRenderTask.MoveNext())
+                    yield return true;
+            }
+
             public StringBuilder Draw()
             {
+                internalRenderScheduler.Main();
+
                 return mainCanvas.ToStringBuilder();
             }
         }
