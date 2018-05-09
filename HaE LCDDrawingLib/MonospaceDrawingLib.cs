@@ -46,6 +46,14 @@ namespace IngameScript
                 internalRenderScheduler.AddTask(RenderAddedElement(element), onRenderDone);
             }
 
+            public void AddElement(IComplexElement element)
+            {
+                internalRenderScheduler.AddTask(element.Generate());
+
+                elements.Add(element);
+                internalRenderScheduler.AddTask(RenderAddedElement(element), onRenderDone);
+            }
+
             public void SetBackground(Color color)
             {
                 internalRenderScheduler.AddTask(mainCanvas.SetBackGround(color, 100), onRenderDone);

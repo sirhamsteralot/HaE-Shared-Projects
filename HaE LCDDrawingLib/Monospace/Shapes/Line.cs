@@ -66,25 +66,6 @@ namespace IngameScript
 
                 char pixel = MonospaceUtils.GetColorChar(color);
 
-                if (x0 == x1)
-                {
-                    for (int y = y0; y <= y1; y++)
-                    {
-                        canvas.PaintPixel(pixel, x0, y);
-                    }
-
-                    return;
-                }
-                else if (y0 == y1)
-                {
-                    for (int x = x0; x <= x1; x++)
-                    {
-                        canvas.PaintPixel(pixel, x, y0);
-                    }
-
-                    return;
-                }
-
                 int dx = Math.Abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
                 int dy = -Math.Abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
                 int err = dx + dy, e2; /* error value e_xy */

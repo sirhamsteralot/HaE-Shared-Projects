@@ -55,8 +55,6 @@ namespace IngameScript
             {
                 canvas.Clear();
 
-                P.Echo("Generating...");
-
                 Vector2I topLeft = Vector2I.Zero;
                 Vector2I topRight = new Vector2I(sizeX, 0);
                 Vector2I bottomLeft = new Vector2I(0, sizeY);
@@ -67,15 +65,10 @@ namespace IngameScript
                 Line right = new Line(topRight, bottomRight, color);
                 Line bottom = new Line(bottomLeft, bottomRight, color);
 
-                P.Echo("Generated lines...");
-                P.Echo($"{topLeft}; {bottomRight}");
-
                 canvas.MergeCanvas(top.Draw(), top.Position);
                 canvas.MergeCanvas(left.Draw(), left.Position);
                 canvas.MergeCanvas(right.Draw(), right.Position);
                 canvas.MergeCanvas(bottom.Draw(), bottom.Position);
-
-                P.Echo("Generated.");
             }
 
             public Canvas Draw()

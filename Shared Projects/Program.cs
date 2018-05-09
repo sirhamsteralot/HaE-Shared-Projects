@@ -147,6 +147,25 @@ namespace IngameScript
                     var rectangle = new Rectangle(pointROne, pointRTwo, Color.White);
                     drawingLib.AddElement(rectangle);
                     break;
+
+                case "DrawPolygon":
+                    int ranPX0 = random.Next(0, 174);
+                    int ranPY0 = random.Next(0, 174);
+
+                    int ranPX1 = random.Next(0, 174);
+                    int ranPY1 = random.Next(0, 174);
+
+                    Echo($"{ranPX0}, {ranPY0}; {ranPX1}, {ranPY1}");
+
+                    var positions = new List<Vector2I>();
+
+                    positions.Add(new Vector2I(ranPX0, ranPY0));
+                    positions.Add(new Vector2I(ranPX1, ranPY1));
+                    positions.Add(new Vector2I(ranPX0, ranPY1));
+
+                    var polygon = new Polygon(positions, Color.White);
+                    drawingLib.AddElement(polygon);
+                    break;
             }
 
             drawingLib.RunRenderer();
@@ -154,7 +173,7 @@ namespace IngameScript
 
         public void OnRenderDone()
         {
-            Echo("Rendering...");
+            //Echo("Rendering...");
             monoOut.WritePublicText(drawingLib.Draw());
         }
 
