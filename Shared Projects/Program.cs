@@ -103,7 +103,7 @@ namespace IngameScript
                     int ranY = random.Next(0, 174);
                     Vector2I pos = new Vector2I(ranX, ranY);
 
-                    var circle = new Circle(pos, random.Next(1, 50), Color.White, false);
+                    var circle = new FillCircle(pos, random.Next(1, 50), Color.White);
 
                     drawingLib.AddElement(circle);
                     break;
@@ -131,7 +131,7 @@ namespace IngameScript
                     Vector2I pointEOne = new Vector2I(ranEX0, ranEY0);
                     Vector2I pointETwo = new Vector2I(ranEX1, ranEY1);
 
-                    var elipse = new Ellipse(pointEOne, pointETwo, Color.White);
+                    var elipse = new FillEllipse(pointEOne, pointETwo, Color.White);
                     drawingLib.AddElement(elipse);
                     break;
                 case "DrawRect":
@@ -144,7 +144,7 @@ namespace IngameScript
                     Vector2I pointROne = new Vector2I(ranRX0, ranRY0);
                     Vector2I pointRTwo = new Vector2I(ranRX1, ranRY1);
 
-                    var rectangle = new Rectangle(pointROne, pointRTwo, Color.White);
+                    var rectangle = new FillRectangle(pointROne, pointRTwo, Color.White);
                     drawingLib.AddElement(rectangle);
                     break;
 
@@ -166,7 +166,8 @@ namespace IngameScript
 
         public void OnRenderDone()
         {
-            //Echo("Rendering...");
+            Echo("Rendering...");
+            Echo($"Left in Queue: {drawingLib.RenderQueueSize}");
             monoOut.WritePublicText(drawingLib.Draw());
         }
 

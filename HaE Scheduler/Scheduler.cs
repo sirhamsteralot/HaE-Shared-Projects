@@ -21,6 +21,7 @@ namespace IngameScript
         public class Scheduler
 	    {
             public int runsPerTick;
+            public int QueueCount => Queue.Count;
 
             Queue<Task> Queue = new Queue<Task>();
 

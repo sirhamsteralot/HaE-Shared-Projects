@@ -20,12 +20,14 @@ namespace IngameScript
 	{
         public class MonospaceDrawingLib
 	    {
+
+            public int RenderQueueSize => internalRenderScheduler.QueueCount;
+            public Action onRenderDone;
+
             private Canvas mainCanvas;
             private HashSet<IMonoElement> elements = new HashSet<IMonoElement>();
 
             private Scheduler internalRenderScheduler = new Scheduler();
-
-            public Action onRenderDone;
             private Color backgroundColor;
 
             public MonospaceDrawingLib(int sizeX, int sizeY, Color background)

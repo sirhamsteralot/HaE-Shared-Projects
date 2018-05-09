@@ -18,8 +18,8 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Circle : IMonoElement
-        {
+        public class FillCircle : IComplexElement
+	    {
             public int Radius { get { return radius; } set { radius = value; Generate(); } }
             public Vector2I Position { get { return position; } set { position = value; } }
             public Color Color { get { return color; } set { color = value; Generate(); } }
@@ -33,8 +33,10 @@ namespace IngameScript
             private int lineThickness;
             private Vector2I center;
 
-            public Circle(Vector2I position, int radius, Color color, int lineThickness = 4)
+            public FillCircle(Vector2I position, int radius, Color color, int lineThickness = 4)
             {
+                canvas.Clear();
+
                 this.position = position;
                 this.radius = radius;
 
@@ -49,7 +51,7 @@ namespace IngameScript
                 Generate();
             }
 
-            private void Generate()
+            public IEnumerator<bool> Generate()
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
@@ -62,14 +64,11 @@ namespace IngameScript
 
                 while (x >= y)
                 {
-                    canvas.PaintPixel(pixel, center.X + x, center.Y + y);
-                    canvas.PaintPixel(pixel, center.X + y, center.Y + x);
-                    canvas.PaintPixel(pixel, center.X - y, center.Y + x);
-                    canvas.PaintPixel(pixel, center.X - x, center.Y + y);
-                    canvas.PaintPixel(pixel, center.X - x, center.Y - y);
-                    canvas.PaintPixel(pixel, center.X - y, center.Y - x);
-                    canvas.PaintPixel(pixel, center.X + y, center.Y - x);
-                    canvas.PaintPixel(pixel, center.X + x, center.Y - y);
+                    MonospaceUtils.PlotLine(center.X - x, center.Y + y, center.X + x, center.Y + y, canvas, pixel);
+                    MonospaceUtils.PlotLine(center.X - y, center.Y + x, center.X + y, center.Y + x, canvas, pixel);
+                    MonospaceUtils.PlotLine(center.X - x, center.Y - y, center.X + x, center.Y - y, canvas, pixel);
+                    MonospaceUtils.PlotLine(center.X - y, center.Y - x, center.X + y, center.Y - x, canvas, pixel);
+
 
                     if (err <= 0)
                     {
@@ -84,6 +83,8 @@ namespace IngameScript
                         dx += 2;
                         err += dx - (radius << 1);
                     }
+
+                    yield return true;
                 }
             }
 
@@ -92,5 +93,5 @@ namespace IngameScript
                 return canvas;
             }
         }
-    }
+	}
 }
