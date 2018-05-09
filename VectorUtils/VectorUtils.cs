@@ -20,6 +20,14 @@ namespace IngameScript
 	{
         public static class VectorUtils
 	    {
+            public static Vector2I GenerateRandomVector2I(Random random)
+            {
+                int ranX0 = random.Next(0, 174);
+                int ranY0 = random.Next(0, 174);
+
+                return new Vector2I(ranX0, ranY0);
+            }
+
             /// project one on two
             public static Vector3D Project(Vector3D one, Vector3D two) 
             {

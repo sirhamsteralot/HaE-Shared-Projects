@@ -149,19 +149,12 @@ namespace IngameScript
                     break;
 
                 case "DrawPolygon":
-                    int ranPX0 = random.Next(0, 174);
-                    int ranPY0 = random.Next(0, 174);
-
-                    int ranPX1 = random.Next(0, 174);
-                    int ranPY1 = random.Next(0, 174);
-
-                    Echo($"{ranPX0}, {ranPY0}; {ranPX1}, {ranPY1}");
-
                     var positions = new List<Vector2I>();
 
-                    positions.Add(new Vector2I(ranPX0, ranPY0));
-                    positions.Add(new Vector2I(ranPX1, ranPY1));
-                    positions.Add(new Vector2I(ranPX0, ranPY1));
+                    for (int i = 0; i < random.Next(3, 16); i++)
+                    {
+                        positions.Add(VectorUtils.GenerateRandomVector2I(random));
+                    }
 
                     var polygon = new Polygon(positions, Color.White);
                     drawingLib.AddElement(polygon);
