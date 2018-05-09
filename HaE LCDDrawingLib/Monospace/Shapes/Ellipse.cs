@@ -64,6 +64,7 @@ namespace IngameScript
 
                 int x1 = localStart.X + size.X;
                 int y1 = localStart.Y + size.Y;
+                char pixel = MonospaceUtils.GetColorChar(color);
 
                 int a = Math.Abs(x1 - x0), b = Math.Abs(y1 - y0), b1 = b & 1; /* values of diameter */
                 long dx = 4 * (1 - a) * b * b, dy = 4 * (b1 + 1) * a * a; /* error increment */
@@ -73,8 +74,6 @@ namespace IngameScript
                 if (y0 > y1) y0 = y1; /* .. exchange them */
                 y0 += (b + 1) / 2; y1 = y0 - b1;   /* starting pixel */
                 a *= 8 * a; b1 = 8 * b * b;
-
-                char pixel = MonospaceUtils.GetColorChar(color);
 
                 do
                 {

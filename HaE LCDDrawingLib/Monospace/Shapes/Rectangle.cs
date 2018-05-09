@@ -20,53 +20,62 @@ namespace IngameScript
 	{
         public class Rectangle : IMonoElement
         {
-            public int Radius { get { return radius; } set { radius = value; } }
             public Vector2I Position { get { return position; } set { position = value; } }
-            public bool Fill { get { return fill; } set { fill = value; } }
-            public Color Color { get { return color; } set { color = value; } }
-            public Canvas Canvas { get { return canvas; } set { canvas = value; } }
-
             private Vector2I position;
-            private int radius;
-            private bool fill;
-            private Color color;
+
             private Canvas canvas;
+            private Color color;
+            private Vector2I startPos;
+            private Vector2I endPos;
 
-            public Rectangle(Vector2I position, int radius, bool fill)
+            private Vector2I size;
+
+            private int sizeX;
+            private int sizeY;
+
+            public Rectangle(Vector2I startPos, Vector2I endPos, Color color)
             {
-                this.position = position;
-                this.radius = radius;
+                this.color = color;
+                this.startPos = startPos;
+                this.endPos = endPos;
 
-                int sizeX = radius * 2;
-                int sizeY = radius * 2;
+                size = endPos - startPos;
 
-                canvas = new Canvas(sizeX, sizeY);
+                position = startPos + size / 2;
+
+                sizeX = Math.Abs(size.X);
+                sizeY = Math.Abs(size.Y);
+
+                canvas = new Canvas(sizeX + 1, sizeY + 1);
+
+                Generate();
             }
 
-            private void Generate()
+            public void Generate()
             {
-                char pixel = MonospaceUtils.GetColorChar(color);
+                canvas.Clear();
 
-                for (int x = 0; x < canvas.sizeX; x++)
-                {
-                    for (int y = 0; y < canvas.sizeY; y++)
-                    {
-                        if (fill)
-                        {
-                            if (((x - radius) * (x - radius) + (y - radius) * (y - radius)) <= radius * radius)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        }
-                        else
-                        {
-                            if (Math.Abs(((x - radius) * (x - radius) + (y - radius) * (y - radius)) - (radius * radius)) <= 1)
-                            {
-                                canvas.PaintPixel(pixel, x, y);
-                            }
-                        }
-                    }
-                }
+                P.Echo("Generating...");
+
+                Vector2I topLeft = Vector2I.Zero;
+                Vector2I topRight = new Vector2I(sizeX, 0);
+                Vector2I bottomLeft = new Vector2I(0, sizeY);
+                Vector2I bottomRight = new Vector2I(sizeX,sizeY);
+
+                Line top = new Line(topLeft, topRight, color);
+                Line left = new Line(topLeft, bottomLeft, color);
+                Line right = new Line(topRight, bottomRight, color);
+                Line bottom = new Line(bottomLeft, bottomRight, color);
+
+                P.Echo("Generated lines...");
+                P.Echo($"{topLeft}; {bottomRight}");
+
+                canvas.MergeCanvas(top.Draw(), top.Position);
+                canvas.MergeCanvas(left.Draw(), left.Position);
+                canvas.MergeCanvas(right.Draw(), right.Position);
+                canvas.MergeCanvas(bottom.Draw(), bottom.Position);
+
+                P.Echo("Generated.");
             }
 
             public Canvas Draw()

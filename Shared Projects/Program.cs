@@ -134,6 +134,19 @@ namespace IngameScript
                     var elipse = new Ellipse(pointEOne, pointETwo, Color.White);
                     drawingLib.AddElement(elipse);
                     break;
+                case "DrawRect":
+                    int ranRX0 = random.Next(0, 174);
+                    int ranRY0 = random.Next(0, 174);
+
+                    int ranRX1 = random.Next(0, 174);
+                    int ranRY1 = random.Next(0, 174);
+
+                    Vector2I pointROne = new Vector2I(ranRX0, ranRY0);
+                    Vector2I pointRTwo = new Vector2I(ranRX1, ranRY1);
+
+                    var rectangle = new Rectangle(pointROne, pointRTwo, Color.White);
+                    drawingLib.AddElement(rectangle);
+                    break;
             }
 
             drawingLib.RunRenderer();
@@ -141,6 +154,7 @@ namespace IngameScript
 
         public void OnRenderDone()
         {
+            Echo("Rendering...");
             monoOut.WritePublicText(drawingLib.Draw());
         }
 
