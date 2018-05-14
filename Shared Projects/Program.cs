@@ -156,7 +156,7 @@ namespace IngameScript
                         positions.Add(VectorUtils.GenerateRandomVector2I(random));
                     }
 
-                    var polygon = new Polygon(positions, Color.White);
+                    var polygon = new FillPolygon(positions, Color.White);
                     drawingLib.AddElement(polygon);
                     break;
             }

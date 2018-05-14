@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Ellipse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\FillCircle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\FillEllipse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\FillPolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\FillRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Polygon.cs" />

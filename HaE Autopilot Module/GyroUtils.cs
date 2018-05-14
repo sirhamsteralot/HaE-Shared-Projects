@@ -61,6 +61,9 @@ namespace IngameScript
 
                 Vector3D relativeRotation = Vector3D.TransformNormal(localRotation, reference);
 
+                if (!relativeRotation.IsValid())
+                    return;
+
                 foreach (IMyGyro gyro in gyros)
                 {
                     Vector3D gyroRotation = Vector3D.TransformNormal(relativeRotation, Matrix.Transpose(gyro.WorldMatrix));
@@ -81,6 +84,9 @@ namespace IngameScript
                 Vector3D localRotation = new Vector3D(-pitch, yaw, roll);
 
                 Vector3D relativeRotation = Vector3D.TransformNormal(localRotation, reference.WorldMatrix);
+
+                if (!relativeRotation.IsValid())
+                    return;
 
                 foreach (IMyGyro gyro in gyros)
                 {

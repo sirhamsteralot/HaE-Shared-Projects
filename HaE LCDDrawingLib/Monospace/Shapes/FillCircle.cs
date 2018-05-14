@@ -35,8 +35,6 @@ namespace IngameScript
 
             public FillCircle(Vector2I position, int radius, Color color, int lineThickness = 4)
             {
-                canvas.Clear();
-
                 this.position = position;
                 this.radius = radius;
 
@@ -53,6 +51,8 @@ namespace IngameScript
 
             public IEnumerator<bool> Generate()
             {
+                canvas.Clear();
+
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
 

@@ -31,6 +31,9 @@ namespace IngameScript
 
             public void UpdatePosition(Vector3D locationInWorld)
             {
+                if (projector == null)
+                    return;
+
                 Vector3D locationInGrid = Vector3D.Transform(locationInWorld, MatrixD.Invert(projector.WorldMatrix)) / projector.CubeGrid.GridSize;
                 locationInGrid -= (Vector3D)projectionSize * 0.5;
                 Vector3I locationRounded = new Vector3I(
