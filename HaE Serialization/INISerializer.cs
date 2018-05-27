@@ -44,7 +44,10 @@ namespace IngameScript
 
             public object GetValue(string valueName)
             {
-                return objectValues[valueName];
+                if (objectValues.ContainsKey(valueName))
+                    return objectValues[valueName];
+
+                throw new Exception($"No value named \"{valueName}\" ");
             }
 
             public void SetValue(string valueName, object value)

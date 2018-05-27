@@ -20,6 +20,8 @@ namespace IngameScript
 	{
         public class Line : IMonoElement
         {
+            public LineD line;
+
             public Vector2I Position { get { return position; } set { position = value;}}
             private Vector2I position;
 
@@ -80,6 +82,10 @@ namespace IngameScript
                     if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
                     if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
                 }
+
+                Vector3D from = new Vector3D(x0, y0, 0);
+                Vector3D to = new Vector3D(x1, y1, 0);
+                line = new LineD(from, to);
             }
 
             public Canvas Draw()

@@ -21,12 +21,12 @@ namespace IngameScript
         public class ProjectorVisualization
 	    {
             IMyProjector projector;
-            Vector3I projectionSize;
+            Vector3I projectionOffset;
 
-            public ProjectorVisualization(IMyProjector projector, Vector3I projectionSize)
+            public ProjectorVisualization(IMyProjector projector, Vector3I projectionOffset)
             {
                 this.projector = projector;
-                this.projectionSize = projectionSize;
+                this.projectionOffset = projectionOffset;
             }
 
             public void UpdatePosition(Vector3D locationInWorld)
@@ -35,7 +35,7 @@ namespace IngameScript
                     return;
 
                 Vector3D locationInGrid = Vector3D.Transform(locationInWorld, MatrixD.Invert(projector.WorldMatrix)) / projector.CubeGrid.GridSize;
-                locationInGrid -= (Vector3D)projectionSize * 0.5;
+                locationInGrid += (Vector3D)projectionOffset;
                 Vector3I locationRounded = new Vector3I(
                                                             (int)-Math.Round(locationInGrid.X),
                                                             (int)-Math.Round(locationInGrid.Y),
