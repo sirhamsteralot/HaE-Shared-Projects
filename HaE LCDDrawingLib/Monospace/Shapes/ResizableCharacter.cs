@@ -18,7 +18,7 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Text : IComplexElement
+        public class ResizableCharacter : IMonoElement
         {
             public Vector2I Position { get { return position; } set { position = value; } }
             public Color Color { get { return color; } set { color = value; Generate(); } }
@@ -29,14 +29,14 @@ namespace IngameScript
             private Canvas canvas;
 
             private float size;
-            private Vector2I center;
+            private char character;
 
-            public Text(Vector2I position, string text, Color color, float size)
+            public ResizableCharacter(Vector2I position, char character, Color color, float size)
             {
                 this.position = position;
 
-                int sizeX = (int)(text.Length * FontLibrary.CHARWIDTH * size) + 1;
-                int sizeY = (int)(text.Length * FontLibrary.CHARHEIGHT * size) + 1;
+                int sizeX = (int)(FontLibrary.CHARWIDTH * size) + 1;
+                int sizeY = (int)(FontLibrary.CHARHEIGHT * size) + 1;
 
                 this.color = color;
                 this.size = size;
@@ -49,6 +49,8 @@ namespace IngameScript
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
+
+
             }
 
             public Canvas Draw()
