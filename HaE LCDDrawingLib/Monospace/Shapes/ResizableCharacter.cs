@@ -29,7 +29,7 @@ namespace IngameScript
             private Canvas canvas;
 
             private float size;
-            private char character;
+            private bool[,] characterbitMap;
 
             public ResizableCharacter(Vector2I position, char character, Color color, float size)
             {

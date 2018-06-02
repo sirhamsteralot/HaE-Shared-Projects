@@ -103,6 +103,31 @@ namespace IngameScript
                 PaintPixel(pixel, posX, posY);
             }
 
+            public void PaintBitMap(bool[,] bitmap, char pixel, int posX, int posY)
+            {
+                int bitMapDimX = bitmap.GetLength(0);
+                int bitMapDimY = bitmap.GetLength(1);
+
+                int topLeftX = posX - bitMapDimX / 2;
+                int topLeftY = posY - bitMapDimY / 2;
+
+                for (int x = 0; x < bitMapDimX; x++)
+                {
+                    for (int y = 0; y < bitMapDimY; y++)
+                    {
+                        if (bitmap[x, y])
+                            PaintPixel(pixel, topLeftX + x, topLeftY + y);
+                    }
+                }
+            }
+
+            public void PaintBitMap(bool[,] bitmap, Color color, int posX, int posY)
+            {
+                char pixel = MonospaceUtils.GetColorChar(color);
+
+                PaintBitMap(bitmap, pixel, posX, posY);
+            }
+
             public void MergeCanvas(Canvas other, Vector2I position)
             {
                 Vector2I topLeft = new Vector2I(position.X - other.sizeX / 2, position.Y - other.sizeY / 2);

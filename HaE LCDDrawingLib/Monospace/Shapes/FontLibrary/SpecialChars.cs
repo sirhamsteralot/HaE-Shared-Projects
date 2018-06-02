@@ -22,7 +22,16 @@ namespace IngameScript
         {
             public static class SpecialChars
             {
-
+                public static bool[,] UnknownChar = new bool[CHARHEIGHT, CHARWIDTH]
+                {
+                    { true, true, true, true, true },
+                    { true, false, false, false, true },
+                    { true, false, false, false, true },
+                    { true, false, false, false, true },
+                    { true, false, false, false, true },
+                    { true, false, false, false, true },
+                    { true, true, true, true, true }
+                };
             }
         }
 	}

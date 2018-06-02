@@ -45,10 +45,14 @@ namespace IngameScript
                 Generate();
             }
 
-            private void Generate()
+            public IEnumerator<bool> Generate()
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
+
+                yield return true;
+
+
             }
 
             public Canvas Draw()

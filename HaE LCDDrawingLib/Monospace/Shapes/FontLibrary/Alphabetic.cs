@@ -22,9 +22,9 @@ namespace IngameScript
 	{
         public partial class FontLibrary
         {
-            public class Alphabetic
+            public static class Alphabetic
             {
-                public bool[,] A = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] A = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, false, false, false, false },
                     { true, false, false, false, true },
@@ -35,7 +35,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] B = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] B = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, false },
                     { true, false, false, false, true },
@@ -46,7 +46,7 @@ namespace IngameScript
                     { true, true, true, true, false }
                 };
 
-                public bool[,] C = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] C = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, true, true, true, false },
                     { true, false, false, false, true },
@@ -57,7 +57,7 @@ namespace IngameScript
                     { false, true, true, true, false }
                 };
 
-                public bool[,] D = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] D = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, false, false },
                     { true, false, false, true, false },
@@ -68,7 +68,7 @@ namespace IngameScript
                     { true, true, true, false, false }
                 };
 
-                public bool[,] E = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] E = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, true },
                     { true, false, false, false, false },
@@ -79,7 +79,7 @@ namespace IngameScript
                     { true, true, true, true, true }
                 };
 
-                public bool[,] F = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] F = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, true },
                     { true, false, false, false, false },
@@ -90,7 +90,7 @@ namespace IngameScript
                     { true, false, false, false, false }
                 };
 
-                public bool[,] G = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] G = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, false },
                     { true, false, false, false, true },
@@ -101,7 +101,7 @@ namespace IngameScript
                     { true, true, true, true, true }
                 };
 
-                public bool[,] H = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] H = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -112,7 +112,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] I = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] I = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, true },
                     { false, false, true, false, false },
@@ -123,7 +123,7 @@ namespace IngameScript
                     { true, true, true, true, true }
                 };
 
-                public bool[,] J = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] J = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, false, true, true, true },
                     { false, false, false, true, false },
@@ -134,7 +134,7 @@ namespace IngameScript
                     { false, true, true, false, false }
                 };
 
-                public bool[,] K = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] K = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, true, false },
@@ -145,7 +145,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] L = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] L = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, false },
                     { true, false, false, false, false },
@@ -156,7 +156,7 @@ namespace IngameScript
                     { true, true, true, true, true }
                 };
 
-                public bool[,] M = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] M = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, true, false, true, true },
@@ -167,7 +167,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] N = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] N = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -178,7 +178,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] O = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] O = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, true, true, true, false },
                     { true, false, false, false, true },
@@ -189,7 +189,7 @@ namespace IngameScript
                     { false, true, true, true, false }
                 };
 
-                public bool[,] P = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] P = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, false },
                     { true, false, false, false, true },
@@ -200,7 +200,7 @@ namespace IngameScript
                     { true, false, false, false, false }
                 };
 
-                public bool[,] Q = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] Q = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, true, true, true, false },
                     { true, false, false, false, true },
@@ -211,7 +211,7 @@ namespace IngameScript
                     { false, true, true, false, true }
                 };
 
-                public bool[,] R = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] R = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, false },
                     { true, false, false, false, true },
@@ -222,7 +222,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] S = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] S = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { false, true, true, true, true },
                     { true, false, false, false, false },
@@ -233,7 +233,7 @@ namespace IngameScript
                     { true, true, true, true, false }
                 };
 
-                public bool[,] T = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] T = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, true },
                     { false, false, true, false, false },
@@ -244,7 +244,7 @@ namespace IngameScript
                     { false, false, true, false, false }
                 };
 
-                public bool[,] U = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] U = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -255,7 +255,7 @@ namespace IngameScript
                     { false, true, true, true, false }
                 };
 
-                public bool[,] V = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] V = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -266,7 +266,7 @@ namespace IngameScript
                     { false, false, true, false, false }
                 };
 
-                public bool[,] W = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] W = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -277,7 +277,7 @@ namespace IngameScript
                     { false, true, false, true, false }
                 };
 
-                public bool[,] X = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] X = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -288,7 +288,7 @@ namespace IngameScript
                     { true, false, false, false, true }
                 };
 
-                public bool[,] Y = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] Y = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, false, false, false, true },
                     { true, false, false, false, true },
@@ -299,7 +299,7 @@ namespace IngameScript
                     { false, false, true, false, false }
                 };
 
-                public bool[,] Z = new bool[CHARHEIGHT, CHARWIDTH]
+                public static bool[,] Z = new bool[CHARHEIGHT, CHARWIDTH]
                 {
                     { true, true, true, true, true },
                     { false, false, false, false, true },
