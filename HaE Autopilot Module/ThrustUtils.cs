@@ -38,6 +38,9 @@ namespace IngameScript
             {
                 foreach (var thruster in thrusters)
                 {
+                    if (!thruster.Enabled)
+                        thruster.Enabled = true;
+
                     thruster.ThrustOverridePercentage = percent;
                 }
             }
@@ -46,6 +49,9 @@ namespace IngameScript
             {
                 foreach (var thruster in thrusters)
                 {
+                    if (!thruster.Enabled)
+                        thruster.Enabled = true;
+
                     thruster.ThrustOverridePercentage = percent;
                 }
             }

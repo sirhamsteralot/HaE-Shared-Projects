@@ -23,8 +23,8 @@ namespace IngameScript
             public Vector2I Position { get { return position; } set { position = value; } }
             private Vector2I position;
 
-            private List<Vector2I> positions;
-            private List<Line> lines;
+            private Vector2[] positions;
+            private List<Line> lines = new List<Line>();
 
             private Canvas canvas;
             private Color color;
@@ -42,21 +42,26 @@ namespace IngameScript
             public FillPolygon(List<Vector2I> positions, Color color)
             {
                 this.color = color;
-                this.positions = positions;
+                this.positions = new Vector2[positions.Count];
+                
+                for (int i = 0; i < positions.Count; i++)
+                {
+                    this.positions[i] = positions[i];
+                }
 
-                foreach (var pos in positions)
+                foreach (var pos in this.positions)
                 {
                     if (pos.X < leftmostX)
-                        leftmostX = pos.X;
+                        leftmostX = (int)pos.X;
 
                     if (pos.Y < topmostY)
-                        topmostY = pos.Y;
+                        topmostY = (int)pos.Y;
 
                     if (pos.X > rightMostX)
-                        rightMostX = pos.X;
+                        rightMostX = (int)pos.X;
 
                     if (pos.Y > bottomMostY)
-                        bottomMostY = pos.Y;
+                        bottomMostY = (int)pos.Y;
                 }
                 topLeft = new Vector2I(leftmostX, topmostY);
                 bottomRight = new Vector2I(rightMostX, bottomMostY);
@@ -67,73 +72,46 @@ namespace IngameScript
                 position = topLeft + size / 2;
 
                 canvas = new Canvas(Math.Abs(size.X) + 10, Math.Abs(size.Y) + 10);
+
+                size.X = Math.Abs(size.X);
+                size.Y = Math.Abs(size.Y);
             }
 
             public IEnumerator<bool> Generate()
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
-
-                for (int i = 0; i < positions.Count - 1; i++)
-                {
-                    yield return true;
-
-                    var currentPos = positions[i] - topLeft;
-                    var nextpos = positions[i + 1] - topLeft;
-
-                    Line line = new Line(currentPos, nextpos, color);
-                    canvas.MergeCanvas(line.Draw(), line.Position);
-
-                    lines.Add(line);
-                }
-
-                yield return true;
-
-                var lastPos = positions[positions.Count - 1] - topLeft;
-                var firstPos = positions[0] - topLeft;
-
-                Line finalLine = new Line(lastPos, firstPos, color);
-                canvas.MergeCanvas(finalLine.Draw(), finalLine.Position);
-
-                yield return true;
+                int truecount = 0;
 
                 for (int y = 0; y < size.Y; y++)
                 {
-                    ScanLine(pixel, y);
+                    for (int x = 0; x < size.X; x++)
+                    {
+                        if (PointInPolygon(x, y))
+                        {
+                            canvas.PaintPixel(pixel, x, y);
+                            truecount++;
+                        }
+                    }
+                    yield return true;
                 }
             }
 
-            public Canvas Draw()
-            {
-                return canvas;
-            }
 
-            private void ScanLine(char color, int y)
+            bool PointInPolygon(float x, float y)
             {
 
-
-
-            }
-
-            List<int> intersections = new List<int>();
-            private List<int> GetIntersections(int y)
-            {
-                intersections.Clear();
-
-                return intersections;
-            }
-
-            private bool PointInPolygon(int x, int y)
-            {
-
-                int i, j = positions.Count - 1;
+                int i, j = positions.Length - 1;
                 bool oddNodes = false;
 
-                for (i = 0; i < positions.Count; i++)
+                for (i = 0; i < positions.Length; i++)
                 {
-                    if (positions[i].Y < y && positions[j].Y >= y
-                    || positions[j].Y < y && positions[i].Y >= y)
+                    var posI = positions[i] - topLeft;
+                    var posJ = positions[j] - topLeft;
+
+                    if (posI.Y < y && positions[j].Y >= y
+                    || posJ.Y < y && posI.Y >= y)
                     {
-                        if (positions[i].X + (y - positions[i].Y) / (positions[j].Y - positions[i].Y) * (positions[j].X - positions[i].X) < x)
+                        if (posI.X + (y - posI.Y) / (posJ.Y - posI.Y) * (posJ.X - posI.X) < x)
                         {
                             oddNodes = !oddNodes;
                         }
@@ -142,6 +120,11 @@ namespace IngameScript
                 }
 
                 return oddNodes;
+            }
+
+            public Canvas Draw()
+            {
+                return canvas;
             }
         }
 	}
