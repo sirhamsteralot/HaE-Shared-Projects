@@ -168,12 +168,13 @@ namespace IngameScript
                     var character = new ResizableCharacter(posChar, 'E', Color.White, 1);
                     drawingLib.AddElement(character);
                     break;
+
                 case "HelloWorld":
                     int ranTX0 = random.Next(0, 174);
                     int ranTY0 = random.Next(0, 174);
                     Vector2I posT = new Vector2I(ranTX0, ranTY0);
 
-                    var text = new Text(posT, "HELLO WORLD", Color.White, 1);
+                    var text = new Text(posT, "HELLO_WORLD?", Color.White, 1);
                     drawingLib.AddElement(text);
                     break;
             }

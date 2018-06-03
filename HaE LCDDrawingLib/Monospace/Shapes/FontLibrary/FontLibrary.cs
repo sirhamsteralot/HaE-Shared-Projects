@@ -84,6 +84,30 @@ namespace IngameScript
                     #region SpecialChars
                     case ' ':
                         return SpecialChars.Space;
+                    case '!':
+                        return SpecialChars.ExclamationMark;
+                    case '?':
+                        return SpecialChars.QuestionMark;
+                    case ',':
+                        return SpecialChars.Comma;
+                    case ';':
+                        return SpecialChars.DotComma;
+                    case '.':
+                        return SpecialChars.Dot;
+                    case ':':
+                        return SpecialChars.DoubleDot;
+                    case '_':
+                        return SpecialChars.UnderScore;
+                    case '/':
+                        return SpecialChars.Slash;
+                    case '\\':
+                        return SpecialChars.BackSlash;
+                    case '(':
+                        return SpecialChars.OpeningParenthesis;
+                    case ')':
+                        return SpecialChars.ClosingParenthesis;
+                    case '%':
+                        return SpecialChars.Percent;
                     #endregion
                     default:
                         return SpecialChars.UnknownChar;
