@@ -27,6 +27,8 @@ namespace IngameScript
             private Canvas mainCanvas;
             private HashSet<IMonoElement> elements = new HashSet<IMonoElement>();
 
+            private HashSet<IRuntimeUpdatable> runtimeUpdatableElements = new HashSet<IRuntimeUpdatable>();
+
             private Scheduler internalRenderScheduler = new Scheduler();
             private Color backgroundColor;
 
@@ -46,6 +48,8 @@ namespace IngameScript
             {
                 elements.Add(element);
                 internalRenderScheduler.AddTask(RenderAddedElement(element), onRenderDone);
+
+                AddRuntimeUpdatable(element as IRuntimeUpdatable);
             }
 
             public void AddElement(IComplexElement element)
@@ -54,6 +58,16 @@ namespace IngameScript
 
                 elements.Add(element);
                 internalRenderScheduler.AddTask(RenderAddedElement(element), onRenderDone);
+
+                AddRuntimeUpdatable(element as IRuntimeUpdatable);
+            }
+
+            private void AddRuntimeUpdatable(IRuntimeUpdatable runtimeUpdatable)
+            {
+                if (runtimeUpdatable == null)
+                    return;
+
+                runtimeUpdatableElements.Add(runtimeUpdatable);
             }
 
             public void SetBackground(Color color)
@@ -61,7 +75,15 @@ namespace IngameScript
                 internalRenderScheduler.AddTask(mainCanvas.SetBackGround(color, 100), onRenderDone);
             }
 
-            public IEnumerator<bool> ReGenerate()
+            public void Clear()
+            {
+                elements.Clear();
+                runtimeUpdatableElements.Clear();
+
+                SetBackground(backgroundColor);
+            }
+
+            public IEnumerator<bool> Generate()
             {
                 Task renderBackgroundTask = new Task(mainCanvas.SetBackGround(backgroundColor, 100));
                 while (renderBackgroundTask.MoveNext())
@@ -73,10 +95,26 @@ namespace IngameScript
                 {
                     yield return true;
 
-                    Task internalRenderTask = new Task(mainCanvas.MergeCanvas(element.Draw(), element.Position, 100));
+                    Task internalRenderTask = null;
+
+                    var complexElement = element as IComplexElement;
+                    
+                    if (complexElement != null)
+                    {
+
+                        internalRenderTask = new Task(complexElement.Generate());
+
+                        while (internalRenderTask.MoveNext())
+                            yield return true;
+                    }
+
+
+                    internalRenderTask = new Task(mainCanvas.MergeCanvas(element.Draw(), element.Position, 100));
                     while (internalRenderTask.MoveNext())
                         yield return true;
                 }
+
+                onRenderDone?.Invoke();
             }
 
             public IEnumerator<bool> RenderAddedElement(IMonoElement element)
@@ -94,6 +132,29 @@ namespace IngameScript
             public void RunRenderer()
             {
                 internalRenderScheduler.Main();
+
+                CheckUpdatableComponents();
+            }
+
+            private void CheckUpdatableComponents()
+            {
+                bool redraw = false;
+
+                foreach (var runtimeUpdatable in runtimeUpdatableElements)
+                {
+                    if (runtimeUpdatable.Updated)
+                    {
+                        redraw = true;
+
+                        P.Echo($"Element updated!\nregenerating...");
+
+                        runtimeUpdatable.Updated = false;
+                        break;
+                    }
+                }
+
+                if (redraw)
+                    internalRenderScheduler.AddTask(Generate());
             }
         }
 	}

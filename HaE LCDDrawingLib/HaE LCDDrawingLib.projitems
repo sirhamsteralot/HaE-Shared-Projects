@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Canvas.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\IComplexElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\IMonoElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Monospace\IRuntimeUpdatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\MonospaceUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Ellipse.cs" />

@@ -79,7 +79,7 @@ namespace IngameScript
             scheduler = new Scheduler();
             drawingLib = new MonospaceDrawingLib(175,175, Color.Black);
             drawingLib.onRenderDone = OnRenderDone;
-            drawingLib.AddRenderTask(drawingLib.ReGenerate(), OnRenderDone);
+            drawingLib.AddRenderTask(drawingLib.Generate(), OnRenderDone);
 
         }
 
@@ -94,6 +94,7 @@ namespace IngameScript
             LCDLibTests(argument, updateSource);
         }
 
+        Text text = null;
         public void LCDLibTests(string argument, UpdateType updateSource)
         {
             switch (argument)
@@ -174,18 +175,28 @@ namespace IngameScript
                     int ranTY0 = random.Next(0, 174);
                     Vector2I posT = new Vector2I(ranTX0, ranTY0);
 
-                    var text = new Text(posT, "0123456789", Color.White, 1);
+                    text = new Text(posT, "0123456789", Color.White, 1);
                     drawingLib.AddElement(text);
+                    break;
+
+                case "UpdateText":
+                    if (text != null)
+                    {
+                        text.UpdateValue("Hello World!");
+                    }
+                    break;
+
+                case "Clear":
+                    drawingLib.Clear();
                     break;
             }
 
             drawingLib.RunRenderer();
+            Echo($"Tasks Left in Queue: {drawingLib.RenderQueueSize}");
         }
 
         public void OnRenderDone()
         {
-            Echo("Rendering...");
-            Echo($"Left in Queue: {drawingLib.RenderQueueSize}");
             monoOut.WritePublicText(drawingLib.Draw());
         }
 
