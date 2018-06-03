@@ -174,7 +174,7 @@ namespace IngameScript
                     int ranTY0 = random.Next(0, 174);
                     Vector2I posT = new Vector2I(ranTX0, ranTY0);
 
-                    var text = new Text(posT, "HELLO_WORLD?", Color.White, 1);
+                    var text = new Text(posT, "0123456789", Color.White, 1);
                     drawingLib.AddElement(text);
                     break;
             }

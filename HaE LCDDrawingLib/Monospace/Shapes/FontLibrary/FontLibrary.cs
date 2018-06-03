@@ -109,6 +109,28 @@ namespace IngameScript
                     case '%':
                         return SpecialChars.Percent;
                     #endregion
+                    #region Numbers
+                    case '0':
+                        return Numbers.N0;
+                    case '1':
+                        return Numbers.N1;
+                    case '2':
+                        return Numbers.N2;
+                    case '3':
+                        return Numbers.N3;
+                    case '4':
+                        return Numbers.N4;
+                    case '5':
+                        return Numbers.N5;
+                    case '6':
+                        return Numbers.N6;
+                    case '7':
+                        return Numbers.N7;
+                    case '8':
+                        return Numbers.N8;
+                    case '9':
+                        return Numbers.N9;
+                    #endregion
                     default:
                         return SpecialChars.UnknownChar;
                 }
