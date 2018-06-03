@@ -99,7 +99,7 @@ namespace IngameScript
 
                     var complexElement = element as IComplexElement;
                     
-                    if (complexElement != null)
+                    if (complexElement != null && complexElement is IRuntimeUpdatable)
                     {
 
                         internalRenderTask = new Task(complexElement.Generate());

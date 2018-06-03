@@ -27,9 +27,11 @@ namespace IngameScript
             public bool Updated { get; set; }
 
             private Vector2I position;
+            private Vector2I basePosition;
             private Color color;
             private Canvas canvas;
 
+            private bool alignTopLeft = false;
             private string text;
 
             private int size;
@@ -37,12 +39,13 @@ namespace IngameScript
 
             private int charSizeStepX;
 
-            public Text(Vector2I position, string text, Color color, int size)
+            public Text(Vector2I position, string text, Color color, int size, bool alignTopLeft = false)
             {
-                this.position = position;
+                this.basePosition = position;
                 this.color = color;
                 this.size = size;
                 this.text = text.ToUpper();
+                this.alignTopLeft = alignTopLeft;
             }
 
             public void UpdateValue(string text)
@@ -62,7 +65,14 @@ namespace IngameScript
 
                 canvas = new Canvas(sizeX, sizeY);
 
-
+                if (alignTopLeft)
+                {
+                    position = new Vector2I(basePosition.X + sizeX / 2, basePosition.Y + sizeY / 2);
+                }
+                else
+                {
+                    position = basePosition;
+                }
 
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();

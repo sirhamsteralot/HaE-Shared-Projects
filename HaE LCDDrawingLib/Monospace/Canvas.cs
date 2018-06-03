@@ -58,13 +58,12 @@ namespace IngameScript
             public void SetBackGround(Color color)
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
+                canvas.Clear();
 
-                for (int x = 0; x < sizeX; x++)
+                for (int y = 0; y < sizeY; y++)
                 {
-                    for (int y = 0; y < sizeY; y++)
-                    {
-                        PaintPixel(pixel, x, y);
-                    }
+                    canvas.Append(pixel, sizeX);
+                    canvas.Append('\n');
                 }
             }
 
@@ -72,19 +71,18 @@ namespace IngameScript
             {
                 char pixel = MonospaceUtils.GetColorChar(color);
                 int counter = 0;
+                canvas.Clear();
 
                 for (int x = 0; x < sizeX; x++)
                 {
-                    for (int y = 0; y < sizeY; y++)
+                    if (counter++ >= maxPerRun)
                     {
-                        if (counter++ >= maxPerRun)
-                        {
-                            counter = 0;
-                            yield return true;
-                        }
-
-                        PaintPixel(pixel, x, y);
+                        counter = 0;
+                        yield return true;
                     }
+
+                    canvas.Append(pixel, sizeX);
+                    canvas.Append('\n');
                 }
             }
 

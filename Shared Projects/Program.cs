@@ -161,6 +161,18 @@ namespace IngameScript
                     drawingLib.AddElement(polygon);
                     break;
 
+                case "DrawTriangle":
+                    positions = new List<Vector2I>();
+
+                    positions.Add(new Vector2I(100, 1));
+                    positions.Add(new Vector2I(100, 100));
+                    positions.Add(new Vector2I(200, 150));
+
+                    polygon = new FillPolygon(positions, Color.White);
+                    drawingLib.AddElement(polygon);
+
+                    break;
+
                 case "DrawCharacter":
                     int ranCX0 = random.Next(0, 174);
                     int ranCY0 = random.Next(0, 174);
@@ -175,7 +187,7 @@ namespace IngameScript
                     int ranTY0 = random.Next(0, 174);
                     Vector2I posT = new Vector2I(ranTX0, ranTY0);
 
-                    text = new Text(posT, "0123456789", Color.White, 1);
+                    text = new Text(posT, "0123456789", Color.White, 1, true);
                     drawingLib.AddElement(text);
                     break;
 
