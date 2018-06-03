@@ -30,12 +30,12 @@ namespace IngameScript
                 this.runsPerTick = runsPerTick;
             }
 
-            public void Main()
+            public bool Main()
             {
                 for (int i = 0; i < runsPerTick; i++)
                 {
                     if (Queue.Count == 0)
-                        return;
+                        return false;
 
                     var current = Queue.First();
 
@@ -45,6 +45,8 @@ namespace IngameScript
                         current.Callback?.Invoke();
                     }
                 }
+
+                return true;
             }
 
             public void AddTask(Task enumerator)
