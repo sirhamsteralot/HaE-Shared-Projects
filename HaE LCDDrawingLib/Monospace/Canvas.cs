@@ -116,7 +116,7 @@ namespace IngameScript
                     for (int y = 0; y < bitMapDimY; y++)
                     {
                         if (bitmap[x, y])
-                            PaintPixel(pixel, topLeftX + x, topLeftY + y);
+                            PaintPixel(pixel,  topLeftY + y, topLeftX + x); //Flip or it will be rotated 90 degrees
                     }
                 }
             }

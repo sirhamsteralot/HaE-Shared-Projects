@@ -28,20 +28,27 @@ namespace IngameScript
             private Color color;
             private Canvas canvas;
 
-            private float size;
+            private int size;
             private bool[,] characterbitMap;
 
-            public ResizableCharacter(Vector2I position, char character, Color color, float size)
+            private Vector2I center;
+
+            public ResizableCharacter(Vector2I position, char character, Color color, int size)
             {
                 this.position = position;
 
-                int sizeX = (int)(FontLibrary.CHARWIDTH * size) + 1;
-                int sizeY = (int)(FontLibrary.CHARHEIGHT * size) + 1;
+                int sizeX = (FontLibrary.CHARWIDTH * size) + 2;
+                int sizeY = (FontLibrary.CHARHEIGHT * size) + 2;
+
+                center = new Vector2I((FontLibrary.CHARWIDTH * size) / 2 + 1, (FontLibrary.CHARHEIGHT * size) / 2);
 
                 this.color = color;
                 this.size = size;
 
                 canvas = new Canvas(sizeX, sizeY);
+
+                characterbitMap = FontLibrary.GetCharacterBitmap(character);
+
                 Generate();
             }
 
@@ -50,7 +57,7 @@ namespace IngameScript
                 char pixel = MonospaceUtils.GetColorChar(color);
                 canvas.Clear();
 
-
+                canvas.PaintBitMap(characterbitMap, color, center.X, center.Y);
             }
 
             public Canvas Draw()

@@ -38,8 +38,8 @@ namespace IngameScript
 
         Random random = new Random();
 
-        EntityTracking_Module entityTracking;
-        Autopilot_Module autopilotModule;
+        //EntityTracking_Module entityTracking;
+        //Autopilot_Module autopilotModule;
         MonospaceDrawingLib drawingLib;
         Scheduler scheduler;
 
@@ -159,6 +159,23 @@ namespace IngameScript
                     var polygon = new FillPolygon(positions, Color.White);
                     drawingLib.AddElement(polygon);
                     break;
+
+                case "DrawCharacter":
+                    int ranCX0 = random.Next(0, 174);
+                    int ranCY0 = random.Next(0, 174);
+                    Vector2I posChar = new Vector2I(ranCX0, ranCY0);
+
+                    var character = new ResizableCharacter(posChar, 'E', Color.White, 1);
+                    drawingLib.AddElement(character);
+                    break;
+                case "HelloWorld":
+                    int ranTX0 = random.Next(0, 174);
+                    int ranTY0 = random.Next(0, 174);
+                    Vector2I posT = new Vector2I(ranTX0, ranTY0);
+
+                    var text = new Text(posT, "HELLO WORLD", Color.White, 1);
+                    drawingLib.AddElement(text);
+                    break;
             }
 
             drawingLib.RunRenderer();
@@ -172,43 +189,43 @@ namespace IngameScript
         }
 
         bool started = false;
-        public void AutopilotTests(string argument, UpdateType updateSource)
-        {
-            switch (argument)
-            {
-                case "Toggle":
-                    started = !started;
-                    break;
-            }
+        //public void AutopilotTests(string argument, UpdateType updateSource)
+        //{
+        //    switch (argument)
+        //    {
+        //        case "Toggle":
+        //            started = !started;
+        //            break;
+        //    }
 
-            if (started)
-            {
-                Vector3D position = Vector3D.Zero;
-                Vector3D direction = position - reference.GetPosition();
-                direction.Normalize();
+        //    if (started)
+        //    {
+        //        Vector3D position = Vector3D.Zero;
+        //        Vector3D direction = position - reference.GetPosition();
+        //        direction.Normalize();
 
-                autopilotModule.TravelToPosition(position, true);
-            }
-        }
+        //        autopilotModule.TravelToPosition(position, true);
+        //    }
+        //}
 
-        public void EntityTrackingTests(string argument, UpdateType updateSource)
-        {
-            entityTracking.Poll();
+        //public void EntityTrackingTests(string argument, UpdateType updateSource)
+        //{
+        //    entityTracking.Poll();
 
-            switch (argument)
-            {
-                case "Paint":
-                    entityTracking.PaintTarget(PAINTINGDISTANCE);
-                    break;
-            }
+        //    switch (argument)
+        //    {
+        //        case "Paint":
+        //            entityTracking.PaintTarget(PAINTINGDISTANCE);
+        //            break;
+        //    }
 
-            if ((updateSource & UpdateType.Update100) != 0)
-            {
-                entityTracking.TimeoutEntities(TimeSpan.FromSeconds(5));
-            }
+        //    if ((updateSource & UpdateType.Update100) != 0)
+        //    {
+        //        entityTracking.TimeoutEntities(TimeSpan.FromSeconds(5));
+        //    }
 
-            monoOut.WritePublicText(entityTracking.known_Objects.ToString());
-        }
+        //    monoOut.WritePublicText(entityTracking.known_Objects.ToString());
+        //}
 
         //MAIN/CONSTR
         public Program()
