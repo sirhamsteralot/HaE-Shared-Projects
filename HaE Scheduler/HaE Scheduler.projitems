@@ -9,6 +9,7 @@
     <Import_RootNamespace>HaE_Scheduler</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AdvancedScheduler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scheduler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Task.cs" />
   </ItemGroup>

@@ -18,21 +18,27 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Scheduler
+        public class AdvancedScheduler : Scheduler
 	    {
-            public int runsPerTick;
-            public int QueueCount => queue.Count;
+            int instructionMargin;
+            int maxInstructionCount;
 
-            protected Queue<Task> queue = new Queue<Task>();
+            IMyGridProgramRuntimeInfo runtimeInfo;
 
-            public Scheduler(int runsPerTick = 1)
+
+	        public AdvancedScheduler(int maxRunsPerTick, int instructionMargin, IMyGridProgramRuntimeInfo runtimeInfo) : base(maxRunsPerTick)
             {
-                this.runsPerTick = runsPerTick;
+                this.instructionMargin = instructionMargin;
+                this.runtimeInfo = runtimeInfo;
+
+                maxInstructionCount = runtimeInfo.MaxInstructionCount - instructionMargin;
             }
 
-            public bool Main()
+            public new bool Main()
             {
-                for (int i = 0; i < runsPerTick; i++)
+                int runcounter = 0;
+
+                while(runtimeInfo.CurrentInstructionCount <= maxInstructionCount && runcounter++ < runsPerTick)
                 {
                     if (queue.Count == 0)
                         return false;
@@ -48,23 +54,6 @@ namespace IngameScript
 
                 return true;
             }
-
-            public void AddTask(Task enumerator)
-            {
-                queue.Enqueue(enumerator);
-            }
-
-            public void AddTask(IEnumerator<bool> enumerator)
-            {
-                var task = new Task(enumerator);
-                AddTask(task);
-            }
-
-            public void AddTask(IEnumerator<bool> enumerator, Action callback)
-            {
-                var task = new Task(enumerator, callback);
-                AddTask(task);
-            }
-        }
+	    }
 	}
 }
