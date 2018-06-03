@@ -81,6 +81,10 @@ namespace IngameScript
                     case 'Z':
                         return Alphabetic.Z;
                     #endregion
+                    #region SpecialChars
+                    case ' ':
+                        return SpecialChars.Space;
+                    #endregion
                     default:
                         return SpecialChars.UnknownChar;
                 }

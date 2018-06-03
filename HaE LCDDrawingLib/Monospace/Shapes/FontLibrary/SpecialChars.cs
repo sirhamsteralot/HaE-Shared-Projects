@@ -32,6 +32,17 @@ namespace IngameScript
                     { true, false, false, false, true },
                     { true, true, true, true, true }
                 };
+
+                public static bool[,] Space = new bool[CHARHEIGHT, CHARWIDTH]
+                {
+                    { false, false, false, false, false },
+                    { false, false, false, false, false },
+                    { false, false, false, false, false },
+                    { false, false, false, false, false },
+                    { false, false, false, false, false },
+                    { false, false, false, false, false },
+                    { false, false, false, false, false }
+                };
             }
         }
 	}
