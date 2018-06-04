@@ -40,6 +40,16 @@ namespace IngameScript
                 Tick((int)Math.Round(timeSinceLastRun / TICKTIME));
             }
 
+            public void Tick(TimeSpan timeSinceLastRun)
+            {
+                Tick(timeSinceLastRun.TotalMilliseconds);
+            }
+
+            public void Tick(IMyGridProgramRuntimeInfo runtime)
+            {
+                Tick(runtime.TimeSinceLastRun);
+            }
+
             private TimeSpan TicksToTime()
             {
                 return TimeSpan.FromMilliseconds(TicksToMillis());
