@@ -42,7 +42,7 @@ namespace IngameScript
 
             public void Tick(TimeSpan timeSinceLastRun)
             {
-                Tick(timeSinceLastRun.TotalMilliseconds);
+                Tick(timeSinceLastRun.TotalMilliseconds / TICKTIME);
             }
 
             public void Tick(IMyGridProgramRuntimeInfo runtime)
