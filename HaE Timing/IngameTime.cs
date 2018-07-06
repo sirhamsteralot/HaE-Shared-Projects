@@ -20,7 +20,7 @@ namespace IngameScript
 	{
         public class IngameTime
 	    {
-            private const double TICKTIME = 16.666666667;
+            private const double TICKTIME = 16.0;
             private long tickCounter;
 
             public TimeSpan Time { get { return TicksToTime(); }}
