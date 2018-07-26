@@ -12,4 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)QuarticTargeting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulatedTargeting.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
+  </ItemGroup>
 </Project>

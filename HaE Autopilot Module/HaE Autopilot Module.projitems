@@ -14,7 +14,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Autopilot Module.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CollisionAvoidance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GyroUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PID Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThrustUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
   </ItemGroup>
 </Project>

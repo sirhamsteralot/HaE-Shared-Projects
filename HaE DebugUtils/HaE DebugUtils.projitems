@@ -13,4 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DebugUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Profiler.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
+  </ItemGroup>
 </Project>

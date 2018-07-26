@@ -32,4 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\ResizableCharacter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Monospace\Shapes\Text.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
+  </ItemGroup>
 </Project>

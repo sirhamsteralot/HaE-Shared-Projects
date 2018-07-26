@@ -19,4 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TrackingUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TurretTracking.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
+  </ItemGroup>
 </Project>

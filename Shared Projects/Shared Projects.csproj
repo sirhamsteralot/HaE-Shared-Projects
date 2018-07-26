@@ -90,10 +90,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MDKUtilities">
-      <HintPath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\5cocn4ad.3cr\MDKUtilities.dll</HintPath>
+      <HintPath>C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\0ulfhm1o.5ss\MDKUtilities.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Analyzer Include="C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\5cocn4ad.3cr\Analyzers\MDKAnalyzer.dll" />
+    <Analyzer Include="C:\Users\SirHa\AppData\Local\Microsoft\VisualStudio\15.0_d85c6838\Extensions\0ulfhm1o.5ss\Analyzers\MDKAnalyzer.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MDK\Bootstrapper.cs" />
@@ -105,18 +105,18 @@
     <AdditionalFiles Include="thumb.png" />
     <AdditionalFiles Include="MDK\whitelist.cache" />
   </ItemGroup>
-  <Import Project="..\HaE Autopilot Module\HaE Autopilot Module.projitems" Label="Shared" />
-  <Import Project="..\VectorUtils\VectorUtils.projitems" Label="Shared" />
-  <Import Project="..\EntityTrackingModule\EntityTrackingModule.projitems" Label="Shared" />
-  <Import Project="..\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems" Label="Shared" />
-  <Import Project="..\HaE DebugUtils\HaE DebugUtils.projitems" Label="Shared" />
-  <Import Project="..\HaE Comms\HaE Comms.projitems" Label="Shared" />
-  <Import Project="..\HaE Serialization\HaE Serialization.projitems" Label="Shared" />
-  <Import Project="..\HaE Timing\HaE Timing.projitems" Label="Shared" />
-  <Import Project="..\HaE Visualization\HaE Visualization.projitems" Label="Shared" />
-  <Import Project="..\HaE Targeting\HaE Targeting.projitems" Label="Shared" />
   <Import Project="..\HaE LCDDrawingLib\HaE LCDDrawingLib.projitems" Label="Shared" />
   <Import Project="..\HaE Scheduler\HaE Scheduler.projitems" Label="Shared" />
+  <Import Project="..\HaE Autopilot Module\HaE Autopilot Module.projitems" Label="Shared" />
+  <Import Project="..\HaE Comms\HaE Comms.projitems" Label="Shared" />
+  <Import Project="..\HaE DebugUtils\HaE DebugUtils.projitems" Label="Shared" />
+  <Import Project="..\EntityTrackingModule\EntityTrackingModule.projitems" Label="Shared" />
+  <Import Project="..\HaE GridTerminalSystemUtils\HaE GridTerminalSystemUtils.projitems" Label="Shared" />
+  <Import Project="..\VectorUtils\VectorUtils.projitems" Label="Shared" />
+  <Import Project="..\HaE Serialization\HaE Serialization.projitems" Label="Shared" />
+  <Import Project="..\HaE Targeting\HaE Targeting.projitems" Label="Shared" />
+  <Import Project="..\HaE Timing\HaE Timing.projitems" Label="Shared" />
+  <Import Project="..\HaE Visualization\HaE Visualization.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="mdk\mdk.options" DestinationFolder="$(TargetDir)\mdk" />

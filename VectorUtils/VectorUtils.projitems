@@ -11,7 +11,11 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)MathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MathUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PID Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
   </ItemGroup>
 </Project>

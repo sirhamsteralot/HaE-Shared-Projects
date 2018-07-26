@@ -13,4 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scheduler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Task.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Readme.md" />
+  </ItemGroup>
 </Project>
