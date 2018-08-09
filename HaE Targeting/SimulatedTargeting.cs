@@ -26,7 +26,7 @@ namespace IngameScript
             public double negationFactor = 0.01;
 
             /*=========| Neccesairy data |=========*/
-            private IMyRemoteControl reference;
+            private IMyShipController reference;
             private Vector3D targetPosition;
 
             private double projectileSpeed;
@@ -54,7 +54,7 @@ namespace IngameScript
             bool succes = false;
 
 
-            public Simulated_Targeting(IMyRemoteControl reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
+            public Simulated_Targeting(IMyShipController reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
                                     Vector3D projectileForward, double projectileAcceleration,
                                     MyDetectedEntityInfo planet, double surfaceGravity, double projectileSpeed = 100,
                                     double projectileSpeedCap = 104.75, double planetRadiusOverride = 0)
@@ -83,7 +83,7 @@ namespace IngameScript
                 Coroutine = TargetingRoutine();
             }
 
-            public Simulated_Targeting( IMyRemoteControl reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
+            public Simulated_Targeting( IMyShipController reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
                                         Vector3D projectileForward, double projectileAcceleration, double projectileSpeed = 100,
                                         double projectileSpeedCap = 104.75)
             {
