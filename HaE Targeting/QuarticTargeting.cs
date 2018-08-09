@@ -18,19 +18,24 @@ namespace IngameScript
 {
 	partial class Program
 	{
-        public class Quartic
+        public class QuarticTargeting
 	    {
             private Vector3D _projectileVelocity;
             private Vector3D _myVelocity;
             private Vector3D _myPosition;
-            private Vector3D _myDirection;
             private double _projectileMaxVelocity;
 
-            public Quartic(Vector3D MyVelocity, Vector3D MyPosition, Vector3D MyDirection, double ProjectileVelocity)
+            public QuarticTargeting(Vector3D MyVelocity, Vector3D MyPosition, double ProjectileVelocity)
             {
                 _myVelocity = MyVelocity;
                 _myPosition = MyPosition;
-                _myDirection = Vector3D.Normalize(MyDirection);
+                _projectileMaxVelocity = ProjectileVelocity;
+            }
+
+            public void UpdateValues(Vector3D MyVelocity, Vector3D MyPosition, double ProjectileVelocity)
+            {
+                _myVelocity = MyVelocity;
+                _myPosition = MyPosition;
                 _projectileMaxVelocity = ProjectileVelocity;
             }
 
