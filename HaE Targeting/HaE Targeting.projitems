@@ -9,6 +9,8 @@
     <Import_RootNamespace>HaE_Targeting</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AdvancedSimTargeting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GridCannonTargeting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuarticTargeting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulatedTargeting.cs" />
   </ItemGroup>
