@@ -17,10 +17,10 @@ using VRageMath;
 
 namespace IngameScript
 {
-	partial class Program
-	{
+    partial class Program
+    {
         public class GridCannonTargeting
-	    {
+        {
             /*==========| Events |==========*/
             Action<Vector3D> onRoutineFinish;
             Action onRoutineFail;
@@ -48,12 +48,13 @@ namespace IngameScript
                     else
                         onRoutineFail?.Invoke();
                     yield return false;
-                } else                                                                                  // This may take a while...
+                }
+                else                                                                                  // This may take a while...
                 {
                     // TODO: Simtargeting
                 }
             }
 
         }
-	}
+    }
 }
