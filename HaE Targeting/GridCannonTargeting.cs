@@ -25,22 +25,27 @@ namespace IngameScript
             Action<Vector3D> onRoutineFinish;
             Action onRoutineFail;
 
+            /*==========| blocks |==========*/
+            public IMyCubeBlock topBlock;
+            public IMyShipController control;
+
 
             /*==========| Fields |==========*/
             public Vector3D targetingDirection;
             public MyDetectedEntityInfo target;
             public double maxProjectileVel;
 
-            public IMyShipController control;
+            public bool keepRunning = true;
+            
 
             QuarticTargeting quartic;
-            Simulated_Targeting simTargeting;
+            AdvancedSimTargeting simTargeting;
 
             public IEnumerator<bool> TargetingRoutine()
             {
                 if (control.GetNaturalGravity() == Vector3D.Zero && control.GetShipSpeed() < 2)         // Easy
                 {
-                    quartic = new QuarticTargeting(control.GetShipVelocities().LinearVelocity, control.GetPosition(), maxProjectileVel);
+                    quartic = new QuarticTargeting(control.GetVelocityVector(), control.GetPosition(), maxProjectileVel);
 
                     Vector3D? result = quartic.CalculateTrajectory(target);
                     if (result.HasValue)
@@ -51,10 +56,49 @@ namespace IngameScript
                 }
                 else                                                                                  // This may take a while...
                 {
-                    // TODO: Simtargeting
+                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(3600, maxProjectileVel, 1, Vector3D.Zero, topBlock.GetPosition(), control.GetVelocityVector());
+                    simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 10, true, maxProjectileVel);
+                    simTargeting.onSimComplete += OnSimComplete;
+                    simTargeting.onSimFail += OnSimFail;
+
+                    yield return true;
+
+                    while (keepRunning)
+                    {
+                        simTargeting.RunSimulation();
+                        yield return true;
+                    }
                 }
             }
 
+            public void End()
+            {
+                keepRunning = false;
+            }
+
+            public void UpdateTrackingInfo(MyDetectedEntityInfo newInfo)
+            {
+                if (simTargeting == null)
+                    return;
+
+                target = newInfo;
+                simTargeting.UpdateRollingSimulation(topBlock.GetPosition(), control.GetVelocityVector(), target);
+            }
+
+            public Vector3D GetTargetingDirection()
+            {
+                return targetingDirection;
+            }
+
+            private void OnSimComplete(Vector3D dir)
+            {
+                targetingDirection = dir;
+            }
+
+            private void OnSimFail()
+            {
+                targetingDirection = Vector3D.Zero;
+            }
         }
     }
 }

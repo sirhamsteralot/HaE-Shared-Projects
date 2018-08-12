@@ -21,7 +21,8 @@ namespace IngameScript
 	{
         public class AdvancedSimTargeting
 	    {
-            public double Tolerance;
+            public double tolerance;
+
             public Vector3D firingDirection;
             public bool continuous;
             public Action<Vector3D> onSimComplete;
@@ -41,6 +42,19 @@ namespace IngameScript
 
             private Scheduler scheduler;
 
+            public AdvancedSimTargeting(ProjectileInfo projectileInfo, MyDetectedEntityInfo target, IMyShipController control, double tolerance, bool continuous, double speedlimit = 100, double timescale = 1)
+            {
+                this.tolerance = tolerance;
+                this.continuous = continuous;
+                this.target = target;
+                this.speedlimit = speedlimit;
+                this.timescale = timescale;
+                this.control = control;
+
+                this.projectileInfo = projectileInfo;
+                targetInfo = new TargetInfo(target, timescale);
+            }
+
             public bool Tick()
             {
                 if (scheduler == null)
@@ -54,7 +68,7 @@ namespace IngameScript
 
                 scheduler.Main();
 
-                if (closest < Tolerance)
+                if (closest < tolerance)
                 {
                     return true;
                 }
@@ -94,7 +108,10 @@ namespace IngameScript
                     projectileInfo.ResetSimulation();
                     targetInfo.RollingSimulation(target);
 
-                    onSimComplete?.Invoke(firingDirection);
+                    if (difference.LengthSquared() < (tolerance * tolerance))
+                        onSimComplete?.Invoke(firingDirection);
+                    else
+                        onSimFail?.Invoke();
                 }
             }
 
