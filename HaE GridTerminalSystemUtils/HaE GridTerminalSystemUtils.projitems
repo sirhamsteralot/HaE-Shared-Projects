@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)GridTerminalSystemUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GTSExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Readme.md" />
