@@ -109,7 +109,7 @@ namespace IngameScript
                     targetInfo.RollingSimulation(target);
 
                     if (difference.LengthSquared() < (tolerance * tolerance))
-                        onSimComplete?.Invoke(firingDirection);
+                        onSimComplete?.Invoke(closestProjPos);
                     else
                         onSimFail?.Invoke();
                 }

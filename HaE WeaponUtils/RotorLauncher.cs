@@ -24,10 +24,31 @@ namespace IngameScript
             public List<IMyMotorStator> propellingRotors = new List<IMyMotorStator>();
             public IMyMotorStator launchRotor;
 
-            public RotorLauncher(List<IMyMotorStator> propellingRotors, IMyMotorStator launchRotor)
+            private Scheduler internalScheduler = new Scheduler();
+
+            public RotorLauncher(IMyMotorStator baseRotor)
             {
-                this.propellingRotors = propellingRotors;
-                this.launchRotor = launchRotor;
+                var currentrotor = baseRotor;
+
+                while(currentrotor != null)
+                {
+                    propellingRotors.Add(currentrotor);
+                    
+                    currentrotor = Selector(currentrotor.TopGrid);
+                }
+
+                launchRotor = propellingRotors[propellingRotors.Count - 1];
+            }
+
+            public void Tick()
+            {
+                internalScheduler.Main();
+            }
+
+            public void Salvo(int amount)
+            {
+                for (int i = 0; i < amount; i++)
+                    internalScheduler.AddTask(LaunchSequence());
             }
 
             public IEnumerator<bool> LaunchSequence()
@@ -50,6 +71,35 @@ namespace IngameScript
                 yield return true;
 
                 launchRotor.Detach();
+
+                yield return true;
+            }
+
+            public static IMyMotorStator Selector(IMyCubeGrid cubegrid)
+            {
+                if (cubegrid == null)
+                    return null;
+
+                for (int x = cubegrid.Min.X; x <= cubegrid.Max.X; x++)
+                {
+                    for (int y = cubegrid.Min.Y; y <= cubegrid.Max.Y; y++)
+                    {
+                        for (int z = cubegrid.Min.Z; z <= cubegrid.Max.Z; z++)
+                        {
+                            var vec = new Vector3I(x, y, z);
+                            var slimblock = cubegrid.GetCubeBlock(vec);
+                            IMyMotorStator stator = null;
+
+                            if (slimblock != null)
+                                stator = slimblock.FatBlock as IMyMotorStator;
+
+                            if (stator != null)
+                                return stator;
+                        }
+                    }
+                }
+
+                return null;
             }
         }
     }

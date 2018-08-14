@@ -26,20 +26,46 @@ namespace IngameScript
             Action onRoutineFail;
 
             /*==========| blocks |==========*/
-            public IMyCubeBlock topBlock;
             public IMyShipController control;
 
 
             /*==========| Fields |==========*/
-            public Vector3D targetingDirection;
-            public MyDetectedEntityInfo target;
-            public double maxProjectileVel;
+            private MyDetectedEntityInfo target;
+            private double maxProjectileVel;
 
-            public bool keepRunning = true;
+            private bool keepRunning = true;
             
 
             QuarticTargeting quartic;
             AdvancedSimTargeting simTargeting;
+            Scheduler internalScheduler;
+
+            public GridCannonTargeting(IMyShipController control, double maxProjectileVel, bool keepRunning)
+            {
+                this.control = control;
+                this.maxProjectileVel = maxProjectileVel;
+                this.keepRunning = keepRunning;
+
+                internalScheduler = new Scheduler();
+            }
+
+            public void NewTarget(MyDetectedEntityInfo target)
+            {
+                if (this.target.EntityId == target.EntityId)
+                {
+                    UpdateTrackingInfo(target);
+
+                    internalScheduler.AddTask(TargetingRoutine());
+                    return;
+                }
+
+                this.target = target;
+            }
+
+            public void Tick()
+            {
+                internalScheduler.Main();
+            }
 
             public IEnumerator<bool> TargetingRoutine()
             {
@@ -56,9 +82,9 @@ namespace IngameScript
                 }
                 else                                                                                  // This may take a while...
                 {
-                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(3600, maxProjectileVel, 1, Vector3D.Zero, topBlock.GetPosition(), control.GetVelocityVector());
+                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(3600, maxProjectileVel, 1, Vector3D.Zero, control.GetPosition(), control.GetVelocityVector());
                     simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 10, true, maxProjectileVel);
-                    simTargeting.onSimComplete += OnSimComplete;
+                    simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
 
                     yield return true;
@@ -82,22 +108,17 @@ namespace IngameScript
                     return;
 
                 target = newInfo;
-                simTargeting.UpdateRollingSimulation(topBlock.GetPosition(), control.GetVelocityVector(), target);
+                simTargeting.UpdateRollingSimulation(control.GetPosition(), control.GetVelocityVector(), target);
             }
 
-            public Vector3D GetTargetingDirection()
+            private void OnSimValid(Vector3D closestPoint)
             {
-                return targetingDirection;
-            }
-
-            private void OnSimComplete(Vector3D dir)
-            {
-                targetingDirection = dir;
+                onRoutineFinish?.Invoke(closestPoint);
             }
 
             private void OnSimFail()
             {
-                targetingDirection = Vector3D.Zero;
+                onRoutineFail?.Invoke();
             }
         }
     }

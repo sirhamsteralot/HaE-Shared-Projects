@@ -146,8 +146,6 @@ namespace IngameScript
                     ticks++;
                     yield return true;
                 }
-
-
             }
 
             void InitTargetingRoutine()
