@@ -37,7 +37,7 @@ namespace IngameScript
 
             private long ticks;
             private double timescale;
-            private double closest = double.MaxValue;
+            private double simulationClosest = double.MaxValue;
             private Vector3D closestProjPos;
 
             private Scheduler scheduler;
@@ -68,9 +68,9 @@ namespace IngameScript
 
                 scheduler.Main();
 
-                P.Echo($"closest: {closest} tolerance: {tolerance}");
+                //P.Echo($"closest: {closest} tolerance: {tolerance}");
 
-                if (closest < tolerance)
+                if (simulationClosest < tolerance)
                 {
                     return true;
                 }
@@ -102,6 +102,8 @@ namespace IngameScript
 
                     } while (ContinueSimulation());
 
+                    P.Echo("sim finished!");
+
                     Vector3D difference = targetInfo.currentLocation - closestProjPos;
                     Vector3D missDir = difference;
                     double differenceMagnitude = missDir.Normalize();
@@ -109,12 +111,13 @@ namespace IngameScript
                     double PFactor = MyMath.Clamp((float)differenceMagnitude, 0.001f, 1f);
                     Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor * 0.001;
 
-                    firingDirection -= rejected;
+                    firingDirection += rejected;
                     firingDirection.Normalize();
 
 
                     projectileInfo.ResetSimulation();
                     targetInfo.RollingSimulation(target);
+                    simulationClosest = double.MaxValue;
 
                     if (differenceMagnitude < tolerance)
                         onSimComplete?.Invoke(control.GetPosition() + firingDirection * 1000);
@@ -142,9 +145,10 @@ namespace IngameScript
             private bool ContinueSimulation()
             {
                 double newClosest = Vector3D.DistanceSquared(projectileInfo.currentLocation, targetInfo.currentLocation);
-                if (newClosest < closest && projectileInfo.currentTicks < projectileInfo.lifeTimeTicks)
+
+                if (newClosest < simulationClosest && projectileInfo.currentTicks < projectileInfo.lifeTimeTicks)
                 {
-                    closest = newClosest;
+                    simulationClosest = newClosest;
                     closestProjPos = projectileInfo.currentLocation;
                     return true;
                 }
