@@ -22,11 +22,11 @@ namespace IngameScript
         public class GridCannonTargeting
         {
             /*==========| Events |==========*/
-            Action<Vector3D> onRoutineFinish;
-            Action onRoutineFail;
+            public Action<Vector3D> onRoutineFinish;
+            public Action onRoutineFail;
 
             /*==========| blocks |==========*/
-            public IMyShipController control;
+            private IMyShipController control;
 
 
             /*==========| Fields |==========*/
@@ -75,14 +75,19 @@ namespace IngameScript
 
                     Vector3D? result = quartic.CalculateTrajectory(target);
                     if (result.HasValue)
+                    {
                         onRoutineFinish?.Invoke(result.Value);
+                    }
                     else
+                    {
                         onRoutineFail?.Invoke();
+                    }
+                        
                     yield return false;
                 }
                 else                                                                                  // This may take a while...
                 {
-                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(3600, maxProjectileVel, 1, Vector3D.Zero, control.GetPosition(), control.GetVelocityVector());
+                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(480, maxProjectileVel, 1, Vector3D.Zero, control.GetPosition(), control.GetVelocityVector());
                     simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 10, true, maxProjectileVel);
                     simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
@@ -91,7 +96,7 @@ namespace IngameScript
 
                     while (keepRunning)
                     {
-                        simTargeting.RunSimulation();
+                        simTargeting.Tick();
                         yield return true;
                     }
                 }

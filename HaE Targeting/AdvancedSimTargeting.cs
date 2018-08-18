@@ -37,7 +37,7 @@ namespace IngameScript
 
             private long ticks;
             private double timescale;
-            private double closest;
+            private double closest = double.MaxValue;
             private Vector3D closestProjPos;
 
             private Scheduler scheduler;
@@ -67,6 +67,8 @@ namespace IngameScript
                 }
 
                 scheduler.Main();
+
+                P.Echo($"closest: {closest} tolerance: {tolerance}");
 
                 if (closest < tolerance)
                 {
@@ -98,20 +100,28 @@ namespace IngameScript
                         projectileInfo.Tick();
                         targetInfo.Tick();
 
-
                     } while (ContinueSimulation());
 
                     Vector3D difference = targetInfo.currentLocation - closestProjPos;
+                    Vector3D missDir = difference;
+                    double differenceMagnitude = missDir.Normalize();
 
-                    firingDirection = Vector3D.Normalize(closestProjPos + difference);
+                    double PFactor = MyMath.Clamp((float)differenceMagnitude, 0.001f, 1f);
+                    Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor * 0.001;
+
+                    firingDirection -= rejected;
+                    firingDirection.Normalize();
+
 
                     projectileInfo.ResetSimulation();
                     targetInfo.RollingSimulation(target);
 
-                    if (difference.LengthSquared() < (tolerance * tolerance))
-                        onSimComplete?.Invoke(closestProjPos);
+                    if (differenceMagnitude < tolerance)
+                        onSimComplete?.Invoke(control.GetPosition() + firingDirection * 1000);
                     else
                         onSimFail?.Invoke();
+
+                    yield return true;
                 }
             }
 
@@ -132,7 +142,6 @@ namespace IngameScript
             private bool ContinueSimulation()
             {
                 double newClosest = Vector3D.DistanceSquared(projectileInfo.currentLocation, targetInfo.currentLocation);
-
                 if (newClosest < closest && projectileInfo.currentTicks < projectileInfo.lifeTimeTicks)
                 {
                     closest = newClosest;
@@ -184,6 +193,7 @@ namespace IngameScript
                 {
                     currentLocation = startLocation;
                     currentVelocity = startVelocity;
+                    currentTicks = 0;
                 }
 
                 public void RollingSimulation(Vector3D startVel, Vector3D currentPos)
