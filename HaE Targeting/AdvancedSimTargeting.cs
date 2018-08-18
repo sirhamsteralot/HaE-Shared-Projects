@@ -41,6 +41,7 @@ namespace IngameScript
             private Vector3D closestProjPos;
 
             private Scheduler scheduler;
+            
 
             public AdvancedSimTargeting(ProjectileInfo projectileInfo, MyDetectedEntityInfo target, IMyShipController control, double tolerance, bool continuous, double speedlimit = 100, double timescale = 1)
             {
@@ -53,6 +54,7 @@ namespace IngameScript
 
                 this.projectileInfo = projectileInfo;
                 targetInfo = new TargetInfo(target, timescale);
+                
             }
 
             public bool Tick()
@@ -97,12 +99,10 @@ namespace IngameScript
 
                     do
                     {
-                        projectileInfo.Tick();
+                        projectileInfo.Tick(target, targetInfo);
                         targetInfo.Tick();
 
                     } while (ContinueSimulation());
-
-                    P.Echo("sim finished!");
 
                     Vector3D difference = targetInfo.currentLocation - closestProjPos;
                     Vector3D missDir = difference;
@@ -170,6 +170,8 @@ namespace IngameScript
                 public Vector3D startLocation;
                 public Vector3D startVelocity;
 
+                private QuarticTargeting quartic;
+
                 public ProjectileInfo(long lifeTimeTicks, double projectileMaxSpeed, double timescale, Vector3D projectileAcceleration, Vector3D currentLocation, Vector3D currentVelocity)
                 {
                     this.lifeTimeTicks = lifeTimeTicks;
@@ -178,6 +180,8 @@ namespace IngameScript
                     this.projectileAcceleration = projectileAcceleration;
                     this.currentLocation = currentLocation;
                     this.currentVelocity = currentVelocity;
+
+                    quartic = new QuarticTargeting(currentVelocity, currentLocation);
                 }
 
                 public void LaunchProjectile(Vector3D launchVelocity)
@@ -185,7 +189,7 @@ namespace IngameScript
                     currentVelocity = Vector3D.ClampToSphere((startVelocity * timescale) + (launchVelocity * timescale), projectileMaxSpeed * timescale);
                 }
 
-                public void Tick()
+                public void Tick(MyDetectedEntityInfo target, TargetInfo targetInfo)
                 {
                     currentVelocity = Vector3D.ClampToSphere(currentVelocity + projectileAcceleration * timescale, projectileMaxSpeed * timescale);
                     currentLocation = currentLocation += currentVelocity;

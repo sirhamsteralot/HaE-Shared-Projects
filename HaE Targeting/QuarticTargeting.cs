@@ -32,11 +32,25 @@ namespace IngameScript
                 _projectileMaxVelocity = ProjectileVelocity;
             }
 
+            public QuarticTargeting(Vector3D MyVelocity, Vector3D MyPosition)
+            {
+                _myVelocity = MyVelocity;
+                _myPosition = MyPosition;
+                _projectileMaxVelocity = _myVelocity.Normalize();
+            }
+
             public void UpdateValues(Vector3D MyVelocity, Vector3D MyPosition, double ProjectileVelocity)
             {
                 _myVelocity = MyVelocity;
                 _myPosition = MyPosition;
                 _projectileMaxVelocity = ProjectileVelocity;
+            }
+
+            public void UpdateValues(Vector3D MyVelocity, Vector3D MyPosition)
+            {
+                _myVelocity = MyVelocity;
+                _myPosition = MyPosition;
+                _projectileMaxVelocity = _myVelocity.Normalize();
             }
 
 

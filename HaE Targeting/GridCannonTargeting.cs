@@ -87,8 +87,9 @@ namespace IngameScript
                 }
                 else                                                                                  // This may take a while...
                 {
-                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(480, maxProjectileVel, 1, Vector3D.Zero, control.GetPosition(), control.GetVelocityVector());
-                    simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 10, true, maxProjectileVel);
+                    double timescale = 0.1;
+                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(4800, maxProjectileVel, timescale, Vector3D.Zero, control.GetPosition(), control.GetVelocityVector());
+                    simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 10, true, maxProjectileVel, timescale);
                     simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
 
