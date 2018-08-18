@@ -27,6 +27,7 @@ namespace IngameScript
             public bool continuous;
             public Action<Vector3D> onSimComplete;
             public Action onSimFail;
+            public double allTimeClosest;
 
             private IMyShipController control;
             private MyDetectedEntityInfo target;
@@ -61,7 +62,7 @@ namespace IngameScript
             {
                 if (scheduler == null)
                 {
-                    scheduler = new Scheduler(10);
+                    scheduler = new Scheduler(1);
                 }
                 if (scheduler.QueueCount == 0)
                 {
@@ -84,6 +85,8 @@ namespace IngameScript
             {
                 projectileInfo.RollingSimulation(projectileVel, projectilPos);
                 target = freshEntityDetection;
+
+                allTimeClosest = double.MaxValue;
             }
 
             public IEnumerator<bool> RunSimulation()
@@ -99,7 +102,7 @@ namespace IngameScript
 
                     do
                     {
-                        projectileInfo.Tick(target, targetInfo);
+                        projectileInfo.Tick(target, targetInfo, control.GetNaturalGravity());
                         targetInfo.Tick();
 
                     } while (ContinueSimulation());
@@ -109,7 +112,14 @@ namespace IngameScript
                     double differenceMagnitude = missDir.Normalize();
 
                     double PFactor = MyMath.Clamp((float)differenceMagnitude, 0.001f, 1f);
-                    Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor * 0.001;
+                    
+                    Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor*0.001;
+
+                    P.Echo($"Adjustment: \n{rejected.Length()}");
+                    P.Echo($"Difference: \n{differenceMagnitude}");
+
+                    P.Echo("");
+                    P.Echo($"targetVel: {target.Velocity.Length()}");
 
                     firingDirection += rejected;
                     firingDirection.Normalize();
@@ -119,7 +129,7 @@ namespace IngameScript
                     targetInfo.RollingSimulation(target);
                     simulationClosest = double.MaxValue;
 
-                    if (differenceMagnitude < tolerance)
+                    if (rejected.Length() < 0.000175)
                         onSimComplete?.Invoke(control.GetPosition() + firingDirection * 1000);
                     else
                         onSimFail?.Invoke();
@@ -150,6 +160,10 @@ namespace IngameScript
                 {
                     simulationClosest = newClosest;
                     closestProjPos = projectileInfo.currentLocation;
+
+                    if (newClosest < allTimeClosest)
+                        allTimeClosest = newClosest;
+
                     return true;
                 }
 
@@ -163,7 +177,6 @@ namespace IngameScript
 
                 public double timescale;
                 public double projectileMaxSpeed;
-                public Vector3D projectileAcceleration;
                 public Vector3D currentLocation;
                 public Vector3D currentVelocity;
 
@@ -172,12 +185,11 @@ namespace IngameScript
 
                 private QuarticTargeting quartic;
 
-                public ProjectileInfo(long lifeTimeTicks, double projectileMaxSpeed, double timescale, Vector3D projectileAcceleration, Vector3D currentLocation, Vector3D currentVelocity)
+                public ProjectileInfo(long lifeTimeTicks, double projectileMaxSpeed, double timescale, Vector3D currentLocation, Vector3D currentVelocity)
                 {
                     this.lifeTimeTicks = lifeTimeTicks;
                     this.timescale = timescale;
                     this.projectileMaxSpeed = projectileMaxSpeed;
-                    this.projectileAcceleration = projectileAcceleration;
                     this.currentLocation = currentLocation;
                     this.currentVelocity = currentVelocity;
 
@@ -189,10 +201,11 @@ namespace IngameScript
                     currentVelocity = Vector3D.ClampToSphere((startVelocity * timescale) + (launchVelocity * timescale), projectileMaxSpeed * timescale);
                 }
 
-                public void Tick(MyDetectedEntityInfo target, TargetInfo targetInfo)
+                public void Tick(MyDetectedEntityInfo target, TargetInfo targetInfo, Vector3D acceleration)
                 {
-                    currentVelocity = Vector3D.ClampToSphere(currentVelocity + projectileAcceleration * timescale, projectileMaxSpeed * timescale);
                     currentLocation = currentLocation += currentVelocity;
+                    Vector3D accel = acceleration * timescale;
+                    currentVelocity = Vector3D.ClampToSphere(currentVelocity + accel, projectileMaxSpeed * timescale);
 
                     currentTicks++;
                 }
