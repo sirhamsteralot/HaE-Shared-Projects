@@ -24,10 +24,18 @@ namespace IngameScript
             public List<IMyMotorStator> propellingRotors = new List<IMyMotorStator>();
             public IMyMotorStator launchRotor;
 
+            IngameTime ingameTime;
+            TimeSpan previousFire;
+            private double timeoutS;
+
+
             private Scheduler internalScheduler = new Scheduler();
 
-            public RotorLauncher(IMyMotorStator baseRotor)
+            public RotorLauncher(IMyMotorStator baseRotor, IngameTime ingameTime, double timeoutS)
             {
+                this.ingameTime = ingameTime;
+                this.timeoutS = timeoutS;
+
                 var currentrotor = baseRotor;
 
                 while(currentrotor != null)
@@ -47,8 +55,13 @@ namespace IngameScript
 
             public void Salvo(int amount)
             {
+                if ((ingameTime.Time - previousFire).TotalSeconds < timeoutS)
+                    return;
+
                 for (int i = 0; i < amount; i++)
                     internalScheduler.AddTask(LaunchSequence());
+
+                previousFire = ingameTime.Time;
             }
 
             public IEnumerator<bool> LaunchSequence()
