@@ -44,7 +44,7 @@ namespace IngameScript
             private Scheduler scheduler;
             
 
-            public AdvancedSimTargeting(ProjectileInfo projectileInfo, MyDetectedEntityInfo target, IMyShipController control, double tolerance, bool continuous, double speedlimit = 100, double timescale = 1)
+            public AdvancedSimTargeting(ProjectileInfo projectileInfo, MyDetectedEntityInfo target, IMyShipController control, IngameTime ingameTime, double tolerance, bool continuous, double speedlimit = 100, double timescale = 1)
             {
                 this.tolerance = tolerance;
                 this.continuous = continuous;

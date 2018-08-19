@@ -24,6 +24,7 @@ namespace IngameScript
             /*==========| Events |==========*/
             public Action<Vector3D> onRoutineFinish;
             public Action onRoutineFail;
+            public Action onTargetTimeout;
 
             /*==========| blocks |==========*/
             private IMyShipController control;
@@ -32,6 +33,7 @@ namespace IngameScript
             /*==========| Fields |==========*/
             private MyDetectedEntityInfo target;
             private double maxProjectileVel;
+            private TimeSpan targetAquiredTime;
 
             private bool keepRunning = true;
             
@@ -39,18 +41,23 @@ namespace IngameScript
             public QuarticTargeting quartic;
             public AdvancedSimTargeting simTargeting;
             Scheduler internalScheduler;
+            IngameTime ingameTime;
 
-            public GridCannonTargeting(IMyShipController control, double maxProjectileVel, bool keepRunning)
+            public GridCannonTargeting(IMyShipController control, IngameTime ingameTime, double maxProjectileVel)
             {
                 this.control = control;
                 this.maxProjectileVel = maxProjectileVel;
-                this.keepRunning = keepRunning;
+                this.keepRunning = true;
+                this.ingameTime = ingameTime;
 
                 internalScheduler = new Scheduler();
             }
 
             public void NewTarget(MyDetectedEntityInfo target)
             {
+                targetAquiredTime = ingameTime.Time;
+                keepRunning = true;
+
                 if (this.target.EntityId == target.EntityId)
                 {
                     UpdateTrackingInfo(target);
@@ -58,13 +65,16 @@ namespace IngameScript
                     internalScheduler.AddTask(TargetingRoutine());
                     return;
                 }
-
+                
                 this.target = target;
             }
 
             public void Tick()
             {
                 internalScheduler.Main();
+
+                if ((ingameTime.Time - targetAquiredTime).TotalSeconds > 5)
+                    End();
             }
 
             public IEnumerator<bool> TargetingRoutine()
@@ -89,7 +99,7 @@ namespace IngameScript
                 {
                     double timescale = 0.1;
                     var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(480, maxProjectileVel, timescale, control.GetPosition(), control.GetVelocityVector());
-                    simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, 25, true, maxProjectileVel, timescale);
+                    simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, ingameTime, 25, true, maxProjectileVel, timescale);
                     simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
 
@@ -125,6 +135,11 @@ namespace IngameScript
             private void OnSimFail()
             {
                 onRoutineFail?.Invoke();
+            }
+
+            private void OnTargetTimeout()
+            {
+                onTargetTimeout?.Invoke();
             }
         }
     }
