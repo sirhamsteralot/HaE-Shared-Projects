@@ -55,6 +55,7 @@ namespace IngameScript
 
                 this.projectileInfo = projectileInfo;
                 targetInfo = new TargetInfo(target, timescale);
+                tolerance = target.BoundingBox.Size.Length();
                 
             }
 
@@ -87,6 +88,7 @@ namespace IngameScript
                 target = freshEntityDetection;
 
                 allTimeClosest = double.MaxValue;
+                tolerance = target.BoundingBox.Size.Length();
             }
 
             public IEnumerator<bool> RunSimulation()
@@ -102,7 +104,7 @@ namespace IngameScript
 
                     do
                     {
-                        projectileInfo.Tick(target, targetInfo, control.GetNaturalGravity());
+                        projectileInfo.Tick(target, targetInfo, control.GetNaturalGravity() * 0.1);
                         targetInfo.Tick();
 
                     } while (ContinueSimulation());
@@ -113,7 +115,7 @@ namespace IngameScript
 
                     double PFactor = MyMath.Clamp((float)differenceMagnitude, 0.001f, 1f);
                     
-                    Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor*0.001;
+                    Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor * 0.01;
 
                     P.Echo($"Adjustment: \n{rejected.Length()}");
                     P.Echo($"Difference: \n{differenceMagnitude}");
@@ -129,8 +131,8 @@ namespace IngameScript
                     targetInfo.RollingSimulation(target);
                     simulationClosest = double.MaxValue;
 
-                    if (rejected.Length() < 0.000175)
-                        onSimComplete?.Invoke(control.GetPosition() + firingDirection * 1000);
+                    if (rejected.Length() < 0.0000175 * tolerance || difference.LengthSquared() < tolerance * tolerance)
+                        onSimComplete?.Invoke(control.GetPosition() + firingDirection * 100);
                     else
                         onSimFail?.Invoke();
 

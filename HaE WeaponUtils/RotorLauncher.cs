@@ -55,7 +55,7 @@ namespace IngameScript
 
             public void Salvo(int amount)
             {
-                if ((ingameTime.Time - previousFire).TotalSeconds < timeoutS)
+                if ((ingameTime.Time - previousFire).TotalSeconds < timeoutS || internalScheduler.QueueCount > 0)
                     return;
 
                 for (int i = 0; i < amount; i++)
