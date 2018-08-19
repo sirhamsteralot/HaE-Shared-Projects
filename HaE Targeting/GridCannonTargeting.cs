@@ -116,6 +116,7 @@ namespace IngameScript
             public void End()
             {
                 keepRunning = false;
+                OnSimFail();
             }
 
             public void UpdateTrackingInfo(MyDetectedEntityInfo newInfo)
