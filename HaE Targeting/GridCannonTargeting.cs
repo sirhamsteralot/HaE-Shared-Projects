@@ -24,7 +24,7 @@ namespace IngameScript
             /*==========| Events |==========*/
             public Action<Vector3D> onRoutineFinish;
             public Action onRoutineFail;
-            public Action onTargetTimeout;
+
 
             /*==========| blocks |==========*/
             private IMyShipController control;
@@ -34,6 +34,7 @@ namespace IngameScript
             private MyDetectedEntityInfo target;
             private double maxProjectileVel;
             private TimeSpan targetAquiredTime;
+            private double targetTimeout;
 
             private bool keepRunning = true;
             
@@ -43,8 +44,9 @@ namespace IngameScript
             Scheduler internalScheduler;
             IngameTime ingameTime;
 
-            public GridCannonTargeting(IMyShipController control, IngameTime ingameTime, double maxProjectileVel)
+            public GridCannonTargeting(IMyShipController control, IngameTime ingameTime, double maxProjectileVel, double targetTimeout = 2.5)
             {
+                this.targetTimeout = targetTimeout;
                 this.control = control;
                 this.maxProjectileVel = maxProjectileVel;
                 this.keepRunning = true;
@@ -73,7 +75,7 @@ namespace IngameScript
             {
                 internalScheduler.Main();
 
-                if ((ingameTime.Time - targetAquiredTime).TotalSeconds > 5)
+                if ((ingameTime.Time - targetAquiredTime).TotalSeconds > targetTimeout)
                     End();
             }
 
@@ -136,11 +138,6 @@ namespace IngameScript
             private void OnSimFail()
             {
                 onRoutineFail?.Invoke();
-            }
-
-            private void OnTargetTimeout()
-            {
-                onTargetTimeout?.Invoke();
             }
         }
     }
