@@ -24,6 +24,7 @@ namespace IngameScript
             /*==========| Events |==========*/
             public Action<Vector3D> onRoutineFinish;
             public Action onRoutineFail;
+            public Action onTargetTimeout;
 
 
             /*==========| blocks |==========*/
@@ -31,6 +32,8 @@ namespace IngameScript
 
 
             /*==========| Fields |==========*/
+            public bool restMode = true;
+
             private MyDetectedEntityInfo target;
             private double maxProjectileVel;
             private TimeSpan targetAquiredTime;
@@ -59,12 +62,14 @@ namespace IngameScript
             {
                 targetAquiredTime = ingameTime.Time;
                 keepRunning = true;
+                restMode = false;
 
                 if (this.target.EntityId == target.EntityId)
                 {
                     UpdateTrackingInfo(target);
 
-                    internalScheduler.AddTask(TargetingRoutine());
+                    if (internalScheduler.QueueCount < 1)
+                        internalScheduler.AddTask(TargetingRoutine());
                     return;
                 }
                 
@@ -73,13 +78,20 @@ namespace IngameScript
 
             public void Tick()
             {
+                if (restMode)
+                    return;
+
                 internalScheduler.Main();
 
                 if ((ingameTime.Time - targetAquiredTime).TotalSeconds > targetTimeout)
-                    End();
+                {
+                    OnTargetTimeout();
+                    restMode = true;
+                }
+                
             }
 
-            public IEnumerator<bool> TargetingRoutine()
+            private IEnumerator<bool> TargetingRoutine()
             {
                 if (control.GetNaturalGravity() == Vector3D.Zero && control.GetShipSpeed() < 2)         // Easy
                 {
@@ -100,7 +112,7 @@ namespace IngameScript
                 else                                                                                  // This may take a while...
                 {
                     double timescale = 0.1;
-                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(480, maxProjectileVel, timescale, control.GetPosition(), control.GetVelocityVector());
+                    var projectileInfo = new AdvancedSimTargeting.ProjectileInfo(200, maxProjectileVel, timescale, control.GetPosition(), control.GetVelocityVector());
                     simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, ingameTime, 25, true, maxProjectileVel, timescale);
                     simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
@@ -115,19 +127,19 @@ namespace IngameScript
                 }
             }
 
-            public void End()
-            {
-                keepRunning = false;
-                OnSimFail();
-            }
-
-            public void UpdateTrackingInfo(MyDetectedEntityInfo newInfo)
+            private void UpdateTrackingInfo(MyDetectedEntityInfo newInfo)
             {
                 if (simTargeting == null)
                     return;
 
                 target = newInfo;
                 simTargeting.UpdateRollingSimulation(control.GetPosition(), control.GetVelocityVector(), target);
+            }
+
+            private void OnTargetTimeout()
+            {
+                keepRunning = false;
+                onTargetTimeout?.Invoke();
             }
 
             private void OnSimValid(Vector3D closestPoint)

@@ -20,7 +20,6 @@ namespace IngameScript
 	{
         public class QuarticTargeting
 	    {
-            private Vector3D _projectileVelocity;
             private Vector3D _myVelocity;
             private Vector3D _myPosition;
             private double _projectileMaxVelocity;

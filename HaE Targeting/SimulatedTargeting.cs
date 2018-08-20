@@ -50,10 +50,6 @@ namespace IngameScript
             private BoundingSphereD planetSphere;
 
 
-            /*===========| Output Data |===========*/
-            bool succes = false;
-
-
             public Simulated_Targeting(IMyShipController reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
                                     Vector3D projectileForward, double projectileAcceleration,
                                     MyDetectedEntityInfo planet, double surfaceGravity, double projectileSpeed = 100,

@@ -36,7 +36,6 @@ namespace IngameScript
             private ProjectileInfo projectileInfo;
             private TargetInfo targetInfo;
 
-            private long ticks;
             private double timescale;
             private double simulationClosest = double.MaxValue;
             private Vector3D closestProjPos;
@@ -63,7 +62,7 @@ namespace IngameScript
             {
                 if (scheduler == null)
                 {
-                    scheduler = new Scheduler(1);
+                    scheduler = new Scheduler();
                 }
                 if (scheduler.QueueCount == 0)
                 {
@@ -71,8 +70,6 @@ namespace IngameScript
                 }
 
                 scheduler.Main();
-
-                //P.Echo($"closest: {closest} tolerance: {tolerance}");
 
                 if (simulationClosest < tolerance)
                 {
@@ -117,12 +114,6 @@ namespace IngameScript
                     
                     Vector3D rejected = Vector3D.Reject(missDir, firingDirection) * PFactor * 0.01;
 
-                    P.Echo($"Adjustment: \n{rejected.Length()}");
-                    P.Echo($"Difference: \n{differenceMagnitude}");
-
-                    P.Echo("");
-                    P.Echo($"targetVel: {target.Velocity.Length()}");
-
                     firingDirection += rejected;
                     firingDirection.Normalize();
 
@@ -149,7 +140,6 @@ namespace IngameScript
                 if (targetInfo == null)
                     return false;
 
-                ticks = 0;
                 firingDirection = Vector3D.Normalize(target.Position - projectileInfo.currentLocation);
                 return true;
             }
