@@ -123,7 +123,7 @@ namespace IngameScript
                     simulationClosest = double.MaxValue;
 
                     if (rejected.Length() < 0.0000175 * tolerance || difference.LengthSquared() < tolerance * tolerance)
-                        onSimComplete?.Invoke(control.GetPosition() + firingDirection * 100);
+                        onSimComplete?.Invoke(control.GetPosition() + firingDirection * 1000);
                     else
                         onSimFail?.Invoke();
 
