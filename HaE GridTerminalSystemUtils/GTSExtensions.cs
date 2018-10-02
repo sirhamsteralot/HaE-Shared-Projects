@@ -22,6 +22,34 @@ namespace IngameScript
     // https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
     static class GTSExtensions
 	{
+        /*============|   IMyCubeGrid  |============*/
+        public static void GetCubesOfType<T>(this IMyCubeGrid cubegrid, List<T> cubeList) where T : class
+        {
+            for (int x = cubegrid.Min.X; x <= cubegrid.Max.X; x++)
+            {
+                for (int y = cubegrid.Min.Y; y <= cubegrid.Max.Y; y++)
+                {
+                    for (int z = cubegrid.Min.Z; z <= cubegrid.Max.Z; z++)
+                    {
+                        var vec = new Vector3I(x, y, z);
+                        var slimblock = cubegrid.GetCubeBlock(vec);
+                        T stator = null;
+
+                        if (slimblock != null)
+                            stator = slimblock.FatBlock as T;
+
+                        if (stator != null)
+                            cubeList.Add(stator);
+                    }
+                }
+            }
+        }
+
+        public static void GetCubesOfType<T>(this IMyCubeGrid cubegrid, IMyGridTerminalSystem GTS, List<T> cubeList) where T : class, IMyTerminalBlock
+        {
+            GTS.GetBlocksOfType(cubeList, x => x.CubeGrid.EntityId == cubegrid.EntityId);
+        }
+
         /*============| ShipController |============*/
         public static Vector3D GetVelocityVector(this IMyShipController controller)
         {
