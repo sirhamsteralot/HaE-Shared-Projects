@@ -21,13 +21,13 @@ namespace IngameScript
 	{
         public class RotorUtils
 	    {
-            public static void PointRotorAtVector(IMyMotorStator rotor, Vector3D targetDirection, Vector3D currentDirection)
+            public static void PointRotorAtVector(IMyMotorStator rotor, Vector3D targetDirection, Vector3D currentDirection, float multiplier = 1)
             {
                 Vector3D angle = Vector3D.Cross(currentDirection, targetDirection);
                 // Project onto rotor
                 double err = angle.Dot(rotor.WorldMatrix.Up);
 
-                rotor.TargetVelocityRad = (float)err;
+                rotor.TargetVelocityRad = (float)err * multiplier;
             }
         }
 	}
