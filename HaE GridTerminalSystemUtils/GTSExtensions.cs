@@ -55,5 +55,11 @@ namespace IngameScript
         {
             return controller.GetShipVelocities().LinearVelocity;
         }
+
+        /*=============| IMyCubeBlock |=============*/
+        public static bool IsClosed(this IMyCubeBlock block)
+        {
+            return block.WorldMatrix == MatrixD.Identity;
+        }
     }
 }
