@@ -34,6 +34,9 @@ namespace IngameScript
                 List<IMyTerminalBlock> blocks = new List<IMyTerminalBlock>();
                 GridTerminalSystem.SearchBlocksOfName(name, blocks, x => x.CubeGrid == Me.CubeGrid);
 
+                if (blocks.Count < 1)
+                    return null;
+
                 return (blocks[0]);
             }
 
