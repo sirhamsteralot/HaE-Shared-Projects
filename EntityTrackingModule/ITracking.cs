@@ -23,7 +23,7 @@ namespace IngameScript
             Action<HaE_Entity> OnEntityDetected { get; set; }
 
             void Poll();
-            void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings);
 
         }
 	}
