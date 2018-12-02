@@ -33,7 +33,7 @@ namespace IngameScript
                 this.cameras = cameras;
             }
 
-            public void SetRefExpSettings(HashSet<IMyLargeTurretBase> turrets, IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            public void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
             {
                 this.refExpSettings = refExpSettings;
                 this.Me = Me;

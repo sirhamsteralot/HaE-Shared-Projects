@@ -36,6 +36,8 @@ namespace IngameScript
                 {
                     tracker.SetRefExpSettings(GTS.Me, supportRefExp);
                 }
+
+                targetPainter.SetRefExpSettings(GTS.Me, supportRefExp);
             }
 
             public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
