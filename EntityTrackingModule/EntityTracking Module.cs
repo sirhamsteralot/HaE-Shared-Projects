@@ -26,7 +26,7 @@ namespace IngameScript
             public Action<HaE_Entity> onEntityDetected;
 
             private TargetPainter targetPainter;
-            private refExpSettings supportRefExp = refExpSettings.Lidar | refExpSettings.Turret | refExpSettings.Sensor;
+            private refExpSettings supportRefExp = refExpDefault;
 
             public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera, refExpSettings supportRefExp) : this(GTS, reference, targetingCamera)
             {
