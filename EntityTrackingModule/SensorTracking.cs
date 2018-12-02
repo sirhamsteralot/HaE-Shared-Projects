@@ -25,6 +25,9 @@ namespace IngameScript
             private HashSet<IMySensorBlock> sensors;
             private const HaE_Entity.TrackingType TRACKINGTYPE = HaE_Entity.TrackingType.Sensor;
 
+            private EntityTracking_Module.refExpSettings refExpSettings = EntityTracking_Module.refExpDefault;
+            private IMyProgrammableBlock Me;
+
             public SensorTracking(HashSet<IMySensorBlock> sensors)
             {
                 this.sensors = sensors;
@@ -35,6 +38,12 @@ namespace IngameScript
                 this.sensors = new HashSet<IMySensorBlock>(sensors);
             }
 
+            public void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            {
+                this.refExpSettings = refExpSettings;
+                this.Me = Me;
+            }
+
             List<MyDetectedEntityInfo> templist = new List<MyDetectedEntityInfo>();
             public void Poll()
             {
@@ -42,19 +51,22 @@ namespace IngameScript
                 {
                     if (sensor.Enabled)
                     {
-                        templist.Clear();
-                        sensor.DetectedEntities(templist);
-
-                        foreach (var entity in templist)
+                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || sensor.IsSameConstructAs(Me))
                         {
-                            HaE_Entity detectedEntity = new HaE_Entity
-                            {
-                                entityInfo = entity,
-                                LastDetectionTime = DateTime.Now,
-                                trackingType = TRACKINGTYPE
-                            };
+                            templist.Clear();
+                            sensor.DetectedEntities(templist);
 
-                            OnEntityDetected?.Invoke(detectedEntity);
+                            foreach (var entity in templist)
+                            {
+                                HaE_Entity detectedEntity = new HaE_Entity
+                                {
+                                    entityInfo = entity,
+                                    LastDetectionTime = DateTime.Now,
+                                    trackingType = TRACKINGTYPE
+                                };
+
+                                OnEntityDetected?.Invoke(detectedEntity);
+                            }
                         }
                     }
                 }

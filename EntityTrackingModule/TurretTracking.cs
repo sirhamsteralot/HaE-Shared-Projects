@@ -25,13 +25,22 @@ namespace IngameScript
             private HashSet<IMyLargeTurretBase> turrets;
             private const HaE_Entity.TrackingType TRACKINGTYPE = HaE_Entity.TrackingType.Turret;
 
+            private EntityTracking_Module.refExpSettings refExpSettings = EntityTracking_Module.refExpDefault;
+            private IMyProgrammableBlock Me;
+
             public TurretTracking(HashSet<IMyLargeTurretBase> turrets)
             {
                 this.turrets = turrets;
             }
-            public TurretTracking(List<IMyLargeTurretBase> turrets)
+
+            public TurretTracking(List<IMyLargeTurretBase> turrets) : this(new HashSet<IMyLargeTurretBase>(turrets))
             {
-                this.turrets = new HashSet<IMyLargeTurretBase>(turrets);
+            }
+
+            public void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            {
+                this.refExpSettings = refExpSettings;
+                this.Me = Me;
             }
 
             public void Poll()
@@ -40,14 +49,17 @@ namespace IngameScript
                 {
                     if (turret.HasTarget)
                     {
-                        HaE_Entity detectedEntity = new HaE_Entity
+                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Turret) != 0 || turret.IsSameConstructAs(Me))
                         {
-                            entityInfo = turret.GetTargetedEntity(),
-                            LastDetectionTime = DateTime.Now,
-                            trackingType = TRACKINGTYPE
-                        };
+                            HaE_Entity detectedEntity = new HaE_Entity
+                            {
+                                entityInfo = turret.GetTargetedEntity(),
+                                LastDetectionTime = DateTime.Now,
+                                trackingType = TRACKINGTYPE
+                            };
 
-                        OnEntityDetected?.Invoke(detectedEntity);
+                            OnEntityDetected?.Invoke(detectedEntity);
+                        }
                     }
                 }
             }

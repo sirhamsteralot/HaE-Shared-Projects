@@ -33,6 +33,9 @@ namespace IngameScript
 
             private IEnumerator<bool> _castingSpreader;
 
+            private EntityTracking_Module.refExpSettings refExpSettings = EntityTracking_Module.refExpDefault;
+            private IMyProgrammableBlock Me;
+
 
             public LidarTracking(HashSet<IMyCameraBlock> cameras, IMyTerminalBlock reference, HashSet<HaE_Entity> trackedEntities)
             {
@@ -42,7 +45,6 @@ namespace IngameScript
 
                 CommonInit();
             }
-
             public LidarTracking(List<IMyCameraBlock> cameras, IMyTerminalBlock reference, HashSet<HaE_Entity> trackedEntities)
             {
                 this.cameras = new HashSet<IMyCameraBlock>(cameras);
@@ -50,6 +52,12 @@ namespace IngameScript
                 this.reference = reference;
 
                 CommonInit();
+            }
+
+            public void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            {
+                this.refExpSettings = refExpSettings;
+                this.Me = Me;
             }
 
             private void CommonInit()
@@ -172,9 +180,12 @@ namespace IngameScript
             {
                 foreach (var camera in cameras)
                 {
-                    if (camera.CanScan(raycastPos))
+                    if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || camera.IsSameConstructAs(Me))
                     {
-                        return camera;
+                        if (camera.CanScan(raycastPos))
+                        {
+                            return camera;
+                        }
                     }
                 }
 
@@ -185,9 +196,12 @@ namespace IngameScript
             {
                 foreach (var camera in cameras)
                 {
-                    if (camera.CanScan(raycastDist))
+                    if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || camera.IsSameConstructAs(Me))
                     {
-                        return camera;
+                        if (camera.CanScan(raycastDist))
+                        {
+                            return camera;
+                        }
                     }
                 }
 

@@ -20,17 +20,26 @@ namespace IngameScript
 	{
         public class EntityTracking_Module
 	    {
+            public const refExpSettings refExpDefault = refExpSettings.Lidar | refExpSettings.Sensor | refExpSettings.Turret;
             public Known_Objects known_Objects = new Known_Objects();
             public List<ITracking> ObjectTrackers = new List<ITracking>();
             public Action<HaE_Entity> onEntityDetected;
 
             private TargetPainter targetPainter;
-            
+            private refExpSettings supportRefExp = refExpSettings.Lidar | refExpSettings.Turret | refExpSettings.Sensor;
+
+            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera, refExpSettings supportRefExp) : this(GTS, reference, targetingCamera)
+            {
+                this.supportRefExp = supportRefExp;
+
+                foreach(var tracker in ObjectTrackers)
+                {
+                    tracker.SetRefExpSettings(GTS.Me, supportRefExp);
+                }
+            }
 
             public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
             {
-                
-
                 List<IMyLargeTurretBase> turretList = new List<IMyLargeTurretBase>();
                 GTS.GridTerminalSystem.GetBlocksOfType(turretList);
                 ObjectTrackers.Add(new TurretTracking(turretList));
@@ -99,6 +108,16 @@ namespace IngameScript
                 }
 
                 onEntityDetected?.Invoke(entity);
+            }
+
+            [Flags]
+            public enum refExpSettings
+            {
+                Lidar,
+                Turret,
+                Sensor,
+                OwnGrid,
+                None,
             }
 	    }
 	}

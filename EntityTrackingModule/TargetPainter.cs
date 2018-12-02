@@ -24,10 +24,19 @@ namespace IngameScript
             private List<IMyCameraBlock> cameras;
             private const HaE_Entity.TrackingType TRACKINGTYPE = HaE_Entity.TrackingType.Lidar;
 
+            private EntityTracking_Module.refExpSettings refExpSettings = EntityTracking_Module.refExpDefault;
+            private IMyProgrammableBlock Me;
+
             public TargetPainter(IMyCameraBlock targetingCamera, List<IMyCameraBlock> cameras)
             {
                 this.targetingCamera = targetingCamera;
                 this.cameras = cameras;
+            }
+
+            public void SetRefExpSettings(HashSet<IMyLargeTurretBase> turrets, IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings)
+            {
+                this.refExpSettings = refExpSettings;
+                this.Me = Me;
             }
 
             public HaE_Entity PaintTarget(double distance)
@@ -55,21 +64,23 @@ namespace IngameScript
             {
                 foreach (var camera in cameras)
                 {
-                    if (camera.CanScan(position))
+                    if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || camera.IsSameConstructAs(Me))
                     {
-                        MyDetectedEntityInfo detected = camera.Raycast(position);
-
-                        HaE_Entity detectedEntity = new HaE_Entity
+                        if (camera.CanScan(position))
                         {
-                            entityInfo = detected,
-                            LastDetectionTime = DateTime.Now,
-                            trackingType = TRACKINGTYPE
-                        };
+                            MyDetectedEntityInfo detected = camera.Raycast(position);
 
-                        return detectedEntity;
+                            HaE_Entity detectedEntity = new HaE_Entity
+                            {
+                                entityInfo = detected,
+                                LastDetectionTime = DateTime.Now,
+                                trackingType = TRACKINGTYPE
+                            };
+
+                            return detectedEntity;
+                        }
                     }
                 }
-
                 return null;
             }
         }
