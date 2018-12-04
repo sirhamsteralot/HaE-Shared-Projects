@@ -20,6 +20,20 @@ namespace IngameScript
     {
         public class ThrustUtils
         {
+            public static double GetForwardThrust(List<IMyThrust>thrusters, IMyTerminalBlock reference)
+            {
+                double sum = 0;
+                foreach (var thrust in thrusters)
+                {
+                    if (Vector3D.Dot(thrust.WorldMatrix.Backward, reference.WorldMatrix.Forward) > 0.999)
+                    {
+                        sum += thrust.MaxEffectiveThrust;
+                    }
+                }
+
+                return sum;
+            }
+
             public static void SetThrust(List<IMyThrust> thrusters, Vector3D direction, double percent)
             {
                 foreach (var thrust in thrusters)
