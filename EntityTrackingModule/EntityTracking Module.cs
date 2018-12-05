@@ -28,7 +28,7 @@ namespace IngameScript
             private TargetPainter targetPainter;
             private refExpSettings supportRefExp = refExpDefault;
 
-            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera, refExpSettings supportRefExp) : this(GTS, reference, targetingCamera)
+            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera, refExpSettings supportRefExp, string ignoreTag = null) : this(GTS, reference, targetingCamera, ignoreTag)
             {
                 this.supportRefExp = supportRefExp;
 
@@ -40,18 +40,24 @@ namespace IngameScript
                 targetPainter.SetRefExpSettings(GTS.Me, supportRefExp);
             }
 
-            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera)
+            public EntityTracking_Module(GridTerminalSystemUtils GTS, IMyShipController reference, IMyCameraBlock targetingCamera, string ignoreTag = null)
             {
+                Func<IMyTerminalBlock, bool> filter = null;
+                if (ignoreTag != null)
+                {
+                    filter = (x => !x.CustomName.Contains(ignoreTag));
+                }
+
                 List<IMyLargeTurretBase> turretList = new List<IMyLargeTurretBase>();
-                GTS.GridTerminalSystem.GetBlocksOfType(turretList);
+                GTS.GridTerminalSystem.GetBlocksOfType(turretList, filter);
                 ObjectTrackers.Add(new TurretTracking(turretList));
 
                 List<IMySensorBlock> sensorList = new List<IMySensorBlock>();
-                GTS.GridTerminalSystem.GetBlocksOfType(sensorList);
+                GTS.GridTerminalSystem.GetBlocksOfType(sensorList, filter);
                 ObjectTrackers.Add(new SensorTracking(sensorList));
 
                 List<IMyCameraBlock> cameraList = new List<IMyCameraBlock>();
-                GTS.GridTerminalSystem.GetBlocksOfType(cameraList);
+                GTS.GridTerminalSystem.GetBlocksOfType(cameraList, filter);
                 ObjectTrackers.Add(new LidarTracking(cameraList, reference, known_Objects.LidarEntities));
 
                 targetPainter = new TargetPainter(targetingCamera, cameraList);
