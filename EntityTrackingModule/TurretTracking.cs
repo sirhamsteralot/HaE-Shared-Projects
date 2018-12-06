@@ -49,7 +49,7 @@ namespace IngameScript
                 {
                     if (turret.HasTarget)
                     {
-                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Turret) != 0 || turret.IsSameConstructAs(Me))
+                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Turret) != 0 || (Me?.IsSameConstructAs(turret) ?? true))
                         {
                             HaE_Entity detectedEntity = new HaE_Entity
                             {

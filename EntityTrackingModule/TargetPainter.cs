@@ -64,7 +64,7 @@ namespace IngameScript
             {
                 foreach (var camera in cameras)
                 {
-                    if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || camera.IsSameConstructAs(Me))
+                    if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || (Me?.IsSameConstructAs(camera) ?? true))
                     {
                         if (camera.CanScan(position))
                         {

@@ -51,7 +51,7 @@ namespace IngameScript
                 {
                     if (sensor.Enabled)
                     {
-                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || sensor.IsSameConstructAs(Me))
+                        if ((refExpSettings & EntityTracking_Module.refExpSettings.Lidar) != 0 || (Me?.IsSameConstructAs(sensor) ?? true))
                         {
                             templist.Clear();
                             sensor.DetectedEntities(templist);
