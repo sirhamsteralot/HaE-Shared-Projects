@@ -43,6 +43,7 @@ namespace IngameScript
                 this.Me = Me;
             }
 
+            public void TimeOutEntities(TimeSpan timeoutTime) { }
             public void ClearTrackedEntities() { }
 
             public void Poll()

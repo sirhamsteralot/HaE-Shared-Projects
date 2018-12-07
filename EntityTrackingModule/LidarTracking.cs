@@ -73,6 +73,17 @@ namespace IngameScript
                 trackedEntities.Clear();
             }
 
+            public void TimeOutEntities(TimeSpan timeoutTime)
+            {
+                var TempSet = new HashSet<HaE_Entity>(trackedEntities);
+
+                foreach (var entity in TempSet)
+                {
+                    if (entity.GetTimeSinceAdded() > timeoutTime)
+                        trackedEntities.Remove(entity);
+                }
+            }
+
             public void Poll()
             {
                 if (_castingSpreader != null)

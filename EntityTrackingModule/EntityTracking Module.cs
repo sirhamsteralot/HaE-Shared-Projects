@@ -76,7 +76,6 @@ namespace IngameScript
 
             public HaE_Entity PaintTarget(Vector3D pos)
             {
-
                 var entity = targetPainter.PaintTarget(pos);
                 OnEntityDetected(entity);
 
@@ -94,6 +93,10 @@ namespace IngameScript
             public void TimeoutEntities(TimeSpan timeout)
             {
                 known_Objects.TimeOutEntities(timeout);
+                foreach (var tracker in ObjectTrackers)
+                {
+                    tracker.TimeOutEntities(timeout);
+                }
             }
 
             public void ClearEntities()

@@ -44,6 +44,7 @@ namespace IngameScript
                 this.Me = Me;
             }
 
+            public void TimeOutEntities(TimeSpan timeoutTime) { }
             public void ClearTrackedEntities() { }
 
             List<MyDetectedEntityInfo> templist = new List<MyDetectedEntityInfo>();
