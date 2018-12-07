@@ -43,6 +43,8 @@ namespace IngameScript
                 this.Me = Me;
             }
 
+            public void ClearTrackedEntities() { }
+
             public void Poll()
             {
                 foreach (var turret in turrets)

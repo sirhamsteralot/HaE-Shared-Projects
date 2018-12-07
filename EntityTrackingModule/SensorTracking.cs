@@ -44,6 +44,8 @@ namespace IngameScript
                 this.Me = Me;
             }
 
+            public void ClearTrackedEntities() { }
+
             List<MyDetectedEntityInfo> templist = new List<MyDetectedEntityInfo>();
             public void Poll()
             {

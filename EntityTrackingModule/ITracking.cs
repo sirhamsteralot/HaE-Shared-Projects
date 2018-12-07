@@ -24,7 +24,7 @@ namespace IngameScript
 
             void Poll();
             void SetRefExpSettings(IMyProgrammableBlock Me, EntityTracking_Module.refExpSettings refExpSettings);
-
+            void ClearTrackedEntities();
         }
 	}
 }

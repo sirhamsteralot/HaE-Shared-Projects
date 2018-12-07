@@ -68,6 +68,11 @@ namespace IngameScript
                 }
             }
 
+            public void ClearTrackedEntities()
+            {
+                trackedEntities.Clear();
+            }
+
             public void Poll()
             {
                 if (_castingSpreader != null)

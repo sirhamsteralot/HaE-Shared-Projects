@@ -99,6 +99,10 @@ namespace IngameScript
             public void ClearEntities()
             {
                 known_Objects.Clear();
+                foreach (var tracker in ObjectTrackers)
+                {
+                    tracker.ClearTrackedEntities();
+                }
             }
 
             private void OnEntityDetected(HaE_Entity entity)
