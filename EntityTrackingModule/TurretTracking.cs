@@ -21,6 +21,7 @@ namespace IngameScript
         public class TurretTracking : ITracking
 	    {
             public Action<HaE_Entity> OnEntityDetected { get; set; }
+            public bool earlyReturn = false;
 
             private HashSet<IMyLargeTurretBase> turrets;
             private const HaE_Entity.TrackingType TRACKINGTYPE = HaE_Entity.TrackingType.Turret;
@@ -62,6 +63,9 @@ namespace IngameScript
                             };
 
                             OnEntityDetected?.Invoke(detectedEntity);
+
+                            if (earlyReturn)
+                                return;
                         }
                     }
                 }

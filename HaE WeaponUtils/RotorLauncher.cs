@@ -21,7 +21,7 @@ namespace IngameScript
 	{
         public class RotorLauncher
 	    {
-            public List<IMyMotorStator> propellingRotors = new List<IMyMotorStator>();
+            private IMyMotorStator[] propellingRotorArray;
             public IMyMotorStator launchRotor;
 
             IngameTime ingameTime;
@@ -33,6 +33,8 @@ namespace IngameScript
 
             public RotorLauncher(IMyMotorStator baseRotor, IngameTime ingameTime, double timeoutS)
             {
+                var propellingRotors = new List<IMyMotorStator>();
+
                 this.ingameTime = ingameTime;
                 this.timeoutS = timeoutS;
 
@@ -46,6 +48,12 @@ namespace IngameScript
                 }
 
                 launchRotor = propellingRotors[propellingRotors.Count - 1];
+                propellingRotorArray = new IMyMotorStator[propellingRotors.Count];
+                for(int i = 0; i < propellingRotors.Count; i++)
+                {
+                    propellingRotorArray[i] = propellingRotors[i];
+                }
+                propellingRotors = null;
             }
 
             public void Tick()
@@ -66,8 +74,7 @@ namespace IngameScript
 
             public IEnumerator<bool> LaunchSequence()
             {
-
-                foreach (var propellingRotor in propellingRotors)
+                foreach (var propellingRotor in propellingRotorArray)
                 {
                     propellingRotor.Displacement = 20;
                 }
@@ -76,7 +83,7 @@ namespace IngameScript
                 
                 launchRotor.ApplyAction("Add Top Part");
 
-                foreach (var propellingRotor in propellingRotors)
+                foreach (var propellingRotor in propellingRotorArray)
                 {
                     propellingRotor.Displacement = -40;
                 }
@@ -106,7 +113,7 @@ namespace IngameScript
                             if (slimblock != null)
                                 stator = slimblock.FatBlock as IMyMotorStator;
 
-                            if (stator != null)
+                            if (stator != null && !stator.CustomName.Contains("[Ignore]"))
                                 return stator;
                         }
                     }
