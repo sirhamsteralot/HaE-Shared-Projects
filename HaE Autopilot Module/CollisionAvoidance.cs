@@ -176,6 +176,7 @@ namespace IngameScript
             private HashSet<long> idsToRemove = new HashSet<long>();
             private void CreateSphereFromEntities(Vector3D headingDir)
             {
+                idsToRemove.Clear();
                 ResetBoundingSphere();
 
                 foreach (var entity in relevantEntities.Values)
@@ -194,6 +195,7 @@ namespace IngameScript
                 {
                     relevantEntities.Remove(id);
                 }
+
             }
 
             private void ResetBoundingSphere()
