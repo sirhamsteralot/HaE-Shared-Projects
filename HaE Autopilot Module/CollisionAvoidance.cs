@@ -20,7 +20,7 @@ namespace IngameScript
 	{
         public class CollisionAvoidance
 	    {
-            private List<HaE_Entity> relevantEntities = new List<HaE_Entity>();
+            private Dictionary<long, HaE_Entity> relevantEntities = new Dictionary<long, HaE_Entity>();
             private BoundingSphereD boundingSphere;
 
             private List<Vector3D> localScanMap;
@@ -43,15 +43,7 @@ namespace IngameScript
             {
                 if (CheckIfEntityRelevant(entity, lastHeadingDir))
                 {
-                    if (relevantEntities.Contains(entity))
-                    {
-                        relevantEntities.Remove(entity);
-                        relevantEntities.Add(entity);
-                    }
-                    else
-                    {
-                        relevantEntities.Add(entity);
-                    }
+                    relevantEntities[entity.entityInfo.EntityId] = entity;
                 }
             }
 
@@ -181,22 +173,26 @@ namespace IngameScript
                 return scanMap;
             }
 
+            private HashSet<long> idsToRemove = new HashSet<long>();
             private void CreateSphereFromEntities(Vector3D headingDir)
             {
                 ResetBoundingSphere();
 
-                for(int i = relevantEntities.Count - 1; i >= 0; i--)
+                foreach (var entity in relevantEntities.Values)
                 {
-                    var entity = relevantEntities[i];
-
                     if (CheckIfEntityRelevant(entity, headingDir))
                     {
                         boundingSphere.Include(entity.BoundingSphere);
-                    } 
+                    }
                     else
                     {
-                        relevantEntities.RemoveAt(i);
+                        idsToRemove.Add(entity.entityInfo.EntityId);
                     }
+                }
+
+                foreach (var id in idsToRemove)
+                {
+                    relevantEntities.Remove(id);
                 }
             }
 
