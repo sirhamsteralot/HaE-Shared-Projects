@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AdvancedSimTargeting.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GridCannonTargeting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PhysicsTargeting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QuarticTargeting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulatedTargeting.cs" />
   </ItemGroup>

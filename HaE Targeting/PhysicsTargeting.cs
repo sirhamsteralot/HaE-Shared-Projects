@@ -19,7 +19,7 @@ namespace IngameScript
 {
     partial class Program
     {
-        public class GridCannonTargeting
+        public class PhysicsTargeting
         {
             /*==========| Events |==========*/
             public Action<Vector3D> onRoutineFinish;
@@ -47,7 +47,7 @@ namespace IngameScript
             Scheduler internalScheduler;
             IngameTime ingameTime;
 
-            public GridCannonTargeting(IMyShipController control, IngameTime ingameTime, double maxProjectileVel, double targetTimeout = 2.5)
+            public PhysicsTargeting(IMyShipController control, IngameTime ingameTime, double maxProjectileVel, double targetTimeout = 2.5)
             {
                 this.targetTimeout = targetTimeout;
                 this.control = control;
