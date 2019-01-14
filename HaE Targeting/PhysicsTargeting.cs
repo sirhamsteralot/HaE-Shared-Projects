@@ -21,6 +21,10 @@ namespace IngameScript
     {
         public class PhysicsTargeting
         {
+            /*======| Extra Settings |======*/
+            public bool IgnoreGravity = false;
+            public double ForwardAccel = 0;
+
             /*==========| Events |==========*/
             public Action<Vector3D> onRoutineFinish;
             public Action onRoutineFail;
@@ -93,7 +97,7 @@ namespace IngameScript
 
             private IEnumerator<bool> TargetingRoutine()
             {
-                if (control.GetNaturalGravity() == Vector3D.Zero && control.GetShipSpeed() < 2)         // Easy
+                if (control.GetNaturalGravity() == Vector3D.Zero && control.GetShipSpeed() < 2 && ForwardAccel != 0)         // Easy
                 {
                     quartic = new QuarticTargeting(control.GetVelocityVector(), control.GetPosition(), maxProjectileVel);
 
@@ -116,6 +120,8 @@ namespace IngameScript
                     simTargeting = new AdvancedSimTargeting(projectileInfo, target, control, ingameTime, 25, true, maxProjectileVel, timescale);
                     simTargeting.onSimComplete += OnSimValid;
                     simTargeting.onSimFail += OnSimFail;
+                    simTargeting.IgnoreGravity = IgnoreGravity;
+                    simTargeting.ForwardAccel = ForwardAccel;
 
                     yield return true;
 

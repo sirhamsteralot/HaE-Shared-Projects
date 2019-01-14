@@ -21,6 +21,9 @@ namespace IngameScript
 	{
         public class AdvancedSimTargeting
 	    {
+            public bool IgnoreGravity = false;
+            public double ForwardAccel = 0;
+
             public double tolerance;
 
             public Vector3D firingDirection;
@@ -99,12 +102,24 @@ namespace IngameScript
                 {
                     projectileInfo.LaunchProjectile(firingDirection * projectileInfo.projectileMaxSpeed);
 
-                    do
+                    if (!IgnoreGravity)
                     {
-                        projectileInfo.Tick(target, targetInfo, control.GetNaturalGravity() * 0.1);
-                        targetInfo.Tick();
+                        do
+                        {
+                            projectileInfo.Tick(target, targetInfo, control.GetNaturalGravity() * 0.1 + projectileInfo.forward * ForwardAccel);
+                            targetInfo.Tick();
 
-                    } while (ContinueSimulation());
+                        } while (ContinueSimulation());
+                    } else
+                    {
+                        do
+                        {
+                            projectileInfo.Tick(target, targetInfo, projectileInfo.forward * ForwardAccel);
+                            targetInfo.Tick();
+
+                        } while (ContinueSimulation());
+                    }
+
 
                     Vector3D difference = targetInfo.currentLocation - closestProjPos;
                     Vector3D missDir = difference;
@@ -171,6 +186,7 @@ namespace IngameScript
                 public double projectileMaxSpeed;
                 public Vector3D currentLocation;
                 public Vector3D currentVelocity;
+                public Vector3D forward;
 
                 public Vector3D startLocation;
                 public Vector3D startVelocity;
@@ -190,6 +206,7 @@ namespace IngameScript
 
                 public void LaunchProjectile(Vector3D launchVelocity)
                 {
+                    forward = Vector3D.Normalize(launchVelocity);
                     currentVelocity = Vector3D.ClampToSphere((startVelocity * timescale) + (launchVelocity * timescale), projectileMaxSpeed * timescale);
                 }
 
