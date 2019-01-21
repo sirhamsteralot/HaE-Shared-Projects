@@ -9,6 +9,7 @@
     <Import_RootNamespace>HaE_Comms</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ACPWrapperV2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ACPWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
