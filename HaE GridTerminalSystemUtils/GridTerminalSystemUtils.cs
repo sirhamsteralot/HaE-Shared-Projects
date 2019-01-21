@@ -37,7 +37,7 @@ namespace IngameScript
                 if (blocks.Count < 1)
                     return null;
 
-                return (blocks[0]);
+                return blocks[0];
             }
 
             public void GetBlocksOfTypeOnGrid<T>(List<T> blocks) where T : class, IMyTerminalBlock
