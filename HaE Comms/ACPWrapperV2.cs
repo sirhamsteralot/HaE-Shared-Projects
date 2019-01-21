@@ -21,6 +21,8 @@ namespace IngameScript
     {
         public class ACPWrapperV2
         {
+            public HashSet<string> listenIds = new HashSet<string>();
+
             private List<Antenna> antennas;
             private GridTerminalSystemUtils GTS;
 
@@ -52,13 +54,42 @@ namespace IngameScript
 
                         return false;
                     });
+
+                listenIds.Add("0");
             }
 
-            public void enqueueMessage(string message, MyTransmitTarget target, antennaType type)
+            public bool TryPeelMessage(string message, ref long senderId, ref string peeledMessagePart)
             {
+                string[] msgParts = message.Split('|');
+
+                if (msgParts.Length < 3)
+                    return false;
+
+                if (!listenIds.Contains(msgParts[1]) && !(msgParts[1] == GTS.Me.EntityId.ToString()))
+                    return false;
+
+                if (!long.TryParse(msgParts[0], out senderId))
+                    return false;
+
+                peeledMessagePart = msgParts[2];
+
+                return true;
+            }
+
+            StringBuilder messageBuilder = new StringBuilder();
+            public void EnqueueMessage(string message, long targetId, MyTransmitTarget target, antennaType type)
+            {
+                messageBuilder.Clear();
+                messageBuilder.Append(GTS.Me.EntityId);
+                messageBuilder.Append('|');
+                messageBuilder.Append(targetId);
+                messageBuilder.Append('|');
+                messageBuilder.Append(message);
+
+
                 var msg = new Message
                 {
-                    message = message,
+                    message = messageBuilder.ToString(),
                     target = target,
                     antennaType = type,
                     isEmpty = false
