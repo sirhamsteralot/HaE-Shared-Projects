@@ -39,9 +39,19 @@ namespace IngameScript
             private Vector3D ControlGravity => controller.GetNaturalGravity();
             private double ControlMass => controller.CalculateShipMass().PhysicalMass;
 
+
+
             public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime, 
                                     PID_Controller.PIDSettings gyroPidSettings, PID_Controller.PIDSettings thrustPidSettings,
-                                    EntityTracking_Module trackingModule)
+                                    EntityTracking_Module trackingModule) : this(GTS, controller, ingameTime, trackingModule)
+            {
+                thrustPidController = new PID_Controller(thrustPidSettings);
+
+                gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
+            }
+
+            public Autopilot_Module(GridTerminalSystemUtils GTS, IMyShipController controller, IngameTime ingameTime,
+                        EntityTracking_Module trackingModule)
             {
                 GTS.GridTerminalSystem.GetBlocksOfType(allThrusters);
                 GTS.GridTerminalSystem.GetBlocksOfType(gyros);
@@ -49,16 +59,13 @@ namespace IngameScript
                 this.controller = controller;
                 this.ingameTime = ingameTime;
 
-                thrustPidController = new PID_Controller(thrustPidSettings);
-
-                gyroControl = new AdvGyroControl(gyroPidSettings, ingameTime);
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
                 collisionAvoidance = new CollisionAvoidance(controller, trackingModule, 10, 10);
                 trackingModule.onEntityDetected += collisionAvoidance.OnEntityDetected;
             }
 
             int avoidanceCheckCounter = 0;
-            public void TravelToPosition(Vector3D position, bool enableAvoidance, double maximumVelocity = 100, double safetyMargin = 1.25)
+            public void TravelToPosition(Vector3D position, bool enableAvoidance, double maximumVelocity = 100, double safetyMargin = 1.25, bool turnSelf = true)
             {
                 double distanceFromTargetSQ = (position - ControlPosition).LengthSquared();
                 if (distanceFromTargetSQ > 1 || controller.GetShipSpeed() > 0.0001)
@@ -86,11 +93,11 @@ namespace IngameScript
                         }
                     }
 
-                    TravelToPosition(position, maximumVelocity, safetyMargin);
+                    TravelToPosition(position, maximumVelocity, safetyMargin, turnSelf);
                 }
             }
 
-            public void TravelToPosition(Vector3D position, double maximumVelocity = 100, double safetyMargin = 1.25)
+            public void TravelToPosition(Vector3D position, double maximumVelocity = 100, double safetyMargin = 1.25, bool turnSelf = true)
             {
                 Vector3D direction = position - ControlPosition;
                 double distance = direction.Normalize();
@@ -103,11 +110,13 @@ namespace IngameScript
                 if (distance >= stoppingDistance * safetyMargin && distance > 1)
                 {
                     ThrustToVelocity(velocity);
-                    AimInDirection(Vector3D.Normalize(velocity), Vector3D.Normalize(ControlGravity));
+                    if (turnSelf)
+                        AimInDirection(Vector3D.Normalize(velocity), Vector3D.Normalize(ControlGravity));
                 } else
                 {
                     ThrustToVelocity(Vector3D.Zero);
-                    AimInDirection(Vector3D.Zero, Vector3D.Normalize(ControlGravity));
+                    if (turnSelf)
+                        AimInDirection(Vector3D.Zero, Vector3D.Normalize(ControlGravity));
                 }
             }
 
