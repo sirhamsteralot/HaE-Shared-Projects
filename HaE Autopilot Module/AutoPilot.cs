@@ -46,6 +46,11 @@ namespace IngameScript
                 autopilotModule = new Autopilot_Module(GTS, controller, time, entityTracking);
             }
 
+            public void Reset()
+            {
+                currentMode = AutopilotMode.Idle;
+            }
+
             public void TravelToPosition(Vector3D position, bool enableAvoidance, double maximumVelocity = 100, double safetyMargin = 1.25)
             {
                 _targetLocation = position;
@@ -90,6 +95,7 @@ namespace IngameScript
             [Flags]
             public enum AutopilotMode
             {
+                Idle,
                 TravelToPosition,
                 ThrustToVelocity,
                 AimInDirection
