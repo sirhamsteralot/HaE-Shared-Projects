@@ -20,6 +20,30 @@ namespace IngameScript
 	{
         public static class VectorUtils
 	    {
+            public static void CreateFibonacciSphere(List<Vector3D> sphereDirections, int samples, Random rnd = null)
+            {
+                double rndNr = 1;
+
+                if (rnd != null)
+                    rndNr = rnd.NextDouble() * samples;
+
+                double offset = 2 / samples;
+                double increment = 2.39996322972865; //= Math.PI * (3 - Math.Sqrt(5));
+
+                for (int i = 0; i < samples; i++)
+                {
+                    double y = ((i *offset) - 1) + (offset / 2);
+                    double r = Math.Sqrt(1 - (y * y));
+
+                    double phi = ((i + rndNr) % samples) * increment;
+
+                    double x = Math.Cos(phi) * r;
+                    double z = Math.Sin(phi) * r;
+
+                    sphereDirections.Add(new Vector3D(x, y, z));
+                }
+            }
+
             public static Vector2I GenerateRandomVector2I(Random random)
             {
                 int ranX0 = random.Next(0, 174);
