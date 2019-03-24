@@ -62,6 +62,17 @@ namespace IngameScript
                 thrustControl = new AdvThrustControl(controller, allThrusters, ingameTime);
                 collisionAvoidance = new CollisionAvoidance(controller, trackingModule, 10, 10);
                 trackingModule.onEntityDetected += collisionAvoidance.OnEntityDetected;
+
+                PID_Controller.PIDSettings onePid = new PID_Controller.PIDSettings
+                {
+                    PGain = 1,
+                    DerivativeGain = 0,
+                    IntegralGain = 0,
+                };
+
+                thrustPidController = new PID_Controller(onePid);
+
+                gyroControl = new AdvGyroControl(onePid, ingameTime);
             }
 
             int avoidanceCheckCounter = 0;
@@ -123,6 +134,13 @@ namespace IngameScript
 
             public void ThrustToVelocity(Vector3D velocity)
             {
+                if (thrustPidController == null)
+                    throw new Exception("wat de neuk thrustPid is null");
+                if (thrustControl == null)
+                    throw new Exception("wat de neuk thrustControl is null");
+                if (ingameTime == null)
+                    throw new Exception("wat de neuk ingameTime is null");
+
                 Vector3D difference = velocity - ControlVelocity;
                 double differenceMag = difference.Normalize();
                 double percent = thrustPidController.NextValue(differenceMag, (lastTime - ingameTime.Time).TotalSeconds);
