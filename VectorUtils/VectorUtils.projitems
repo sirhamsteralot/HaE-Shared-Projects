@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CachedFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MathExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MathUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PositionOctree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PID Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VectorUtils.cs" />
