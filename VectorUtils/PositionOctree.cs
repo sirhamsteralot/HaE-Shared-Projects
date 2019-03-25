@@ -23,9 +23,23 @@ namespace IngameScript
         {
             private Node topNode;
 
+            public PositionOctree()
+            {
+                topNode = new Node(Vector3D.Zero, null);
+            }
+
             public void AddPositionNode(Vector3D position)
             {
                 topNode.AddPosition(position);
+            }
+
+            public bool DeleteNode(Node node)
+            {
+                if (node.Equals(topNode))
+                    return false;
+
+                node.DeleteNode();
+                return true;
             }
 
             public Node FindClosestNode(Vector3D position)
@@ -35,12 +49,14 @@ namespace IngameScript
 
             public struct Node
             {
-                Vector3D position;
+                public Vector3D position;
 
+                public object parentNode;
                 public List<Node> subNodes;
 
-                public Node(Vector3D position) : this()
+                public Node(Vector3D position, object parentNode) : this()
                 {
+                    this.parentNode = parentNode;
                     this.position = position;
                 }
 
@@ -48,7 +64,7 @@ namespace IngameScript
                 {
                     if (subNodes.Count <= 8)
                     {
-                        subNodes.Add(new Node(position));
+                        subNodes.Add(new Node(position, this));
                     } else
                     {
                         FindClosestNode(position).AddPosition(position);
@@ -82,6 +98,50 @@ namespace IngameScript
                     }
 
                     return closestNode;
+                }
+
+                public void DeleteNode()
+                {
+                    if (parentNode is Node)
+                    {
+                        Node parent = (Node)parentNode;
+                        parent.DeleteSubNode(this);
+                    }
+
+                    
+                }
+
+                public void DeleteSubNode(Node node)
+                {
+                    bool deleted = false;
+
+                    for (int i = 0; i < subNodes.Count; i++)
+                    {
+                        if (subNodes[i].Equals(node))
+                        {
+                            subNodes.RemoveAt(i);
+                            deleted = true;
+                            break;
+                        }
+                    }
+
+                    if (node.subNodes.Count > 0 && deleted)
+                    {
+                        subNodes.Add(node.subNodes[0]);
+                    }
+                }
+
+                public override bool Equals(object obj)
+                {
+                    if (!(obj is Node))
+                        return false;
+
+                    return position.Equals(((Node)obj).position);
+                }
+
+                public override int GetHashCode()
+                {
+                    return position.GetHashCode();
                 }
             }
         }
