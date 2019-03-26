@@ -47,6 +47,24 @@ namespace IngameScript
                 return topNode.FindClosestNode(position);
             }
 
+
+            List<Node> workList = new List<Node>();
+            public List<Node> GetNodeList()
+            {
+                workList.Clear();
+                workList.AddRange(GetNodeList(topNode));
+                return workList;
+            }
+            private List<Node> GetNodeList(Node sourceNode)
+            {
+                foreach (var node in sourceNode.subNodes)
+                {
+                    workList.AddRange(GetNodeList(node));
+                }
+
+                return sourceNode.subNodes;
+            }
+
             public struct Node
             {
                 public Vector3D position;
