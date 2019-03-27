@@ -88,7 +88,7 @@ namespace IngameScript
 
                 public void AddPosition(Vector3D position, object payload = null)
                 {
-                    if (subNodes.Count <= 8)
+                    if (subNodes.Count < 8)
                     {
                         subNodes.Add(new Node(position, this, payload));
                     } else
