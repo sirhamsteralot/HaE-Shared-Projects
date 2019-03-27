@@ -99,30 +99,29 @@ namespace IngameScript
 
                 public Node FindClosestNode(Vector3D position)
                 {
-                    if (subNodes.Count == 0)
+                    if (subNodes.Count < 1)
                         return this;
 
-                    Node closestNode;
+                    int closest = 0;
+                    double closestDistSq = double.MaxValue;
 
-                    do
+                    for (int i = 0; i < subNodes.Count; i++)
                     {
-                        int closest = 0;
-                        double closestDistSq = double.MaxValue;
+                        double distSq = Vector3D.DistanceSquared(position, subNodes[i].position);
 
-                        for (int i = 0; i < subNodes.Count; i++)
+                        if (distSq < closestDistSq)
                         {
-                            double distSq = Vector3D.DistanceSquared(position, subNodes[i].position);
-
-                            if (distSq < closestDistSq)
-                            {
-                                closest = i;
-                                closestDistSq = distSq;
-                            }
+                            closest = i;
+                            closestDistSq = distSq;
                         }
+                    }
 
-                        closestNode = subNodes[closest];
+                    Node closestNode = subNodes[closest];
 
-                    } while (closestNode.subNodes.Count > 0);
+                    if (closestNode.subNodes.Count > 0)
+                    {
+                        return closestNode.FindClosestNode(position);
+                    }
 
                     return closestNode;
                 }
