@@ -25,12 +25,12 @@ namespace IngameScript
 
             public PositionOctree()
             {
-                topNode = new Node(Vector3D.Zero, null);
+                topNode = new Node(Vector3D.Zero, this, null);
             }
 
-            public void AddPositionNode(Vector3D position)
+            public void AddPositionNode(Vector3D position, object payload = null)
             {
-                topNode.AddPosition(position);
+                topNode.AddPosition(position, payload);
             }
 
             public bool DeleteNode(Node node)
@@ -49,7 +49,7 @@ namespace IngameScript
 
             public void Clear()
             {
-                topNode = new Node(Vector3D.Zero, null);
+                topNode = new Node(Vector3D.Zero, this, null);
             }
 
             public List<Node> GetNodeList()
@@ -76,9 +76,10 @@ namespace IngameScript
                 public object payload;
 
                 public object parentNode;
+                public PositionOctree root;
                 public List<Node> subNodes;
 
-                public Node(Vector3D position, object parentNode, object payload = null) : this()
+                public Node(Vector3D position, object parentNode, PositionOctree root, object payload = null) : this()
                 {
                     this.parentNode = parentNode;
                     this.position = position;
@@ -90,7 +91,7 @@ namespace IngameScript
                 {
                     if (subNodes.Count < 8)
                     {
-                        subNodes.Add(new Node(position, this, payload));
+                        subNodes.Add(new Node(position, this, root, payload));
                     } else
                     {
                         FindClosestNode(position).AddPosition(position);
@@ -150,11 +151,11 @@ namespace IngameScript
                         }
                     }
 
-                    if (node.subNodes.Count > 0 && deleted)
+                    if (deleted)
                     {
                         foreach (var subNode in node.subNodes)
                         {
-                            AddPosition(subNode.position);
+                            root.AddPositionNode(subNode.position, subNode.payload);
                         }
                     }
 
