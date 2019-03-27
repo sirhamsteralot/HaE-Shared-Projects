@@ -33,14 +33,14 @@ namespace IngameScript
                 topNode.AddPosition(position);
             }
 
-            //public bool DeleteNode(Node node)
-            //{
-            //    if (node.Equals(topNode))
-            //        return false;
+            public bool DeleteNode(Node node)
+            {
+                if (node.Equals(topNode))
+                    return false;
 
-            //    node.DeleteNode();
-            //    return true;
-            //}
+                node.DeleteNode();
+                return true;
+            }
 
             public Node FindClosestNode(Vector3D position)
             {
@@ -72,11 +72,12 @@ namespace IngameScript
             public struct Node
             {
                 public Vector3D position;
+                public object payload;
 
                 public object parentNode;
                 public List<Node> subNodes;
 
-                public Node(Vector3D position, object parentNode) : this()
+                public Node(Vector3D position, object parentNode, object payload = null) : this()
                 {
                     this.parentNode = parentNode;
                     this.position = position;
@@ -84,11 +85,11 @@ namespace IngameScript
                     subNodes = new List<Node>();
                 }
 
-                public void AddPosition(Vector3D position)
+                public void AddPosition(Vector3D position, object payload = null)
                 {
                     if (subNodes.Count <= 8)
                     {
-                        subNodes.Add(new Node(position, this));
+                        subNodes.Add(new Node(position, this, payload));
                     } else
                     {
                         FindClosestNode(position).AddPosition(position);
@@ -124,37 +125,40 @@ namespace IngameScript
                     return closestNode;
                 }
 
-                //public bool DeleteNode()
-                //{
-                //    if (parentNode is Node)
-                //    {
-                //        Node parent = (Node)parentNode;
-                //        return parent.DeleteSubNode(this);
-                //    }
-                //    return false;
-                //}
+                public bool DeleteNode()
+                {
+                    if (parentNode is Node)
+                    {
+                        Node parent = (Node)parentNode;
+                        return parent.DeleteSubNode(this);
+                    }
+                    return false;
+                }
 
-                //public bool DeleteSubNode(Node node)
-                //{
-                //    bool deleted = false;
+                public bool DeleteSubNode(Node node)
+                {
+                    bool deleted = false;
 
-                //    for (int i = 0; i < subNodes.Count; i++)
-                //    {
-                //        if (subNodes[i].Equals(node))
-                //        {
-                //            subNodes.RemoveAt(i);
-                //            deleted = true;
-                //            break;
-                //        }
-                //    }
+                    for (int i = 0; i < subNodes.Count; i++)
+                    {
+                        if (subNodes[i].Equals(node))
+                        {
+                            subNodes.RemoveAt(i);
+                            deleted = true;
+                            break;
+                        }
+                    }
 
-                //    if (node.subNodes.Count > 0 && deleted)
-                //    {
-                //        subNodes.Add(node.subNodes[0]);
-                //    }
+                    if (node.subNodes.Count > 0 && deleted)
+                    {
+                        foreach (var subNode in node.subNodes)
+                        {
+                            AddPosition(subNode.position);
+                        }
+                    }
 
-                //    return deleted;
-                //}
+                    return deleted;
+                }
 
                 public override bool Equals(object obj)
                 {
