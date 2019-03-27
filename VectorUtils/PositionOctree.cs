@@ -44,12 +44,14 @@ namespace IngameScript
 
             public Node FindClosestNode(Vector3D position)
             {
-                return topNode.FindClosestNode(position);
+                Node closestCache = new Node();
+                double closestSqCache = double.MaxValue;
+                return topNode.FindClosestNode(position, ref closestCache, ref closestSqCache);
             }
 
             public void Clear()
             {
-                topNode = new Node(Vector3D.Zero, this, null);
+                topNode = new Node(Vector3D.Zero, null, this, null);
             }
 
             public List<Node> GetNodeList()
@@ -83,28 +85,75 @@ namespace IngameScript
                 {
                     this.parentNode = parentNode;
                     this.position = position;
+                    this.root = root;
+                    this.payload = payload;
 
                     subNodes = new List<Node>();
                 }
 
                 public void AddPosition(Vector3D position, object payload = null)
                 {
+                    Node closestCache = new Node();
+                    double closestSqCache = double.MaxValue;
+
                     if (subNodes.Count < 8)
                     {
                         subNodes.Add(new Node(position, this, root, payload));
                     } else
                     {
-                        FindClosestNode(position).AddPosition(position);
+                        FindClosestFreeNode(position, ref closestCache, ref closestSqCache).AddPosition(position);
                     }
                 }
 
-                public Node FindClosestNode(Vector3D position)
+                public void AddNode(Node node)
+                {
+                    Node closestCache = new Node();
+                    double closestSqCache = double.MaxValue;
+
+                    if (subNodes.Count < 8)
+                    {
+                        subNodes.Add(node);
+                    }
+                    else
+                    {
+                        FindClosestFreeNode(node.position, ref closestCache, ref closestSqCache).AddNode(node);
+                    }
+                }
+
+                public Node FindClosestNode(Vector3D position, ref Node closestNode, ref double closestDistSq)
+                {
+                    if (subNodes.Count < 1)
+                        return this;
+
+                    double closestDistSqNode = double.MaxValue;
+                    for (int i = 0; i < subNodes.Count; i++)
+                    {
+                        double distSq = Vector3D.DistanceSquared(position, subNodes[i].position);
+
+                        if (distSq < closestDistSqNode)
+                        {
+                            closestNode = subNodes[i];
+                            closestDistSqNode = distSq;
+                        }
+                    }
+
+                    closestDistSq = closestDistSqNode;
+
+                    if (closestNode.subNodes.Count > 0)
+                    {
+                        return closestNode.FindClosestNode(position, ref closestNode, ref closestDistSq);
+                    }
+
+                    return closestNode;
+                }
+
+                public Node FindClosestFreeNode(Vector3D position, ref Node closestNode, ref double closestDistSq)
                 {
                     if (subNodes.Count < 1)
                         return this;
 
                     int closest = 0;
-                    double closestDistSq = double.MaxValue;
+                    closestDistSq = double.MaxValue;
 
                     for (int i = 0; i < subNodes.Count; i++)
                     {
@@ -117,11 +166,11 @@ namespace IngameScript
                         }
                     }
 
-                    Node closestNode = subNodes[closest];
+                    closestNode = subNodes[closest];
 
-                    if (closestNode.subNodes.Count > 0)
+                    if (closestNode.subNodes.Count > 7)
                     {
-                        return closestNode.FindClosestNode(position);
+                        return closestNode.FindClosestFreeNode(position, ref closestNode, ref closestDistSq);
                     }
 
                     return closestNode;
