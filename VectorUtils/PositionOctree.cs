@@ -56,14 +56,15 @@ namespace IngameScript
             {
                 List<Node> workList = new List<Node>();
                 workList.Clear();
-                workList.AddRange(GetNodeList(topNode, ref workList));
+                workList.AddRange(GetNodeList(ref topNode, ref workList));
                 return workList;
             }
-            private List<Node> GetNodeList(Node sourceNode, ref List<Node> workList)
+            private List<Node> GetNodeList(ref Node sourceNode, ref List<Node> workList)
             {
                 foreach (var node in sourceNode.subNodes)
                 {
-                    workList.AddRange(GetNodeList(node, ref workList));
+                    var manCpy = node;
+                    workList.AddRange(GetNodeList(ref manCpy, ref workList));
                 }
 
                 return sourceNode.subNodes;
