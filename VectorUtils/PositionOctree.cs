@@ -23,8 +23,32 @@ namespace IngameScript
         {
             private Sector _root;
 
+            public PositionOctree()
+            {
+                _root = new Sector(Vector3D.Zero, double.MaxValue);
+            }
+
+            public Leaf FindClosestLeaf(Vector3D position)
+            {
+                return _root.FindClosestLeaf(ref position);
+            }
+
+            public bool TryAddLeaf(Vector3D position, T payload)
+            {
+                var leaf = new Leaf(position, payload);
+
+                return _root.TryAddLeaf(ref leaf);
+            }
+
+            public bool TryDeleteLeafAt(Vector3D position)
+            {
+                var leaf = FindClosestLeaf(position);
+                return _root.DeleteLeaf(ref leaf);
+            }
+
             public void Clear()
             {
+                _root = new Sector(Vector3D.Zero, double.MaxValue);
             }
 
             public struct Sector
@@ -68,18 +92,18 @@ namespace IngameScript
                     }
                 }
 
-                public void DeleteLeaf(ref Leaf leaf)
+                public bool DeleteLeaf(ref Leaf leaf)
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
-                        leaves.Remove(leaf);
+                        return leaves.Remove(leaf);
                     } else
                     {
-                        GetSubSector(leaf.position).DeleteLeaf(ref leaf);
+                        return GetSubSector(leaf.position).DeleteLeaf(ref leaf);
                     }
                 }
 
-                public bool AddLeaf(ref Leaf leaf)
+                public bool TryAddLeaf(ref Leaf leaf)
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
@@ -98,13 +122,13 @@ namespace IngameScript
                         } else
                         {
                             DivideSector();
-                            return AddLeaf(ref leaf);
+                            return TryAddLeaf(ref leaf);
                         }
 
                         return false;
                     } else
                     {
-                        return GetSubSector(leaf.position).AddLeaf(ref leaf);
+                        return GetSubSector(leaf.position).TryAddLeaf(ref leaf);
                     }
                 }
 
@@ -201,7 +225,7 @@ namespace IngameScript
                     foreach (var leaf in leaves)
                     {
                         var mancpy = leaf;
-                        AddLeaf(ref mancpy);
+                        TryAddLeaf(ref mancpy);
                     }
                 }
             }
