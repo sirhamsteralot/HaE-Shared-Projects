@@ -43,7 +43,43 @@ namespace IngameScript
                     this.halfLength = halfLength;
                 }
 
-                public void AddLeaf(Leaf leaf)
+                public Leaf FindClosestLeaf(ref Vector3D position)
+                {
+                    if (subSectors == null)
+                    {   // if this is the lowest level node
+                        double closestSq = double.MaxValue;
+                        int closestI = 0;
+
+                        for (int i = 0; i < leaves.Count; i++)
+                        {
+                            double dist = Vector3D.DistanceSquared(position, leaves[i].position);
+
+                            if (dist < closestSq)
+                            {
+                                closestSq = dist;
+                                closestI = i;
+                            }
+                        }
+
+                        return leaves[closestI];
+                    } else
+                    {
+                        return GetSubSector(position).FindClosestLeaf(ref position);
+                    }
+                }
+
+                public void DeleteLeaf(ref Leaf leaf)
+                {
+                    if (subSectors == null)
+                    {   // if this is the lowest level node
+                        leaves.Remove(leaf);
+                    } else
+                    {
+                        GetSubSector(leaf.position).DeleteLeaf(ref leaf);
+                    }
+                }
+
+                public bool AddLeaf(ref Leaf leaf)
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
@@ -52,64 +88,68 @@ namespace IngameScript
 
                         if (leaves.Count < 8)
                         {
+                            foreach (var subleaf in leaves)
+                            {
+                                if (subleaf.Equals(leaf))
+                                    return false;
+                            }
+
                             leaves.Add(leaf);
                         } else
                         {
                             DivideSector();
-                            AddLeaf(leaf);
+                            return AddLeaf(ref leaf);
                         }
 
-                        return;
+                        return false;
                     } else
-                    {   // this isnt the lowest level node
-                        Vector3D dfc = leaf.position - center;
+                    {
+                        return GetSubSector(leaf.position).AddLeaf(ref leaf);
+                    }
+                }
 
-                        if (dfc.Z > 0)
+                private Sector GetSubSector(Vector3D position)
+                {
+                    Vector3D dfc = position - center;
+
+                    if (dfc.Z > 0)
+                    {
+                        if (dfc.Y > 0)
                         {
-                            if (dfc.Y > 0)
-                            {
-                                if (dfc.X > 0)
-                                {
-                                    subSectors[0].AddLeaf(leaf);
-                                    return;
-                                }
-
-                                subSectors[1].AddLeaf(leaf);
-                                return;
-                            }
-
                             if (dfc.X > 0)
                             {
-                                subSectors[2].AddLeaf(leaf);
-                                return;
+                                return subSectors[0];
                             }
 
-                            subSectors[3].AddLeaf(leaf);
-                            return;
+                            return subSectors[1];
                         }
-                            else
+
+                        if (dfc.X > 0)
                         {
-                            if (dfc.Y > 0)
-                            {
-                                if (dfc.X > 0)
-                                {
-                                    subSectors[4].AddLeaf(leaf);
-                                    return;
-                                }
+                            return subSectors[2];
+                        }
 
-                                subSectors[5].AddLeaf(leaf);
-                                return;
-                            }
 
+                        return subSectors[3];
+                    }
+                    else
+                    {
+                        if (dfc.Y > 0)
+                        {
                             if (dfc.X > 0)
                             {
-                                subSectors[6].AddLeaf(leaf);
-                                return;
+                                return subSectors[4];
                             }
 
-                            subSectors[7].AddLeaf(leaf);
-                            return;
+                            return subSectors[5];
                         }
+
+                        if (dfc.X > 0)
+                        {
+                            return subSectors[6];
+                        }
+
+                        return subSectors[7];
                     }
                 }
 
@@ -160,12 +200,13 @@ namespace IngameScript
                     // actually move the leaves
                     foreach (var leaf in leaves)
                     {
-                        AddLeaf(leaf);
+                        var mancpy = leaf;
+                        AddLeaf(ref mancpy);
                     }
                 }
             }
 
-            public struct Leaf
+            public struct Leaf : IEquatable<Leaf>
             {
                 public Vector3D position;
                 public T payload;
@@ -174,6 +215,24 @@ namespace IngameScript
                 {
                     this.position = position;
                     this.payload = payload;
+                }
+
+                public bool Equals(Leaf other)
+                {
+                    return position == other.position;
+                }
+
+                public override bool Equals(object obj)
+                {
+                    if (!(obj is Leaf))
+                        return false;
+
+                    return Equals((Leaf)obj);
+                }
+
+                public override int GetHashCode()
+                {
+                    return 1206833562 + EqualityComparer<Vector3D>.Default.GetHashCode(position);
                 }
             }
         }
