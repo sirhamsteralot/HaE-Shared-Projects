@@ -22,9 +22,22 @@ namespace IngameScript
         public class PositionOctree<T>
         {
             private Sector _root;
+            private Vector3D center = Vector3D.Zero;
+            private double range = double.MaxValue;
+            private int maxDepth;
+
+
+            public PositionOctree(Vector3D center, double range, int maxDepth)
+            {
+                this.center = center;
+                this.range = range;
+                this.maxDepth = maxDepth;
+                _root = new Sector(center, range);
+            }
 
             public PositionOctree()
             {
+                maxDepth = 50;
                 _root = new Sector(Vector3D.Zero, double.MaxValue);
             }
 
@@ -35,6 +48,14 @@ namespace IngameScript
 
             public bool TryAddLeaf(Vector3D position, T payload)
             {
+                var diff = position - center;
+                if (Math.Abs(position.X) > range)
+                    return false;
+                if (Math.Abs(position.Y) > range)
+                    return false;
+                if (Math.Abs(position.Z) > range)
+                    return false;
+
                 var leaf = new Leaf(position, payload);
 
                 return _root.TryAddLeaf(ref leaf);
@@ -48,23 +69,37 @@ namespace IngameScript
 
             public void Clear()
             {
-                _root = new Sector(Vector3D.Zero, double.MaxValue);
+                _root = new Sector(center, range, this, 0);
             }
 
-            public struct Sector
+            public class Sector
             {
                 public Vector3D center;
                 public double halfLength;
                 private double quarterLength { get { return halfLength / 2; } }
 
+                private int depth = 0;
+                private PositionOctree<T> root;
 
-                public List<Sector> subSectors;
+                public Sector[] subSectors;
                 public List<Leaf> leaves;
 
-                public Sector(Vector3D center, double halfLength) : this()
+                public Sector(Vector3D center, double halfLength)
                 {
                     this.center = center;
                     this.halfLength = halfLength;
+
+                    leaves = new List<Leaf>(8);
+                }
+
+                public Sector(Vector3D center, double halfLength, PositionOctree<T> root, int depth)
+                {
+                    this.root = root;
+                    this.center = center;
+                    this.halfLength = halfLength;
+                    this.depth = depth;
+
+                    leaves = new List<Leaf>(8);
                 }
 
                 public Leaf FindClosestLeaf(ref Vector3D position)
@@ -107,9 +142,6 @@ namespace IngameScript
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
-                        if (leaves == null)
-                            leaves = new List<Leaf>();
-
                         if (leaves.Count < 8)
                         {
                             foreach (var subleaf in leaves)
@@ -119,16 +151,20 @@ namespace IngameScript
                             }
 
                             leaves.Add(leaf);
+                            return true;
                         } else
                         {
-                            DivideSector();
-                            return TryAddLeaf(ref leaf);
-                        }
+                            bool result = true;
 
-                        return false;
+                            result &= DivideSector();
+                            result &= GetSubSector(leaf.position).TryAddLeaf(ref leaf);
+
+                            return result;
+                        }
                     } else
                     {
-                        return GetSubSector(leaf.position).TryAddLeaf(ref leaf);
+                        Sector sector = GetSubSector(leaf.position);
+                        return sector.TryAddLeaf(ref leaf);
                     }
                 }
 
@@ -153,80 +189,71 @@ namespace IngameScript
                             return subSectors[2];
                         }
 
-
                         return subSectors[3];
                     }
-                    else
+
+                    if (dfc.Y > 0)
                     {
-                        if (dfc.Y > 0)
-                        {
-                            if (dfc.X > 0)
-                            {
-                                return subSectors[4];
-                            }
-
-                            return subSectors[5];
-                        }
-
                         if (dfc.X > 0)
                         {
-                            return subSectors[6];
+                            return subSectors[4];
                         }
 
-                        return subSectors[7];
+                        return subSectors[5];
                     }
+
+                    if (dfc.X > 0)
+                    {
+                        return subSectors[6];
+                    }
+
+                    return subSectors[7];
                 }
 
-                private void DivideSector()
+                private bool DivideSector()
                 {
-                    var divided = new List<Sector>();
+
+
+                    bool success = true;
+
+                    subSectors = new Sector[8];
 
                     // create all the new sectors offset from the center by the quarter length
                     #region create
-                    Vector3D tempvec = center;
-                    tempvec.X += quarterLength; tempvec.Y += quarterLength; tempvec.Z += quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    int subDepth = depth + 1;
 
-                    tempvec = center;
-                    tempvec.X -= quarterLength; tempvec.Y += quarterLength; tempvec.Z += quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    if (subDepth >= root.maxDepth)
+                        throw new Exception("depth Exceeded maximum tree depth!");
 
-                    tempvec = center;
-                    tempvec.X += quarterLength; tempvec.Y -= quarterLength; tempvec.Z += quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[0] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
 
-                    tempvec = center;
-                    tempvec.X -= quarterLength; tempvec.Y -= quarterLength; tempvec.Z += quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[1] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
 
-                    tempvec = center;
-                    tempvec.X += quarterLength; tempvec.Y += quarterLength; tempvec.Z -= quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[2] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
 
-                    tempvec = center;
-                    tempvec.X -= quarterLength; tempvec.Y += quarterLength; tempvec.Z -= quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[3] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
 
-                    tempvec = center;
-                    tempvec.X += quarterLength; tempvec.Y -= quarterLength; tempvec.Z -= quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[4] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
 
-                    tempvec = center;
-                    tempvec.X -= quarterLength; tempvec.Y -= quarterLength; tempvec.Z -= quarterLength;
-                    divided.Add(new Sector(tempvec, quarterLength));
+                    subSectors[5] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+
+                    subSectors[6] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+
+                    subSectors[7] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
                     #endregion
-
-                    // make the new subsectors active and move over all the leaves before clearing them from this node
-                    subSectors = divided;
-                    var tempBranch = leaves;
-                    leaves = null;
 
                     // actually move the leaves
                     foreach (var leaf in leaves)
                     {
                         var mancpy = leaf;
-                        TryAddLeaf(ref mancpy);
+                        success &= TryAddLeaf(ref mancpy);
                     }
+
+                    // clear leaves from node this if success
+                    if (success)
+                        leaves = null;
+
+                    return success;
                 }
             }
 
