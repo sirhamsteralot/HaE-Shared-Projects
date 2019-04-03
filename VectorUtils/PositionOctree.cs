@@ -32,28 +32,28 @@ namespace IngameScript
                 this.center = center;
                 this.range = range;
                 this.maxDepth = maxDepth;
-                _root = new Sector(center, range);
+                _root = new Sector(center, range, null, this, 0, -1);
             }
 
             public PositionOctree()
             {
                 maxDepth = 50;
-                _root = new Sector(Vector3D.Zero, double.MaxValue);
+                _root = new Sector(Vector3D.Zero, double.MaxValue, null, this, 0, -1);
             }
 
-            public Leaf FindClosestLeaf(Vector3D position)
+            public Leaf? FindClosestLeaf(Vector3D position)
             {
-                return _root.FindClosestLeaf(ref position);
+                return _root.FindClosestLeaf(ref position, null);
+            }
+
+            public Leaf FindExactLeaf(Vector3D position)
+            {
+                return _root.FindExactLeaf(ref position);
             }
 
             public bool TryAddLeaf(Vector3D position, T payload)
             {
-                var diff = position - center;
-                if (Math.Abs(position.X) > range)
-                    return false;
-                if (Math.Abs(position.Y) > range)
-                    return false;
-                if (Math.Abs(position.Z) > range)
+                if (!IsPosValid(position))
                     return false;
 
                 var leaf = new Leaf(position, payload);
@@ -63,13 +63,36 @@ namespace IngameScript
 
             public bool TryDeleteLeafAt(Vector3D position)
             {
-                var leaf = FindClosestLeaf(position);
+                if (!IsPosValid(position))
+                    return false;
+
+                var leaf = FindExactLeaf(position);
                 return _root.DeleteLeaf(ref leaf);
             }
 
             public void Clear()
             {
-                _root = new Sector(center, range, this, 0);
+                _root = new Sector(center, range, null, this, 0, -1);
+            }
+
+            private bool IsPosValid(Vector3D position)
+            {
+                var diff = position - center;
+                if (Math.Abs(position.X) > range)
+                    return false;
+                if (Math.Abs(position.Y) > range)
+                    return false;
+                if (Math.Abs(position.Z) > range)
+                    return false;
+
+                return true;
+            }
+
+            public int CountLeaves()
+            {
+                int count = 0;
+                _root.GetLeafCountInBranch(ref count);
+                return count;
             }
 
             public class Sector
@@ -80,6 +103,8 @@ namespace IngameScript
 
                 private int depth = 0;
                 private PositionOctree<T> root;
+                private Sector parent;
+                private int quadrantNum;
 
                 public Sector[] subSectors;
                 public List<Leaf> leaves;
@@ -92,17 +117,19 @@ namespace IngameScript
                     leaves = new List<Leaf>(8);
                 }
 
-                public Sector(Vector3D center, double halfLength, PositionOctree<T> root, int depth)
+                public Sector(Vector3D center, double halfLength, Sector parent, PositionOctree<T> root, int depth, int quadrantNum)
                 {
+                    this.parent = parent;
                     this.root = root;
                     this.center = center;
                     this.halfLength = halfLength;
                     this.depth = depth;
+                    this.quadrantNum = quadrantNum;
 
                     leaves = new List<Leaf>(8);
                 }
 
-                public Leaf FindClosestLeaf(ref Vector3D position)
+                public Leaf FindExactLeaf(ref Vector3D position)
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
@@ -121,9 +148,68 @@ namespace IngameScript
                         }
 
                         return leaves[closestI];
+                    }
+                    else
+                    {
+                        return GetSubSector(position).FindExactLeaf(ref position);
+                    }
+                }
+
+                public Leaf? FindClosestLeaf(ref Vector3D position, List<int> ignoreThese)
+                {
+                    if (subSectors == null && leaves.Count > 0)
+                    {   // if this is the lowest level node
+
+                        if (leaves == null)
+                            leaves = new List<Leaf>(8);
+
+                        double closestSq = double.MaxValue;
+                        int closestI = 0;
+
+                        for (int i = 0; i < leaves.Count; i++)
+                        {
+                            double dist = Vector3D.DistanceSquared(position, leaves[i].position);
+
+                            if (dist < closestSq)
+                            {
+                                closestSq = dist;
+                                closestI = i;
+                            }
+                        }
+
+                        return leaves[closestI];
                     } else
                     {
-                        return GetSubSector(position).FindClosestLeaf(ref position);
+                        if (ignoreThese == null)
+                            ignoreThese = new List<int>();
+
+                        int? sectorInt = GetSubSectorInt(position, ignoreThese);
+                        if (!sectorInt.HasValue || subSectors == null)
+                        {
+                            if (quadrantNum != -1)
+                                return null;
+
+                            ignoreThese.Clear();
+                            ignoreThese.Add(quadrantNum);
+                            return parent.FindClosestLeaf(ref position, ignoreThese);
+                        }
+                       
+
+                        Sector sector = subSectors[sectorInt.Value];
+                        if (sector.subSectors == null)
+                        {
+                            if (sector.leaves.Count > 0)
+                            {
+                                ignoreThese.Clear();
+                                return sector.FindClosestLeaf(ref position, ignoreThese);
+                            }
+
+                            ignoreThese.Add(sectorInt.Value);
+                            return FindClosestLeaf(ref position, ignoreThese);
+                        }
+
+                        ignoreThese.Clear();
+                        return sector.FindClosestLeaf(ref position, ignoreThese);
                     }
                 }
 
@@ -157,7 +243,7 @@ namespace IngameScript
                             bool result = true;
 
                             result &= DivideSector();
-                            result &= GetSubSector(leaf.position).TryAddLeaf(ref leaf);
+                            result &= TryAddLeaf(ref leaf);
 
                             return result;
                         }
@@ -168,52 +254,118 @@ namespace IngameScript
                     }
                 }
 
-                private Sector GetSubSector(Vector3D position)
+                public void GetLeafCountInBranch(ref int count)
+                {
+                    if (subSectors != null)
+                    {
+                        foreach (var sub in subSectors)
+                            sub.GetLeafCountInBranch(ref count);
+                    }
+                    else
+                        count += leaves.Count;
+                }
+
+                private int? GetSubSectorInt(Vector3D position, List<int> ignoreSectors = null)
                 {
                     Vector3D dfc = position - center;
+                    int correctSector = 0;
 
                     if (dfc.Z > 0)
                     {
                         if (dfc.Y > 0)
                         {
                             if (dfc.X > 0)
-                            {
-                                return subSectors[0];
-                            }
-
-                            return subSectors[1];
+                                correctSector = 0;
+                            else
+                                correctSector = 1;
                         }
 
                         if (dfc.X > 0)
+                            correctSector = 2;
+                        else
+                            correctSector = 3;
+                    } else
+                    {
+                        if (dfc.Y > 0)
                         {
-                            return subSectors[2];
+                            if (dfc.X > 0)
+                                correctSector = 4;
+                            else
+                                correctSector = 5;
                         }
 
-                        return subSectors[3];
-                    }
-
-                    if (dfc.Y > 0)
-                    {
                         if (dfc.X > 0)
+                            correctSector = 6;
+                        else
+                            correctSector = 7;
+                    }
+
+                    if (ignoreSectors == null || !ignoreSectors.Contains(correctSector))
+                        return correctSector;
+
+                    double closestSq = double.MaxValue;
+
+                    for (int i = 0; i < subSectors.Length; i++)
+                    {
+                        if (ignoreSectors.Contains(i))
+                            continue;
+
+                        double newDist = Vector3D.DistanceSquared(position, subSectors[i].center);
+
+                        if (newDist < closestSq)
                         {
-                            return subSectors[4];
+                            closestSq = newDist;
+                            correctSector = i;
+                        }
+                    }
+
+                    if (!ignoreSectors.Contains(correctSector))
+                        return correctSector;
+
+                    return null;
+                }
+
+                private Sector GetSubSector(Vector3D position)
+                {
+                    Vector3D dfc = position - center;
+                    int correctSector = 0;
+
+                    if (dfc.Z > 0)
+                    {
+                        if (dfc.Y > 0)
+                        {
+                            if (dfc.X > 0)
+                                correctSector = 0;
+                            else
+                                correctSector = 1;
                         }
 
-                        return subSectors[5];
+                        if (dfc.X > 0)
+                            correctSector = 2;
+                        else
+                            correctSector = 3;
                     }
-
-                    if (dfc.X > 0)
+                    else
                     {
-                        return subSectors[6];
+                        if (dfc.Y > 0)
+                        {
+                            if (dfc.X > 0)
+                                correctSector = 4;
+                            else
+                                correctSector = 5;
+                        }
+
+                        if (dfc.X > 0)
+                            correctSector = 6;
+                        else
+                            correctSector = 7;
                     }
 
-                    return subSectors[7];
+                    return subSectors[correctSector];
                 }
 
                 private bool DivideSector()
                 {
-
-
                     bool success = true;
 
                     subSectors = new Sector[8];
@@ -225,21 +377,21 @@ namespace IngameScript
                     if (subDepth >= root.maxDepth)
                         throw new Exception("depth Exceeded maximum tree depth!");
 
-                    subSectors[0] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
+                    subSectors[0] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, this, root, subDepth, 0);
 
-                    subSectors[1] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
+                    subSectors[1] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z + quarterLength), quarterLength, this, root, subDepth, 1);
 
-                    subSectors[2] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
+                    subSectors[2] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, this, root, subDepth, 2);
 
-                    subSectors[3] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, root, subDepth);
+                    subSectors[3] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z + quarterLength), quarterLength, this, root, subDepth, 3);
 
-                    subSectors[4] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+                    subSectors[4] = new Sector(new Vector3D(center.X + quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, this, root, subDepth, 4);
 
-                    subSectors[5] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+                    subSectors[5] = new Sector(new Vector3D(center.X - quarterLength, center.Y + quarterLength, center.Z - quarterLength), quarterLength, this, root, subDepth, 5);
 
-                    subSectors[6] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+                    subSectors[6] = new Sector(new Vector3D(center.X + quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, this, root, subDepth, 6);
 
-                    subSectors[7] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, root, subDepth);
+                    subSectors[7] = new Sector(new Vector3D(center.X - quarterLength, center.Y - quarterLength, center.Z - quarterLength), quarterLength, this, root, subDepth, 7);
                     #endregion
 
                     // actually move the leaves
