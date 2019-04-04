@@ -444,8 +444,8 @@ namespace IngameScript
 
             public struct Leaf : IEquatable<Leaf>
             {
-                public Vector3D position;
-                public T payload;
+                public readonly Vector3D position;
+                public readonly T payload;
 
                 public Leaf(Vector3D position, T payload)
                 {
