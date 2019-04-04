@@ -87,10 +87,16 @@ namespace IngameScript
 
             public bool TryDeleteLeafAt(Vector3D position)
             {
+                Leaf? leaf = new Leaf();
+                return TryDeleteLeafAt(position, ref leaf);
+            }
+
+            public bool TryDeleteLeafAt(Vector3D position, ref Leaf? leaf)
+            {
                 if (!IsPosValid(position))
                     return false;
 
-                var leaf = FindExactLeaf(position);
+                leaf = FindExactLeaf(position);
                 if (leaf.HasValue)
                 {
                     var mancpy = leaf.Value;
@@ -444,8 +450,8 @@ namespace IngameScript
 
             public struct Leaf : IEquatable<Leaf>
             {
-                public readonly Vector3D position;
-                public readonly T payload;
+                public Vector3D position;
+                public T payload;
 
                 public Leaf(Vector3D position, T payload)
                 {
