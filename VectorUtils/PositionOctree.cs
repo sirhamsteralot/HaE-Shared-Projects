@@ -46,7 +46,31 @@ namespace IngameScript
                 return _root.FindClosestLeaf(ref position, null);
             }
 
-            public Leaf FindExactLeaf(Vector3D position)
+            public bool TryFindClosestLeaf(Vector3D position, ref Leaf leaf)
+            {
+                var leafI = _root.FindClosestLeaf(ref position, null);
+
+                if (leafI.HasValue)
+                {
+                    leaf = leafI.Value;
+                    return true;
+                }
+                return false;
+            }
+
+            public bool TryFindExactLeaf(Vector3D position, ref Leaf leaf)
+            {
+                var leafI = _root.FindExactLeaf(ref position);
+
+                if (leafI.HasValue)
+                {
+                    leaf = leafI.Value;
+                    return true;
+                }
+                return false;
+            }
+
+            public Leaf? FindExactLeaf(Vector3D position)
             {
                 return _root.FindExactLeaf(ref position);
             }
@@ -67,7 +91,13 @@ namespace IngameScript
                     return false;
 
                 var leaf = FindExactLeaf(position);
-                return _root.DeleteLeaf(ref leaf);
+                if (leaf.HasValue)
+                {
+                    var mancpy = leaf.Value;
+                    return _root.DeleteLeaf(ref mancpy);
+                }
+
+                return false;
             }
 
             public void Clear()
@@ -129,7 +159,7 @@ namespace IngameScript
                     leaves = new List<Leaf>(8);
                 }
 
-                public Leaf FindExactLeaf(ref Vector3D position)
+                public Leaf? FindExactLeaf(ref Vector3D position)
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
@@ -147,7 +177,10 @@ namespace IngameScript
                             }
                         }
 
-                        return leaves[closestI];
+                        if (leaves[closestI].position == position)
+                            return leaves[closestI];
+                        else
+                            return null;
                     }
                     else
                     {
