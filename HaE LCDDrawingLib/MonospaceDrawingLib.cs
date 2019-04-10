@@ -146,8 +146,6 @@ namespace IngameScript
                     {
                         redraw = true;
 
-                        P.Echo($"Element updated!\nregenerating...");
-
                         runtimeUpdatable.Updated = false;
                         break;
                     }

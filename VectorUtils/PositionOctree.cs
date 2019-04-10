@@ -41,14 +41,14 @@ namespace IngameScript
                 _root = new Sector(Vector3D.Zero, double.MaxValue, null, this, 0, -1);
             }
 
-            public Leaf? FindClosestLeaf(Vector3D position)
+            public Leaf? FindNearbyLeaf(Vector3D position)
             {
-                return _root.FindClosestLeaf(ref position, null);
+                return _root.FindNearbyLeaf(ref position, null);
             }
 
-            public bool TryFindClosestLeaf(Vector3D position, ref Leaf leaf)
+            public bool TryFindNearbyLeaf(Vector3D position, ref Leaf leaf, List<Vector3D> ignore = null)
             {
-                var leafI = _root.FindClosestLeaf(ref position, null);
+                var leafI = _root.FindNearbyLeaf(ref position, null, ignore);
 
                 if (leafI.HasValue)
                 {
@@ -169,6 +169,9 @@ namespace IngameScript
                 {
                     if (subSectors == null)
                     {   // if this is the lowest level node
+                        if (leaves.Count < 1)
+                            return null;
+
                         double closestSq = double.MaxValue;
                         int closestI = 0;
 
@@ -194,13 +197,10 @@ namespace IngameScript
                     }
                 }
 
-                public Leaf? FindClosestLeaf(ref Vector3D position, List<int> ignoreThese)
+                public Leaf? FindNearbyLeaf(ref Vector3D position, List<int> ignoreThese, List<Vector3D> ignore = null)
                 {
                     if (subSectors == null && leaves.Count > 0)
                     {   // if this is the lowest level node
-
-                        if (leaves == null)
-                            leaves = new List<Leaf>(8);
 
                         double closestSq = double.MaxValue;
                         int closestI = 0;
@@ -209,14 +209,32 @@ namespace IngameScript
                         {
                             double dist = Vector3D.DistanceSquared(position, leaves[i].position);
 
-                            if (dist < closestSq)
+                            bool flag = true;
+                            if (ignore != null)
+                                flag = !ignore.Contains(leaves[i].position);
+
+                            if (dist < closestSq && flag)
                             {
                                 closestSq = dist;
                                 closestI = i;
                             }
                         }
 
-                        return leaves[closestI];
+                        if (closestSq != double.MaxValue)
+                        {
+                            return leaves[closestI];
+                        }
+                        else
+                        {
+                            if (ignoreThese == null)
+                                ignoreThese = new List<int>();
+                            ignoreThese.Clear();
+                            ignoreThese.Add(quadrantNum);
+
+                            return parent?.FindNearbyLeaf(ref position, ignoreThese, ignore);
+                        }
+                            
+
                     } else
                     {
                         if (ignoreThese == null)
@@ -230,7 +248,7 @@ namespace IngameScript
 
                             ignoreThese.Clear();
                             ignoreThese.Add(quadrantNum);
-                            return parent.FindClosestLeaf(ref position, ignoreThese);
+                            return parent.FindNearbyLeaf(ref position, ignoreThese, ignore);
                         }
                        
 
@@ -240,15 +258,15 @@ namespace IngameScript
                             if (sector.leaves.Count > 0)
                             {
                                 ignoreThese.Clear();
-                                return sector.FindClosestLeaf(ref position, ignoreThese);
+                                return sector.FindNearbyLeaf(ref position, ignoreThese, ignore);
                             }
 
                             ignoreThese.Add(sectorInt.Value);
-                            return FindClosestLeaf(ref position, ignoreThese);
+                            return FindNearbyLeaf(ref position, ignoreThese, ignore);
                         }
 
                         ignoreThese.Clear();
-                        return sector.FindClosestLeaf(ref position, ignoreThese);
+                        return sector.FindNearbyLeaf(ref position, ignoreThese, ignore);
                     }
                 }
 

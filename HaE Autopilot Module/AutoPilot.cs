@@ -83,6 +83,9 @@ namespace IngameScript
                 }
                 else if ((currentMode & AutopilotMode.TravelToPosition) != 0)
                 {
+                    if (Vector3D.DistanceSquared(autopilotModule.controller.GetPosition(), _targetLocation) < 0.1 && autopilotModule.controller.GetShipSpeed() < 0.01)
+                        currentMode &= ~AutopilotMode.TravelToPosition;
+
                     autopilotModule.TravelToPosition(_targetLocation, _maxVelocity, _safetyMarginMult, (currentMode & AutopilotMode.AimInDirection) != 0);
                 }
 

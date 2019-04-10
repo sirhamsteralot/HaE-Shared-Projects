@@ -33,6 +33,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE WeaponUtils", "HaE Weap
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE RotorUtils", "HaE RotorUtils\HaE RotorUtils.shproj", "{D30F4BBF-D20E-4571-966A-49E43BC62D47}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HaE TextSurfaceDrawing", "HaE TextSurfaceDrawing\HaE TextSurfaceDrawing.shproj", "{2F86B6F6-9BDC-432E-B178-DAD38F52EDA0}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		HaE Comms\HaE Comms.projitems*{0563c763-5b65-4a47-8a5b-2176876d7eaf}*SharedItemsImports = 13
@@ -46,12 +48,14 @@ Global
 		HaE Scheduler\HaE Scheduler.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Serialization\HaE Serialization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Targeting\HaE Targeting.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
+		HaE TextSurfaceDrawing\HaE TextSurfaceDrawing.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Timing\HaE Timing.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Visualization\HaE Visualization.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE WeaponUtils\HaE WeaponUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		VectorUtils\VectorUtils.projitems*{27f93b29-3dea-43aa-a0e1-1c42a60c295b}*SharedItemsImports = 4
 		HaE Targeting\HaE Targeting.projitems*{2c0b9aab-8c08-40ef-a9f4-980dba0e4b11}*SharedItemsImports = 13
 		VectorUtils\VectorUtils.projitems*{2d034700-8c67-41b0-b3c8-5510d21e52c3}*SharedItemsImports = 13
+		HaE TextSurfaceDrawing\HaE TextSurfaceDrawing.projitems*{2f86b6f6-9bdc-432e-b178-dad38f52eda0}*SharedItemsImports = 13
 		HaE Scheduler\HaE Scheduler.projitems*{32a2473a-3095-4b7b-8362-456c72003feb}*SharedItemsImports = 13
 		HaE Timing\HaE Timing.projitems*{36c0deeb-8ade-4156-aea7-9df3c620f474}*SharedItemsImports = 13
 		HaE Autopilot Module\HaE Autopilot Module.projitems*{4efa3dc1-c6df-4853-962d-e2998290b240}*SharedItemsImports = 13

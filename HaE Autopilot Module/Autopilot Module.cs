@@ -27,7 +27,7 @@ namespace IngameScript
             private List<IMyThrust> allThrusters = new List<IMyThrust>();
             private List<IMyGyro> gyros = new List<IMyGyro>();
 
-            private IMyShipController controller;
+            public IMyShipController controller;
 
             public AdvThrustControl thrustControl;
             public AdvGyroControl gyroControl;
