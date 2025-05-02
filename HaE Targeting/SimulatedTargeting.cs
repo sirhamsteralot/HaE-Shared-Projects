@@ -114,6 +114,7 @@ namespace IngameScript
 
             double currentSimulationTime;
             double originalMissMagnitude;
+            double currentMissMagnitudeSq;
 
 
             /*==========| Functions |===========*/
@@ -165,7 +166,8 @@ namespace IngameScript
                     CurrentProjectileVelocity = AccelVelocityClamped(CurrentProjectileVelocity, acceleration);
                 } while (planetSphere.Contains(CurrentProjectileLocation) == ContainmentType.Disjoint && currentSimulationTime++ <= timeLimit);
 
-                if (Vector3D.DistanceSquared(CurrentProjectileLocation, targetPosition) <= tolerance * tolerance)
+                currentMissMagnitudeSq = Vector3D.DistanceSquared(CurrentProjectileLocation, targetPosition);
+                if (currentMissMagnitudeSq <= tolerance * tolerance)
                     return true;
 
                 return false;
@@ -200,6 +202,10 @@ namespace IngameScript
             public Vector3D GetCurrentTarget()
             {
                 return targetPosition;
+            }
+
+            public double GetLastMissDistance() {
+                return Math.Sqrt(currentMissMagnitudeSq);
             }
         }
 	}
