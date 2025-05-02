@@ -35,7 +35,7 @@ namespace IngameScript
             private Vector3D projectileForward;
             private Vector3D projectileStartPosition;
 
-            private MyDetectedEntityInfo planet;
+            private Vector3D planetPosition;
             private double surfaceGravity;
 
 
@@ -60,7 +60,7 @@ namespace IngameScript
                 this.projectileSpeed = projectileSpeed;
                 this.projectileSpeedCap = projectileSpeedCap;
                 this.projectileStartPosition = projectileStartPosition;
-                this.planet = planet;
+                this.planetPosition = planet.Position;
                 this.surfaceGravity = surfaceGravity;
                 this.projectileForward = projectileForward;
                 this.projectileAcceleration = projectileAcceleration;
@@ -90,6 +90,32 @@ namespace IngameScript
                 this.projectileStartPosition = projectileStartPosition;
                 this.projectileForward = projectileForward;
                 this.projectileAcceleration = projectileAcceleration;
+
+                Coroutine = TargetingRoutine();
+            }
+
+            public Simulated_Targeting(IMyShipController reference, Vector3D targetPosition, Vector3D projectileStartPosition, 
+                                    Vector3D projectileForward, double projectileAcceleration,
+                                    Vector3D planetCenter, double surfaceGravity, double projectileSpeed = 100,
+                                    double projectileSpeedCap = 104.75, double planetRadiusOverride = 0)
+            {
+                this.reference = reference;
+                this.targetPosition = targetPosition;
+                this.projectileSpeed = projectileSpeed;
+                this.projectileSpeedCap = projectileSpeedCap;
+                this.projectileStartPosition = projectileStartPosition;
+                this.planetPosition = planetCenter;
+                this.surfaceGravity = surfaceGravity;
+                this.projectileForward = projectileForward;
+                this.projectileAcceleration = projectileAcceleration;
+                this.planetRadius = planetRadiusOverride;
+
+
+
+                GravityCutoffHeight = (Math.Pow(surfaceGravity, 1.0 / 7.0) * (planetRadius * 1.12)) / Math.Pow(0.3924, 1.0 / 7.0);
+
+                gravitySphere = new BoundingSphereD(planetPosition, GravityCutoffHeight);
+                planetSphere = new BoundingSphereD(planetPosition, (targetPosition - planetPosition).Length());
 
                 Coroutine = TargetingRoutine();
             }
@@ -162,7 +188,7 @@ namespace IngameScript
                 {
                     CurrentProjectileLocation += CurrentProjectileVelocity;
 
-                    Vector3D acceleration = (Vector3D.Normalize(planet.Position - CurrentProjectileLocation) * GetGravityAtAltitude(Vector3D.Distance(planet.Position, CurrentProjectileLocation))) + (projectileForward * projectileAcceleration);
+                    Vector3D acceleration = (Vector3D.Normalize(planetPosition - CurrentProjectileLocation) * GetGravityAtAltitude(Vector3D.Distance(planetPosition, CurrentProjectileLocation))) + (projectileForward * projectileAcceleration);
                     CurrentProjectileVelocity = AccelVelocityClamped(CurrentProjectileVelocity, acceleration);
                 } while (planetSphere.Contains(CurrentProjectileLocation) == ContainmentType.Disjoint && currentSimulationTime++ <= timeLimit);
 
